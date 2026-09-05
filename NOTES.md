@@ -59,6 +59,18 @@ implementing.
   instead, which is stable across processes and machines. Verified by running the full
   generator twice in separate processes and diffing checksums of all 8 CSVs -- byte-identical.
 
+## QA / tuning pass (post-generation)
+
+A separate, deeper QA pass ([`qa_report.py`](qa_report.py)) checked text duplication rates,
+numeric distribution sanity, per-feature label leakage, and overall behavioral-feature
+separability -- and found the initial generation was unrealistically clean (near-100%
+classifier separability, and up to 100% duplicate captions in some archetypes). Two real
+bugs (an inverted overlap-ternary, and per-field-only noise that a nonlinear classifier
+could route around by fingerprinting archetypes) were found and fixed in `generate_dataset.py`
+and `common.py`, not patched onto the CSVs. Full before/after numbers and what changed are in
+[`data/qa_report.md`](data/qa_report.md). Install `requirements-qa.txt` (adds scikit-learn +
+xgboost on top of the base generator deps) to rerun it.
+
 ## Operational note for the next phase (feature extraction)
 
 `hashtags` is stored as an empty string `""` for rows with no hashtags (Facebook/LinkedIn

@@ -112,12 +112,24 @@ def fill_template(rng: np.random.Generator, fk: Faker, template: str) -> str:
 
 @dataclass
 class PhraseBank:
-    """A recombination bank for one archetype's short-form text (bio/headline)."""
+    """A recombination bank for one archetype's short-form text (bio/headline).
+
+    `high_card_pool` is a set of templates that almost always carry a
+    high-cardinality placeholder ({name}/{city}/{company}/{number}/{year}).
+    A handful of hand-written phrase fragments alone cannot produce enough
+    distinct strings once thousands of rows share an archetype -- the fixed
+    fragment lists give maybe a few hundred combinations, but a Faker city
+    or a 4-digit number multiplies that by another 1-2 orders of magnitude.
+    Sampling one high-card item on (nearly) every row is what keeps exact-
+    duplicate rates low at realistic row counts.
+    """
     fragments: dict[str, list[str]]
     emoji_pool: list[str] = field(default_factory=list)
     emoji_prob: float = 0.4
     connector: str = " "
     parts_range: tuple[int, int] = (2, 3)
+    high_card_pool: list[str] = field(default_factory=list)
+    high_card_prob: float = 0.95
 
     def sample(self, rng: np.random.Generator, fk: Faker) -> str:
         keys = list(self.fragments.keys())
@@ -132,6 +144,9 @@ class PhraseBank:
             pool = self.fragments[k]
             idx = int(rng.integers(0, len(pool)))
             pieces.append(fill_template(rng, fk, pool[idx]))
+        if self.high_card_pool and rng.random() < self.high_card_prob:
+            idx = int(rng.integers(0, len(self.high_card_pool)))
+            pieces.append(fill_template(rng, fk, self.high_card_pool[idx]))
         text = self.connector.join(pieces)
         text += maybe_emoji(rng, self.emoji_pool, self.emoji_prob)
         return text.strip()
@@ -139,22 +154,37 @@ class PhraseBank:
 
 @dataclass
 class CaptionBank:
-    """A recombination bank for post captions."""
+    """A recombination bank for post captions.
+
+    `details` works the same way as PhraseBank.high_card_pool: an
+    (almost-)always-included clause carrying a Faker/number placeholder, so
+    that tens of thousands of posts per archetype don't collapse onto a
+    small fixed opener x body x cta combinatorial space.
+    """
     openers: list[str]
     bodies: list[str]
     ctas: list[str] = field(default_factory=list)
+    details: list[str] = field(default_factory=list)
     emoji_pool: list[str] = field(default_factory=list)
     emoji_prob: float = 0.5
     cta_prob: float = 0.3
+    detail_prob: float = 0.95
+    detail2_prob: float = 0.0
 
     def sample(self, rng: np.random.Generator, fk: Faker) -> str:
         parts = [
             fill_template(rng, fk, self.openers[int(rng.integers(0, len(self.openers)))]),
             fill_template(rng, fk, self.bodies[int(rng.integers(0, len(self.bodies)))]),
         ]
+        if self.details and rng.random() < self.detail_prob:
+            parts.append(fill_template(rng, fk, self.details[int(rng.integers(0, len(self.details)))]))
+        if self.details and rng.random() < self.detail2_prob:
+            # A second, independent draw from the same pool -- roughly squares the
+            # combinatorial contribution of `details` for platforms (LinkedIn) that
+            # can't lean on emoji variety the way the others do.
+            parts.append(fill_template(rng, fk, self.details[int(rng.integers(0, len(self.details)))]))
         if self.ctas and rng.random() < self.cta_prob:
             parts.append(fill_template(rng, fk, self.ctas[int(rng.integers(0, len(self.ctas)))]))
-        rng.shuffle(parts) if False else None  # keep opener-first, natural reading order
         text = " ".join(parts)
         text += maybe_emoji(rng, self.emoji_pool, self.emoji_prob)
         return text.strip()
