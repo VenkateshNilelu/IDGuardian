@@ -1,0 +1,4 @@
+pandas>=2.2
+numpy>=1.26
+Faker>=24.0
+vaderSentiment>=3.3.2
