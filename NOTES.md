@@ -71,6 +71,35 @@ and `common.py`, not patched onto the CSVs. Full before/after numbers and what c
 [`data/qa_report.md`](data/qa_report.md). Install `requirements-qa.txt` (adds scikit-learn +
 xgboost on top of the base generator deps) to rerun it.
 
+## Model training pass (`train_models.py`)
+
+Trained the spec's Section 8 architecture: 2 shared models (Lexical: TF-IDF + Logistic
+Regression; Semantic: SBERT + XGBoost) + 8 per-platform models (Behavioral x4, Trust Fusion
+x4) = 10 total, with a proper out-of-fold stacking methodology so Trust Fusion never sees a
+base layer's in-sample predictions (see `data/model_training_report.md` for the full
+methodology and numbers).
+
+**A third over-separability bug turned up here, this time in text.** The first full training
+run produced Lexical and Semantic layers at 99.9-100% test accuracy/AUC on every platform,
+which made Trust Fusion trivially perfect (exactly 1.0/1.0/1.0 everywhere) -- it was just
+inheriting the lexical/semantic scores and adding nothing. Root cause: each archetype's
+phrase banks use essentially disjoint vocabulary (a spam bank never says what a genuine
+bank says), so a bag-of-words or embedding classifier can key off a handful of highly
+distinctive tokens and separate the classes almost perfectly -- the QA pass had only tuned
+*numeric* separability into a realistic range and explicitly called out text as untested at
+the time. Fixed the same way as the earlier numeric fix: added `text_overlap_frac` to
+`build_platform_dataset` (`generate_dataset.py`), an independent shadow-archetype swap
+applied to bio/headline + captions + hashtags only, decoupled from the numeric
+`overlap_frac` since text classifiers are far more sample-efficient at exploiting whatever
+overlap-free vocabulary remains. Tuning took two tries: 0.35 overshot badly (61-65%
+accuracy, near the 60% majority-class floor with no signal left worth keeping), 0.15 landed
+Lexical/Semantic in the target 83-85% band across every platform. Iterated quickly with a
+lexical-only check (skipping the slow SBERT re-encode) before committing to a full retrain.
+
+After the fix, every base layer sits in a realistic, non-trivial range, and Trust Fusion
+shows a real, positive lift over the best single layer on every platform (+0.006 to +0.078
+ROC-AUC) -- the multi-layer architecture is finally doing what it's meant to do.
+
 ## Operational note for the next phase (feature extraction)
 
 `hashtags` is stored as an empty string `""` for rows with no hashtags (Facebook/LinkedIn

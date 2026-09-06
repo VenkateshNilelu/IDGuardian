@@ -1,0 +1,10 @@
+-r requirements.txt
+scikit-learn>=1.4
+xgboost>=2.0
+sentence-transformers>=3.0
+
+# Windows-only, and only needed if huggingface_hub/httpx fail with
+# CERTIFICATE_VERIFY_FAILED behind a corporate TLS-inspecting proxy whose root CA
+# is trusted by Windows but isn't in certifi's bundle. Patches Python's SSL context
+# to use the OS trust store. Uncomment if the SBERT model download fails on SSL.
+# pip-system-certs

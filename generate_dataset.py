@@ -114,6 +114,23 @@ def sample_numeric_fields(rng: np.random.Generator, source: Archetype, k: int) -
     )
 
 
+def assign_shadow_sources(rng: np.random.Generator, arche: Archetype, cnt: int,
+                           archetypes: list[Archetype], frac: float) -> list[Archetype]:
+    """For `frac` of `cnt` rows, swap in a randomly chosen opposite-class archetype as
+    that row's "source" for whatever the caller samples from next (numeric fields, or
+    text banks) -- the row keeps its own true archetype/is_fake label regardless."""
+    sources = [arche] * cnt
+    opposite_pool = [a for a in archetypes if a.is_fake != arche.is_fake]
+    if frac > 0 and opposite_pool:
+        n_ov = int(round(cnt * frac))
+        if n_ov > 0:
+            ov_idx = rng.choice(cnt, size=n_ov, replace=False)
+            shadow_pick = rng.integers(0, len(opposite_pool), size=n_ov)
+            for pos, row_i in enumerate(ov_idx):
+                sources[row_i] = opposite_pool[shadow_pick[pos]]
+    return sources
+
+
 def build_platform_dataset(
     platform: str,
     prefix: str,
@@ -127,6 +144,7 @@ def build_platform_dataset(
     profile_column_order: list[str],
     text_field: str,
     overlap_frac: float = 0.0,
+    text_overlap_frac: float = 0.0,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     `overlap_frac`: for this share of EVERY archetype's profiles, the ENTIRE numeric
@@ -134,7 +152,7 @@ def build_platform_dataset(
     profile completion, verified/website/location) is redrawn from a randomly chosen
     *opposite-class* archetype's config instead of the profile's own -- i.e. some fake
     accounts behave like a genuine archetype end-to-end, and vice versa, while keeping
-    their true archetype/is_fake label and their own archetype's text bank.
+    their true archetype/is_fake label.
 
     This has to touch every numeric field together, not just one or two: an "ambiguous"
     subset with noise on only account_age_days/engagement_rate still leaves every other
@@ -143,6 +161,16 @@ def build_platform_dataset(
     determines is_fake deterministically by construction). Randomizing the whole numeric
     vector together for the overlapped rows is what actually caps a combined classifier's
     achievable accuracy, rather than merely denting one or two univariate signals.
+
+    `text_overlap_frac`: the same idea applied independently to bio/headline + captions +
+    hashtags (drawn from a shadow archetype's *text banks* instead of its numeric config).
+    This needs its own, generally much larger, fraction: each archetype's phrase banks use
+    essentially disjoint vocabulary from every other archetype's (a spam bank never uses a
+    genuine bank's words), so a bag-of-words/embedding classifier can key off a handful of
+    highly distinctive tokens and reach ~100% accuracy even when the numeric layer alone is
+    realistically noisy -- discovered when the trained Lexical/Semantic layers came back at
+    99.9-100% test accuracy on every platform despite the tuned 86-93% Behavioral layer,
+    which would make Trust Fusion a no-op that adds nothing over Lexical alone.
     """
     rng = C.make_rng(platform)
     fk = C.make_faker(platform)
@@ -156,7 +184,7 @@ def build_platform_dataset(
     blocks = list(zip(genuine, genuine_counts)) + list(zip(fake, fake_counts))
 
     cols: dict[str, list] = {
-        "text": [], "username": [], "archetype": [], "is_fake": [],
+        "text": [], "username": [], "archetype": [], "is_fake": [], "text_source": [],
         "account_age_days": [], "is_verified": [], "has_website": [], "has_location": [],
         "profile_completion_score": [], "primary": [], "secondary": [],
         "engagement_rate_base": [], "comment_ratio": [], "share_ratio": [],
@@ -172,24 +200,17 @@ def build_platform_dataset(
         if cnt <= 0:
             continue
 
-        cols["text"].extend(arche.text_bank.sample(rng, fk) for _ in range(cnt))
+        # Independent shadow assignments for text vs. numeric fields -- text needs a much
+        # larger overlap fraction than numeric to land in a realistic accuracy range (see
+        # docstring), so they're tuned and drawn separately rather than sharing one array.
+        text_sources = assign_shadow_sources(rng, arche, cnt, archetypes, text_overlap_frac)
+        sources = assign_shadow_sources(rng, arche, cnt, archetypes, overlap_frac)
+
+        cols["text"].extend(text_sources[i].text_bank.sample(rng, fk) for i in range(cnt))
+        cols["text_source"].extend(s.name for s in text_sources)
         cols["username"].extend(make_username(rng, fk, arche) for _ in range(cnt))
         cols["archetype"].extend([arche.name] * cnt)
         cols["is_fake"].extend([arche.is_fake] * cnt)
-
-        # Assign each row a numeric "source" archetype: its own, unless it lands in the
-        # overlap_frac subset, in which case a random opposite-class archetype stands in
-        # for every numeric field (see build_platform_dataset's docstring for why this has
-        # to be all-or-nothing per row rather than per field).
-        sources = [arche] * cnt
-        opposite_pool = [a for a in archetypes if a.is_fake != arche.is_fake]
-        if overlap_frac > 0 and opposite_pool:
-            n_ov = int(round(cnt * overlap_frac))
-            if n_ov > 0:
-                ov_idx = rng.choice(cnt, size=n_ov, replace=False)
-                shadow_pick = rng.integers(0, len(opposite_pool), size=n_ov)
-                for pos, row_i in enumerate(ov_idx):
-                    sources[row_i] = opposite_pool[shadow_pick[pos]]
 
         age = np.empty(cnt, dtype=int)
         primary = np.empty(cnt, dtype=int)
@@ -245,6 +266,7 @@ def build_platform_dataset(
         return np.array(cols[key])[perm].astype(dtype)
 
     archetype_arr = P("archetype")
+    text_source_arr = P("text_source")
     is_fake_arr = Pnum("is_fake", "int64")
     n_posts_arr = Pnum("n_posts", "int64")
     primary_arr = Pnum("primary", "int64")
@@ -274,6 +296,7 @@ def build_platform_dataset(
         post_noise_sigma=Pnum("post_noise_sigma", "float64").tolist(),
         caption_banks=caption_banks,
         hashtag_cfg=hashtag_cfg,
+        text_sources=text_source_arr.tolist(),
     )
 
     agg = C.derive_profile_aggregates(posts, user_ids.tolist())
@@ -1254,6 +1277,11 @@ def facebook_extra_builders() -> dict[str, ExtraFieldBuilder]:
 # ===========================================================================
 
 OVERLAP_FRAC = 0.13
+# Text needs a much bigger overlap fraction than numeric fields to land in a realistic
+# accuracy range -- see build_platform_dataset's docstring for why (disjoint per-archetype
+# vocabulary lets a lexical/semantic classifier nearly perfectly separate classes even when
+# the numeric layer alone is realistically noisy).
+TEXT_OVERLAP_FRAC = 0.15
 
 PLATFORM_SPECS = {
     "ig": dict(
@@ -1273,8 +1301,6 @@ PLATFORM_SPECS = {
                                "account_age_days", "avg_likes", "avg_comments", "avg_shares", "engagement_rate",
                                "is_verified", "has_website", "has_location", "profile_completion_score",
                                "archetype", "is_fake"],
-        age_overlap={"genuine_range": (30, 500), "fake_range": (700, 3000), "frac": OVERLAP_FRAC},
-        engagement_overlap={"genuine_range": (0.001, 0.015), "fake_range": (0.02, 0.07), "frac": OVERLAP_FRAC},
     ),
     "fb": dict(
         platform="facebook", prefix="fb", archetypes_fn=facebook_archetypes,
@@ -1337,7 +1363,7 @@ def run_platform(key: str) -> tuple[pd.DataFrame, pd.DataFrame, list[str], bool]
         primary_field=spec["primary_field"], secondary_field=spec["secondary_field"],
         engagement_denominator_fields=spec["engagement_denominator_fields"],
         extra_field_builders=spec["extra_field_builders"], profile_column_order=spec["profile_column_order"],
-        text_field=spec["text_field"], overlap_frac=OVERLAP_FRAC,
+        text_field=spec["text_field"], overlap_frac=OVERLAP_FRAC, text_overlap_frac=TEXT_OVERLAP_FRAC,
     )
 
     os.makedirs(DATA_DIR, exist_ok=True)

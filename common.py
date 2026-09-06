@@ -262,6 +262,7 @@ def generate_posts_for_all_profiles(
     post_noise_sigma: Sequence[float],
     caption_banks: dict[str, "CaptionBank"],
     hashtag_cfg: dict[str, tuple[list[str], int, int, float]],
+    text_sources: Sequence[str] | None = None,
 ) -> pd.DataFrame:
     """Generate every post for every profile in one pass.
 
@@ -269,6 +270,12 @@ def generate_posts_for_all_profiles(
     Engagement fields are sampled per-post around each profile's own
     archetype-conditioned base rate/ratio, with lognormal multiplicative
     noise so no two posts of the same profile look identical.
+
+    `text_sources[i]` (defaulting to `archetypes[i]` if not given) selects which
+    archetype's caption bank/hashtag pool profile i's posts actually draw from --
+    this can differ from `archetypes[i]`/`is_fake_flags[i]` (the TRUE label written
+    to the output) when a profile has been assigned a "shadow" archetype for text-
+    overlap purposes (see build_platform_dataset's text_overlap_frac).
     """
     user_id_col: list[str] = []
     caption_col: list[str] = []
@@ -280,13 +287,17 @@ def generate_posts_for_all_profiles(
     archetype_col: list[str] = []
     is_fake_col: list[int] = []
 
+    if text_sources is None:
+        text_sources = archetypes
+
     for i in range(len(profile_ids)):
         n = int(n_posts[i])
         if n <= 0:
             continue
         arch = archetypes[i]
-        bank = caption_banks[arch]
-        pool, hlo, hhi, hempty = hashtag_cfg[arch]
+        text_arch = text_sources[i]
+        bank = caption_banks[text_arch]
+        pool, hlo, hhi, hempty = hashtag_cfg[text_arch]
 
         base_likes = max(audience[i], 1.0) * engagement_rate_base[i]
         like_noise = rng.lognormal(mean=0.0, sigma=post_noise_sigma[i], size=n)

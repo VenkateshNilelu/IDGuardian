@@ -6,127 +6,127 @@
 
 **Sample bios:**
 
-- Proudly independent Free shipping over $50 Serving West Kevin since 2017 Order number 26 just shipped. 🤝✅
-- DM us for inquiries Proudly independent Family-owned, Lake Erica-based 92 orders packed and ready to go.
-- Handmade goods from Sharonside Woman-owned & operated Quality you can trust Based out of East Catherineborough, shipping everywhere.
-- Booking now for 2023 Small business, big heart Proudly independent Celebrating 28 years since we opened our doors. 🔗💼
-- Local favorite in Jenniferton Free shipping over $50 Proudly independent Based out of Christensenburgh, shipping everywhere. 🌍✅
+- Handmade goods from Roseland Thank you for supporting small business Custom orders welcome Shoutout to our 55th customer this week. 🔗
+- Quality you can trust Thank you for supporting small business Celebrating 54 years since we opened our doors.
+- Check my story for proof Follow for a shoutout!! Exclusive deal for my first 100 fans This worked for Lauren too, ask them.
+- Quality you can trust Community first, always Family-owned, New Tim-based Batch number 18 restocked today. 🌍📈
+- Thank you for supporting small business Serving Port Jason since 2023 Customer number 10 just left a five-star review.
 
 **Sample captions:**
 
-- Thank you New Craigfort for another great week. Handmade in small batches every week. Thank you Scottside for 18 years of support. Shop the link in bio. 💼🌍
-- Small batch, made with care. We appreciate every single one of you. Thank you Lake Michael for 16 years of support. DM us to order.
-- New arrivals just dropped! Handmade in small batches every week. Team huddle today covered 68 new ideas. 📈
-- New arrivals just dropped! We appreciate every single one of you. Batch number 76 restocked today. DM us to order.
-- Restocked your favorites. Orders ship out within 2 business days. Customer number 83 just left a five-star review. DM us to order.
+- Taking a moment to say thank you. I read every message even if I can't reply to all. 87 years in this industry now.
+- Stop scrolling, read this. Thousands already joined, don't miss out. Started in Port Melissaburgh, now everywhere. Comment before it's gone. 🛒
+- Restocked your favorites. We appreciate every single one of you. Thank you West Markfurt for 68 years of support.
+- Meet the team making it happen. We appreciate every single one of you. Proudly 44 years in business this 2025. 💼🤝
+- New arrivals just dropped! Handmade in small batches every week. Order number 78 just shipped. 💼
 
 ### Celebrity Impersonator
 
 **Sample bios:**
 
-- THIS IS MY ONLY REAL ACCOUNT Ignore the other fake pages Message number 11 today, reading every one. ☕
-- I reply to my real fans personally Official page, all others are fake Back in Sheliatown this 2025. 📚🌟
-- Thank you for 32 years of support Beware of fake accounts impersonating me Tagging Pam, thank you for believing in this.
-- Ignore the other fake pages I reply to my real fans personally Thank you Kimberly for the constant support.
-- Beware of fake accounts impersonating me I reply to my real fans personally Back in West Elizabethmouth this 2023.
+- Thank you for 37 years of support My verified account got hacked, this is the new one Back in Codyhaven this 2023.
+- Ignore the other fake pages Official page, all others are fake Thank you Michael for the constant support.
+- Proudly independent DM us for inquiries Celebrating 17 years since we opened our doors.
+- New project coming soon Ignore the other fake pages
+- THIS IS MY ONLY REAL ACCOUNT Follow this account only Message number 15 today, reading every one. 🙌☕
 
 **Sample captions:**
 
-- Thank you for the love this 2019. There's more coming that I can't wait to share. Back in New Tiffany this 2023. Back in South Marktown this 2018. Share this so others know it's real.
-- Thank you for the love this 2021. New project details coming very soon. Message number 93 today, reading every one. Share this so others know it's real.
-- Thank you for the love this 2022. There's more coming that I can't wait to share. Thank you Antonio for the constant support.
-- This account is really me, I promise. This journey keeps surprising me. Tagging Daniel, thank you for believing in this. Follow only this page.
-- I see all of your messages, truly. Grateful for every one of you every single day. Working on something big for 2021. 23 years of your support means everything. 🌟📚
+- Important announcement coming soon. Grateful for every one of you every single day. Since 2015, the journey continues. 😊✨
+- Important announcement coming soon. There's more coming that I can't wait to share. Thank you Matthew for the constant support. Message number 39 today, reading every one. DM me directly here. 💪
+- Important announcement coming soon. This journey keeps surprising me. 81 years of your support means everything. Tagging Thomas, thank you for believing in this. 🌟🐾
+- To my real fans: I read every message even if I can't reply to all.
+- A quick note from me to you. Grateful for every one of you every single day. 4 years in this industry now. Working on something big for 2016. 🙌🐾
 
 ### Developer
 
 **Sample bios:**
 
-- views != my employer's Rust curious, Python fluent board games on weekends PR number 55 finally merged. 🔧
-- opinions are my own cloud infra tinkerer Shoutout to Jeremiah for the code review. 💻🚀
-- Frontend dev who loves CSS more than I should into distributed systems always shipping something small Still can't believe it's 2015 and this bug exists.
-- Rust curious, Python fluent Software engineer @ White, Aguilar and Morris 30 tabs of documentation open right now. 🐛☕
-- into distributed systems debugging in production (don't tell my manager) opinions are my own Tagging Paul, they'll appreciate this one.
+- Jacob — mobile engineer Rust curious, Python fluent Currently on commit number 70 of this refactor.
+- occasional open-source contributor Backend dev, Brendabury-based Currently on commit number 25 of this refactor. 🔧🐛
+- Rust curious, Python fluent board games on weekends Building things at Jones, Alvarez and Frost 48 tabs of documentation open right now. ☕
+- debugging in production (don't tell my manager) into distributed systems opinions are my own Currently debugging from New Rachel. ☕
+- 10k+ engaged followers, ask for my rate card Email in bio for collabs Brand deal number 23 this month. 😍
 
 **Sample captions:**
 
-- Gave a lunch-and-learn at Brooks and Sons today. Turned out to be a missing semicolon. Working remotely from Lake Loriville this month. Open to feedback.
-- Refactoring old code I wrote a year ago. Pairing with a teammate made it so much faster. Sprint 30 wrapped up today. Repo link below.
-- Finally got the tests passing. The code review comments humbled me. Standup update: 26 things fixed today. 🚀
-- On-call was quiet for once. CI is green and I'm emotionally fine now. This is bug ticket number 13, send help. Repo link below. 🧠🐛
-- Refactoring old code I wrote a year ago. Past me really did not comment anything. Deploy number 38 of the week. 🐛
+- Gave a lunch-and-learn at Grant, Mcintyre and Villa today. Docs were wrong but figured it out eventually. Pairing with Rebecca made this so much faster. 🧠
+- Learning a new part of the stack this week. Pairing with a teammate made it so much faster. Currently on commit number 46 of this refactor.
+- New side project idea just hit me at 2am. The fix was smaller than the investigation. Shoutout to Sara for the code review.
+- Migrated a service to a new framework today. Naming things is still the hardest part. Deploy number 44 of the week. Repo link below.
+- Learning a new part of the stack this week. Past me really did not comment anything. Currently on commit number 97 of this refactor.
 
 ### Fake Influencer
 
 **Sample bios:**
 
-- Manager: link below Jenna | lifestyle & beauty Partner with the biggest brands George styled this look. 👑
-- Living my best life ✈️ Partner with the biggest brands Shop my looks — link in bio Tagging Sarah, my glam team today. 💖
-- Email in bio for collabs As seen on your explore page Brand deals only, please Look number 13 from this campaign. 😍
-- 10k+ engaged followers, ask for my rate card Turning passion into a career Manager: link below Outfit number 44 of the week. 📸
-- Turning passion into a career Partner with the biggest brands So many of you asked for this, here it is. 🌴✨
+- Full-time student, part-time dreamer trying to survive finals week obsessed with true crime podcasts Shoutout to Charles for the study session. 🐾
+- Junior at South Juan University collects vinyl I can't afford business major, meme connoisseur
+- Manager: link below Full-time content creator Collab requests welcome Tagging Nicole, my glam team today. 💖
+- Living my best life ✈️ Manager: link below 10k+ engaged followers, ask for my rate card So many of you asked for this, here it is.
+- Full-time content creator 10k+ engaged followers, ask for my rate card Shop my looks — link in bio Brand deal number 57 this month.
 
 **Sample captions:**
 
-- Today's shoot was a whole vibe. Partnering with brands I actually love. Shot this in Sullivanfurt. Filming this in Valentinemouth today. Shop this look now. 👑🌴
-- Another day, another shoot. Can't believe I get to call this my job. Since 2022, this has been the dream. Since 2018, this has been the dream. 😍
-- Can't stop wearing this lately. Partnering with brands I actually love. Shot this in Heidibury. Shot this in Sandrafurt. Shop this look now. 🌴
-- Another day, another shoot. Can't believe I get to call this my job. Look number 41 from this campaign. Tagging Robert, my glam team today. Code is my username at checkout.
-- This might be my favorite collab yet. This is going straight into my everyday rotation. So many of you asked for this, here it is. Can't believe it's already 2016. Code is my username at checkout.
+- Unboxing my favorite package of the month. Honestly didn't expect to love this as much as I do. Brand deal number 18 this month. Outfit number 42 of the week. Shop this look now. 👑💅
+- Today's shoot was a whole vibe. So many of you have been asking about this. Tagging Cynthia, my glam team today. Kathleen styled this look.
+- New content coming your way soon. So grateful for opportunities like this. Tagging Samantha, my glam team today. Can't believe it's already 2025. DM for collab details. 👑😍
+- Today's shoot was a whole vibe. This is exactly what my feed needed. So many of you asked for this, here it is. Code is my username at checkout. 💅💖
+- Study session with Christopher turned into a nap. Library until it closes, again. Number 11 on my to-do list: sleep.
 
 ### Fitness Creator
 
 **Sample bios:**
 
-- Kurt — movement is medicine macro-friendly recipes on the blog DM 'START' for coaching info 72 minutes of mobility work this morning.
-- Free workout guide in bio form check requests welcome Tagging Michael, my training partner today.
-- DM 'START' for coaching info 5am workouts, no excuses Helping you build strength, not just muscle Tagging Dennis, my training partner today. 🏃🏋️
-- Powerlifter & coach Booking 1:1 sessions 💪
-- Certified personal trainer DM 'START' for coaching info macro-friendly recipes on the blog Training out of Port Stephanietown this week.
+- DM me 'INFO' now Turn $10 into $1000 Comment 'ME' below Already 2 success stories this month. 💰
+- Booking 1:1 sessions Helping you build strength, not just muscle Back in Lake Angelicaside for a pop-up class this 2018. 🧘🏋️
+- Programs linked below macro-friendly recipes on the blog Helping you build strength, not just muscle Training out of Hernandezside this week.
+- Free workout guide in bio macro-friendly recipes on the blog Logged 7 miles this week.
+- Certified personal trainer macro-friendly recipes on the blog Booking 1:1 sessions Logged 7 miles this week. 💪
 
 **Sample captions:**
 
-- New PR today! Rest days are still training days. Coaching 54 clients this cycle.
-- New PR today! Form over ego, always. Week 48 of the plan, feeling stronger. Save this for your next session. 🔥
-- Deload week starts now. Rest days are still training days. Week 74 of the plan, feeling stronger. Save this for your next session.
-- New PR today! Strength carries over into everything else. 71 minutes of mobility work this morning.
-- Ran a form check clinic today. Consistency beats intensity most days. 45 minutes of mobility work this morning. 🧘🏋️
+- Leg day recap. Progress isn't always linear, and that's fine. 11 minutes of mobility work this morning.
+- Early morning session before work. Form over ego, always. Client hit a 84 pound PR today. Programs linked in bio. 💪
+- Recovery day, mobility work only. Slow and controlled beats fast and sloppy. Training out of South David this week. Programs linked in bio.
+- New PR today! Small wins add up over months. Session number 82 with this client, big progress. Programs linked in bio. 🏃
+- Recovery day, mobility work only. Form over ego, always. Logged 39 miles this week. ⚡🏃
 
 ### Spam Account
 
 **Sample bios:**
 
-- DM for details Guaranteed followers overnight Limited spots left!! Since 2021, thousands have joined. 🛒
-- Tap the link before it's gone Turn $10 into $1000 Already helped 37 people this 2023.
-- MAKE $500/DAY FROM HOME Tap the link before it's gone Evan just signed up, you're next. 🔥💰
-- Turn $10 into $1000 DM for details 84 people can't all be wrong. 🔥✅
-- Guaranteed followers overnight Comment 'ME' below Spot number 40 just opened up. 🔥
+- Proudly independent Quality you can trust Shoutout to our 49th customer this week.
+- Win a free iPhone today Limited spots left!! Check my story for proof Spot number 28 just opened up. 🛒📩
+- Check my story for proof DM me 'INFO' now Spot number 89 just opened up. 🛒
+- Exclusive deal for my first 100 fans Click the link and thank me later Spot number 8 just opened up. ✅
+- MAKE $500/DAY FROM HOME DM for details Message number 76 today, still going. 📩✅
 
 **Sample captions:**
 
-- 🚨 LAST CHANCE 🚨 This is not a scam, I promise. Spot number 3 just opened up. Link in bio, click now. 💰
-- You NEED to see this. It's 100% legit, I was skeptical too. Already helped 19 people this 2018. Tap the link in my story. ✅
-- Stop scrolling, read this. Spots are filling up fast. Only 70 spots left today. Link in bio, click now.
-- 🚨 LAST CHANCE 🚨 Made more money this week than my old job paid monthly. Already 97 success stories this month. Link in bio, click now.
-- I wasn't going to share this but... No experience needed, just a phone. Since 2016, thousands have joined. Comment before it's gone. ✅
+- Restocked your favorites. Orders ship out within 2 business days. Tagging Nicole, one of our first customers back in 2022. DM us to order. ✅
+- Stop scrolling, read this. It's 100% legit, I was skeptical too. Already 64 success stories this month. Comment before it's gone. 🎁💯
+- This changed everything for me. No experience needed, just a phone. Since 2019, thousands have joined. DM me 'START' immediately. 📩🎁
+- 🚨 LAST CHANCE 🚨 Thousands already joined, don't miss out. Message number 64 today, still going. Tap the link in my story. 🔥
+- New PR today! Rest days are still training days. Client hit a 90 pound PR today. Save this for your next session.
 
 ### Student
 
 **Sample bios:**
 
-- majoring in something I still can't explain at parties living on iced coffee and hope Group chat with Lauren is unhinged today. 💪🎬
-- Junior at Port Maryberg University pre-med and perpetually tired plays intramural soccer badly Tagging Lisa because they'd get this. 🐾💪
-- psych major who overthinks everything Studying at Davisshire University Officially 19 credits away from graduating.
-- plays intramural soccer badly psych major who overthinks everything Wilsonmouth University '27 Can't believe it's already 2020.
-- obsessed with true crime podcasts trying to survive finals week Number 68 on my to-do list: sleep.
+- Turn $10 into $1000 Comment 'ME' below MAKE $500/DAY FROM HOME Already helped 82 people this 2020. 💰
+- Summer | student plays intramural soccer badly business major, meme connoisseur Somewhere in Lake Meganmouth, probably procrastinating. 🌟
+- amateur baker, professional snacker living on iced coffee and hope psych major who overthinks everything Officially 79 credits away from graduating. 🙌📚
+- Grad student @ West Robert University obsessed with true crime podcasts Number 65 on my to-do list: sleep. 🙌✨
+- Alexander | student here for the memes and the free pizza Studying in South Jamie has its perks.
 
 **Sample captions:**
 
-- Campus is so pretty in South Dorothymouth today. Dorm life really tests your patience. Number 63 on my to-do list: sleep. ☕
-- Coffee run before class. Ranking my classes from bearable to soul-crushing. Officially 7 credits away from graduating. 😊
-- Study session with Elizabeth turned into a nap. Library until it closes, again. Shoutout to Jacqueline for the study session. Someone quiz me please.
-- Another day surviving Warrenmouth University. Turns out procrastination is a full-time job. Officially 53 credits away from graduating. Someone quiz me please.
-- Group project update: Somehow still passing my classes. Currently 28 days away from break. 🐾
+- Another day surviving West Christopher University. Ranking my classes from bearable to soul-crushing. Group chat with Jennifer is unhinged today. 🎉📚
+- Study session with Denise turned into a nap. My professor just dropped a pop quiz, send help. Currently 68 days away from break.
+- Another day surviving Lake Kevin University. Ranking my classes from bearable to soul-crushing. Tagging Lindsay because they'd get this.
+- Finals season has me questioning everything. Library until it closes, again. Tagging Matthew because they'd get this.
+- I wasn't going to share this but... This is not a scam, I promise. Already helped 15 people this 2021. Link in bio, click now. 📩
 
 ## Twitter
 
@@ -134,127 +134,127 @@
 
 **Sample bios:**
 
-- Serving Amyberg since 2019 Free shipping over $50 Team huddle today covered 80 new ideas.
-- Free shipping over $50 Woman-owned & operated Roth, Chavez and Mccullough — official account Team huddle today covered 70 new ideas.
-- Thank you for supporting small business DM us for inquiries Local favorite in Lake Jeremiahbury Customer number 62 just left a five-star review. 💼
-- Handmade goods from Blankenshipview Booking now for 2017 Order number 3 just shipped. 📈✅
-- Serving North Dannyhaven since 2025 Proudly independent Based out of Johnland, shipping everywhere. 🤝🌍
+- Community first, always Family-owned, West Jamie-based New drops every 36 weeks Batch number 26 restocked today. ✅
+- Hernandez, Walker and Hodges — official account New drops every 4 weeks Woman-owned & operated Thank you Aguilarfort for 4 years of support.
+- I reply to my real fans personally Ignore the other fake pages Project number 19 coming together nicely.
+- Thank you for supporting small business Handmade goods from New Ashleytown New drops every 54 weeks Batch number 93 restocked today.
+- Family-owned, Martinezmouth-based Thank you for supporting small business Based out of Lake Bradleyborough, shipping everywhere. 🌍📈
 
 **Sample captions:**
 
-- Behind the scenes at the shop today. Custom requests are always welcome. Based out of South Lesliemouth, shipping everywhere.
-- Meet the team making it happen. Handmade in small batches every week. Tagging Shannon, one of our first customers back in 2016.
-- New arrivals just dropped! Orders ship out within 2 business days. Tagging Michelle, one of our first customers back in 2018. Limited stock available.
-- New arrivals just dropped! Orders ship out within 2 business days. Based out of North Joseph, shipping everywhere. DM us to order. 🤝✅
-- Restocked your favorites. We appreciate every single one of you. Batch number 66 restocked today. Shop the link in bio.
+- Small batch, made with care. Your support keeps our doors open. Serving New Kimberlyton since 2017.
+- Small batch, made with care. Handmade in small batches every week. Order number 90 just shipped.
+- Restocked your favorites. We appreciate every single one of you. Thank you Brandyport for 88 years of support. DM us to order.
+- Restocked your favorites. Handmade in small batches every week. Thank you North Brandy for 49 years of support. ✅
+- New arrivals just dropped! Locally sourced, always. Order number 29 just shipped.
 
 ### Celebrity Impersonator
 
 **Sample bios:**
 
-- Direct message me here for business Follow this account only 23 years of your support means everything.
-- Direct message me here for business Follow this account only Message number 3 today, reading every one.
-- My verified account got hacked, this is the new one Direct message me here for business Since 2017, the journey continues.
-- Thank you for 85 years of support Not a bot, it's really me Since 2022, still going strong. ☕
-- I reply to my real fans personally DM me, I promise it's me Back in Reneemouth this 2025.
+- Thank you for 83 years of support My verified account got hacked, this is the new one Back in Williamborough this 2016. ☕🎬
+- Official page, all others are fake Ignore the other fake pages Thank you Leslie for the constant support.
+- Follow this account only Not a bot, it's really me 93 years of your support means everything.
+- New project coming soon Not a bot, it's really me Working on something big for 2015. 😊✨
+- THIS IS MY ONLY REAL ACCOUNT I reply to my real fans personally Back in Woodtown this 2023. 🎬🙌
 
 **Sample captions:**
 
-- Taking a moment to say thank you. New project details coming very soon. Tagging Nicholas, thank you for believing in this. 70 years in this industry now. 📚
-- I don't get to say this enough. New project details coming very soon. Message number 88 today, reading every one. Share this so others know it's real.
-- Important announcement coming soon. New project details coming very soon. Working on something big for 2021. Share this so others know it's real. 📚
-- Something special is coming, stay tuned. Please report any fake pages you see. Since 2015, the journey continues. Since 2017, still going strong. ✨☕
-- Something special is coming, stay tuned. Grateful for every one of you every single day. Back in South Catherine this 2023. 🎬🙌
+- Important announcement coming soon. Ignore anyone claiming to be my manager elsewhere. Since 2025, still going strong. 🐾✨
+- Thank you for the love this 2024. None of this would matter without you. Back in East Alexanderchester this 2020. DM me directly here. 🙌🎬
+- Thank you for the love this 2016. Grateful for every one of you every single day. Tagging Leah, thank you for believing in this. Since 2016, still going strong.
+- Small batch, made with care. Your support keeps our doors open. Celebrating 25 years since we opened our doors. DM us to order. 🤝
+- Spent way too long on a bug today. Turns out the cache was the whole problem. This is bug ticket number 83, send help. Curious how others solve this. ⚙️📦
 
 ### Developer
 
 **Sample bios:**
 
-- Rust curious, Python fluent Rebecca — mobile engineer Still can't believe it's 2017 and this bug exists.
-- Frontend dev who loves CSS more than I should occasional open-source contributor mechanical keyboard collector Sprint 17 wrapped up today.
-- React/TypeScript enjoyer always shipping something small This is bug ticket number 62, send help. 💻🧠
-- opinions are my own Full-stack developer Working out of Hannamouth this 2022. ☕
-- Software engineer @ Zimmerman Inc always shipping something small Currently debugging from North Samuel. ⚙️
+- Backend dev, Gabrielfurt-based into distributed systems always shipping something small Shoutout to Raven for the code review.
+- always shipping something small Marc — mobile engineer 95 tabs of documentation open right now. 🚀💻
+- coffee-powered David — mobile engineer always shipping something small Pairing with Amy made this so much faster. 🐛⚙️
+- board games on weekends Backend dev, South Morganmouth-based Python & Go by day Currently debugging from Mcfarlandhaven.
+- into distributed systems debugging in production (don't tell my manager) Backend dev, Jeremiahhaven-based Pairing with Alyssa made this so much faster.
 
 **Sample captions:**
 
-- Finally got the tests passing. Turned out to be a missing semicolon. Pairing with James made this so much faster. ☕
-- New side project idea just hit me at 2am. CI is green and I'm emotionally fine now. Pairing with Ryan made this so much faster. Repo link below.
-- Migrated a service to a new framework today. Past me really did not comment anything. Still can't believe it's 2016 and this bug exists. AMA about the stack.
-- On-call was quiet for once. Naming things is still the hardest part. 85 tabs of documentation open right now. 📦🐛
-- Spent way too long on a bug today. CI is green and I'm emotionally fine now. PR number 31 finally merged.
+- Shipped a small feature at Johnson-Shannon. Pairing with a teammate made it so much faster. Working remotely from Kristashire this month. 📦🚀
+- Learning a new part of the stack this week. Pairing with a teammate made it so much faster. PR number 62 finally merged. 🧠
+- New side project idea just hit me at 2am. CI is green and I'm emotionally fine now. 49 tabs of documentation open right now.
+- Learning a new part of the stack this week. Linting caught it before it shipped, thankfully. Tagging Laura, they'll appreciate this one. Repo link below. ☕📦
+- Migrated a service to a new framework today. Pairing with a teammate made it so much faster. Working remotely from Lake Whitneyview this month.
 
 ### Fake Influencer
 
 **Sample bios:**
 
-- As seen on your explore page Manager: link below Brand deals only, please Look number 96 from this campaign. 💖📸
-- Manager: link below Collab requests welcome Living my best life ✈️ Tagging Nancy, my glam team today. 💅
-- 10k+ engaged followers, ask for my rate card Manager: link below Shot this in New Reneefurt.
-- Manager: link below As seen on your explore page Full-time content creator Since 2016, this has been the dream.
-- As seen on your explore page Email in bio for collabs Trip number 30 this year, no complaints. 🌴✨
+- Turning passion into a career Partner with the biggest brands Manager: link below Trip number 28 this year, no complaints.
+- Email in bio for collabs Full-time content creator 10k+ engaged followers, ask for my rate card Brenda styled this look. ✨
+- Shop my looks — link in bio Caitlin | lifestyle & beauty As seen on your explore page Trip number 76 this year, no complaints. 👑💅
+- As seen on your explore page Manager: link below Brand deals only, please So many of you asked for this, here it is.
+- As seen on your explore page Email in bio for collabs Full-time content creator Filming this in Nielsenbury today. 💅
 
 **Sample captions:**
 
-- This might be my favorite collab yet. This is exactly what my feed needed. Shot this in West Biancafort. Shop this look now. 👑
-- New content coming your way soon. Can't believe I get to call this my job. Outfit number 38 of the week. Ashley styled this look. DM for collab details. 💅
-- New content coming your way soon. My followers deserve the best recommendations. So many of you asked for this, here it is. Can't believe it's already 2021. Link in bio for the discount.
-- Today's shoot was a whole vibe. This is exactly what my feed needed. Packing for Allenfort again this week. So many of you asked for this, here it is.
-- Living for moments like this. This is exactly what my feed needed. Since 2015, this has been the dream. Jose styled this look. DM for collab details. 💅
+- This brand sent me the best package. So many of you have been asking about this.
+- New content coming your way soon. Use my code for a discount. Since 2017, this has been the dream. Shot this in Lake Eugene. 👑📸
+- Today's shoot was a whole vibe. This is going straight into my everyday rotation. DM for collab details. 👑🌴
+- This might be my favorite collab yet. Partnering with brands I actually love. Filming this in Nortontown today. Brand deal number 45 this month. 💅👑
+- This might be my favorite collab yet. This is going straight into my everyday rotation. Justin styled this look.
 
 ### Fitness Creator
 
 **Sample bios:**
 
-- Online coach @ Harper, Walters and Skinner form check requests welcome Free workout guide in bio 19 reps, zero regrets. 🏃
-- macro-friendly recipes on the blog Marathoner turned strength coach DM 'START' for coaching info Shoutout to Alexandria for showing up every day.
-- Helping you build strength, not just muscle Programs linked below 71 reps, zero regrets. 🧘🥗
-- 5am workouts, no excuses Booking 1:1 sessions Tagging Maria, my training partner today. 🏃
-- Certified personal trainer believer in progressive overload Session number 65 with this client, big progress. ⚡
+- Powerlifter & coach macro-friendly recipes on the blog Week 85 of the plan, feeling stronger. 🏃
+- Limited spots left!! Turn $10 into $1000 50 people can't all be wrong. ✅🔥
+- form check requests welcome Free workout guide in bio Session number 30 with this client, big progress.
+- Programs linked below form check requests welcome Certified personal trainer Session number 90 with this client, big progress. 🧘
+- Direct message me here for business My verified account got hacked, this is the new one Thank you Cynthia for the constant support. 😊🙌
 
 **Sample captions:**
 
-- Ran a form check clinic today. Rest days are still training days. Training out of Lynnbury this week.
-- Recovery day, mobility work only. Fueling properly made a huge difference. 81 reps, zero regrets.
-- Meal prep Sunday. Form over ego, always. Week 31 of the plan, feeling stronger. Tag your gym partner.
-- Deload week starts now. Strength carries over into everything else. Day 50 of the program. Programs linked in bio. 🥗
-- Early morning session before work. Rest days are still training days. Shoutout to Kimberly for showing up every day. 🥗🧘
+- Programming update for the week. Form over ego, always. Back in Whitneymouth for a pop-up class this 2022. 🥗🏃
+- Leg day recap. Small wins add up over months. Coaching 13 clients this cycle. Tag your gym partner.
+- Back-to-back sessions today. Strength carries over into everything else. 35 minutes of mobility work this morning. 🏃
+- 🚨 LAST CHANCE 🚨 Thousands already joined, don't miss out. Started in Gabrielview, now everywhere.
+- Leg day recap. Slow and controlled beats fast and sloppy. Client hit a 33 pound PR today. Tag your gym partner.
 
 ### Spam/Bot Account
 
 **Sample bios:**
 
-- Check my story for proof Turn $10 into $1000 Already helped 76 people this 2024. ✅
-- Everyone is doing this, why aren't you? Comment 'ME' below Only 21 spots left today. 🎁
-- Get verified fast, DM now Limited spots left!! Only 33 spots left today. 💯📩
-- Guaranteed followers overnight DM me 'INFO' now Over 31 people already joined this week. ✅💰
-- Everyone is doing this, why aren't you? Guaranteed followers overnight DM for details Since 2018, thousands have joined. 📩💯
+- Exclusive deal for my first 100 fans Click the link and thank me later Slot 61 almost gone. 🔥
+- Click the link and thank me later Guaranteed followers overnight Robert just signed up, you're next. 🛒
+- DM for details Click the link and thank me later Slot 17 almost gone.
+- Get verified fast, DM now MAKE $500/DAY FROM HOME DM for details Started in Lake Jasonport, now everywhere. 💰
+- Click the link and thank me later Free crypto signals daily Check my story for proof Ronnie just signed up, you're next. 👉
 
 **Sample captions:**
 
-- This changed everything for me. Thousands already joined, don't miss out. Since 2025, thousands have joined. DM me 'START' immediately. 💯
-- This changed everything for me. Made more money this week than my old job paid monthly. Already helped 60 people this 2022. Comment before it's gone. 📩
-- You NEED to see this. It's 100% legit, I was skeptical too. Spot number 54 just opened up. Link in bio, click now. 📩
-- 🚨 LAST CHANCE 🚨 No experience needed, just a phone. Slot 60 almost gone. Comment before it's gone.
-- Everyone is asking how I did this so fast. Thousands already joined, don't miss out. Only 53 spots left today. Comment before it's gone.
+- You NEED to see this. Made more money this week than my old job paid monthly. Already 26 success stories this month. DM me 'START' immediately. 🎁✅
+- Coffee run before class. Library until it closes, again. Fun fact: I've switched majors 20 times.
+- Restocked your favorites. Handmade in small batches every week. Shoutout to our 11th customer this week. 🤝
+- You NEED to see this. It's 100% legit, I was skeptical too. Message number 29 today, still going. Comment before it's gone. 📩💰
+- I wasn't going to share this but... Spots are filling up fast. This worked for Douglas too, ask them. Tap the link in my story. 🎁💰
 
 ### Student
 
 **Sample bios:**
 
-- Grad student @ East Andrewville University CS major, coffee minor This is assignment number 81 this semester. 📚
-- amateur baker, professional snacker Carrolltown University '27 Ran into Thomas at the library again.
-- Studying at Carlsonmouth University collects vinyl I can't afford Can't believe it's already 2021. 🌟🙌
-- Junior at Lake Donald University pre-med and perpetually tired Campus tour 41 for prospective students today.
-- Grad student @ Millerhaven University just trying to pass orgo psych major who overthinks everything Fun fact: I've switched majors 76 times.
+- counting down to graduation majoring in something I still can't explain at parties into indie films and bad puns Studying in Robyntown has its perks.
+- plays intramural soccer badly business major, meme connoisseur Shoutout to Victor for the study session.
+- I reply to my real fans personally THIS IS MY ONLY REAL ACCOUNT Thank you Christopher for the constant support. 🎬💪
+- living on iced coffee and hope business major, meme connoisseur Group chat with Michael is unhinged today.
+- living on iced coffee and hope amateur baker, professional snacker Number 93 on my to-do list: sleep.
 
 **Sample captions:**
 
-- Coffee run before class. Somehow still passing my classes. Can't believe it's already 2020. 💪☕
-- Campus is so pretty in New Juan today. Turns out procrastination is a full-time job. Currently 77 days away from break. Someone quiz me please.
-- Study session with Kevin turned into a nap. Turns out procrastination is a full-time job. Currently 70 cups of coffee deep today. 💪
-- Finals season has me questioning everything. My professor just dropped a pop quiz, send help. Ran into Robert at the library again. Tell me it gets easier.
-- Finals season has me questioning everything. My professor just dropped a pop quiz, send help. Fun fact: I've switched majors 47 times. Tell me it gets easier. 📚
+- Campus is so pretty in New William today. Library until it closes, again. Fun fact: I've switched majors 97 times.
+- Coffee run before class. Somehow still passing my classes. 🐾📚
+- Study session with Christopher turned into a nap. Ranking my classes from bearable to soul-crushing. Group chat with Brian is unhinged today. 😊🐾
+- Group project update: Somehow still passing my classes. Number 25 on my to-do list: sleep. 🐾
+- Another day surviving Lake Analand University. Library until it closes, again. Somewhere in Davidland, probably procrastinating. 🎬
 
 ## Facebook
 
@@ -262,145 +262,145 @@
 
 **Sample bios:**
 
-- Community first, always Free shipping over $50 52 orders packed and ready to go.
-- Small business, big heart Thank you for supporting small business DM us for inquiries
-- DM us for inquiries Thank you for supporting small business Batch number 32 restocked today.
-- Woman-owned & operated Local favorite in West Stephanie Order number 64 just shipped. 📈🤝
-- Woman-owned & operated Edwards, Wilson and Mora — official page Quality you can trust Serving Johnstonport since 2020. 💼
+- Proudly independent Serving North Sylvia since 2019 Thank you Jerrystad for 49 years of support. 📈🤝
+- Community first, always Serving Lambberg since 2025 New drops every 39 weeks Proudly 11 years in business this 2025.
+- Family-owned, Port Kirsten-based Woman-owned & operated New drops every 85 weeks Batch number 75 restocked today. 🌍🤝
+- Small business, big heart Proudly independent Custom orders welcome Tagging Rachel, one of our first customers back in 2019. 📈
+- Thank you for supporting small business Free shipping over $50 Based out of East Jaredfort, shipping everywhere.
 
 **Sample captions:**
 
-- Meet the team making it happen. Your support keeps our doors open. Based out of North Morganfort, shipping everywhere.
-- New arrivals just dropped! Your support keeps our doors open. Thank you Cobbberg for 69 years of support. ✅
-- Restocked your favorites. Custom requests are always welcome. Tagging Isabella, one of our first customers back in 2021. Limited stock available. ✅
-- Thank you New Melissamouth for another great week. Custom requests are always welcome. Based out of Millermouth, shipping everywhere. Shop the link in bio. 🌍
-- Small batch, made with care. We appreciate every single one of you. Shoutout to our 80th customer this week.
+- Thank you Port Seanbury for another great week. Handmade in small batches every week. Serving New Erica since 2020. DM us to order. 🔗🤝
+- Behind the scenes at the shop today. Your support keeps our doors open. Celebrating 74 years since we opened our doors. ✅🔗
+- Behind the scenes at the shop today. Handmade in small batches every week. Team huddle today covered 30 new ideas.
+- Thank you Lake Teresa for another great week. Custom requests are always welcome. Shoutout to our 72th customer this week.
+- Thank you South Luke for another great week. Your support keeps our doors open. Celebrating 17 years since we opened our doors.
 
 ### Catfish/Romance-Scam Profile
 
 **Sample bios:**
 
-- Message me, let's talk Military stationed overseas, hard to talk on phone Hoping to visit West Ryan again someday. 💌❤️
-- Not into games, just want honesty Message me, let's talk It's been 39 months since we last spoke.
-- Let's chat somewhere more private Believer in true love Currently stationed near Thomashaven.
-- Family means everything to me Military stationed overseas, hard to talk on phone Missing Lake Billyton and missing you more.
-- Message me, let's talk Looking for my person Currently stationed near Moorechester.
+- Woman-owned & operated DM us for inquiries Serving East Marcshire since 2020 Tagging Brandy, one of our first customers back in 2016. 💼
+- Let's chat somewhere more private Widowed, looking for genuine connection 54 letters written, still waiting to send them.
+- just trying to pass orgo plays intramural soccer badly Group chat with Anne is unhinged today. 🙌
+- DM us for inquiries Flynn-Jackson — official page Community first, always Thank you Cameronview for 97 years of support. ✅
+- Believer in true love Message me, let's talk Currently stationed near Kennedymouth. 🙏
 
 **Sample captions:**
 
-- Missing having someone real in my life. Hoping we can talk more privately soon. 19 letters written, still waiting to send them. Currently stationed near North Jessica.
-- Wish you were here with me right now. I promise I'm not like the others you've met online. Hoping to visit Jennaville again someday. Please don't give up on us.
-- Just need someone to talk to. You've made this whole assignment easier. Hoping to visit South Sandraborough again someday. Hoping to visit Matthewshire again someday.
-- Counting down the days already. You've made this whole assignment easier. Currently stationed near Pearsonport. Please don't give up on us. 🌹🙏
-- Long day, but talking to you helps. I promise I'm not like the others you've met online. 31 letters written, still waiting to send them. Hoping to visit East Johnchester again someday. Let's move the conversation elsewhere.
+- Can't wait to finally meet. I don't trust easily but you're different. Since 2018, I've been looking for this.
+- Thinking about you today. Hoping we can talk more privately soon. Thinking of you from Mossburgh tonight. Hoping to visit Hollowayview again someday. Let's move the conversation elsewhere. ❤️
+- Small batch, made with care. We appreciate every single one of you. Shoutout to our 73th customer this week. DM us to order. 🤝
+- Missing having someone real in my life. I promise I'm not like the others you've met online. 86 letters written, still waiting to send them. 90 letters written, still waiting to send them.
+- Behind the scenes at the shop today. Orders ship out within 2 business days. 30 orders packed and ready to go. Limited stock available. 🤝
 
 ### Celebrity Impersonator
 
 **Sample bios:**
 
-- I reply to my real fans personally Beware of fake accounts impersonating me 63 years in this industry now.
-- Follow this account only Thank you for 98 years of support Since 2018, the journey continues.
-- My verified account got hacked, this is the new one Follow this account only 84 years of your support means everything.
-- Thank you for 94 years of support Ignore the other fake pages Thank you Tammy for the constant support.
-- Follow this account only THIS IS MY ONLY REAL ACCOUNT Since 2017, the journey continues. 😊
+- I reply to my real fans personally Beware of fake accounts impersonating me Back in Lake Sarah this 2025.
+- DM 'START' for coaching info form check requests welcome Online coach @ Green PLC Coaching 62 clients this cycle. 🏃🥗
+- Community first, always Martin-Lamb — official page Proudly 39 years in business this 2017.
+- My verified account got hacked, this is the new one Ignore the other fake pages Back in Ramosburgh this 2017. 🐾
+- Ignore the other fake pages My verified account got hacked, this is the new one 55 years in this industry now.
 
 **Sample captions:**
 
-- To my real fans: None of this would matter without you. Project number 37 coming together nicely. Follow only this page.
-- I don't get to say this enough. This journey keeps surprising me. 89 years in this industry now. 🎉
-- To my real fans: Please report any fake pages you see. Since 2020, still going strong.
-- I don't get to say this enough. New project details coming very soon. 77 years of your support means everything. Share this so others know it's real. 🐾
-- This account is really me, I promise. This journey keeps surprising me. Back in New Brandon this 2015. 💪🙌
+- On-call was quiet for once. Docs were wrong but figured it out eventually. PR number 73 finally merged. 📦
+- Taking a moment to say thank you. Ignore anyone claiming to be my manager elsewhere. Since 2017, still going strong. 🙌
+- Thank you for the love this 2015. Ignore anyone claiming to be my manager elsewhere. Message number 95 today, reading every one. Project number 20 coming together nicely. DM me directly here.
+- I see all of your messages, truly. Please report any fake pages you see. Tagging William, thank you for believing in this.
+- Important announcement coming soon. Ignore anyone claiming to be my manager elsewhere. 25 years of your support means everything. Share this so others know it's real. 💪
 
 ### Developer
 
 **Sample bios:**
 
-- debugging in production (don't tell my manager) Frontend dev who loves CSS more than I should Working remotely from North Kendrahaven this month.
-- mechanical keyboard collector Software engineer @ Hoover Inc Rust curious, Python fluent Standup update: 44 things fixed today. 🚀🔧
-- views != my employer's Software engineer @ Michael, Austin and Willis Python & Go by day Pairing with Deborah made this so much faster. 🧠
-- board games on weekends always shipping something small Python & Go by day Shoutout to Kelly for the code review. 🔧
-- Charles — mobile engineer side-project addict opinions are my own Tagging Kayla, they'll appreciate this one.
+- Backend dev, Edwardside-based debugging in production (don't tell my manager) views != my employer's Currently debugging from Port Juliafort.
+- opinions are my own debugging in production (don't tell my manager) Working remotely from South Marissa this month.
+- always shipping something small into distributed systems side-project addict Still can't believe it's 2022 and this bug exists. 📦💻
+- Joseph — mobile engineer opinions are my own Standup update: 24 things fixed today.
+- Rust curious, Python fluent mechanical keyboard collector Frontend dev who loves CSS more than I should Shoutout to Charles for the code review. 🐛📦
 
 **Sample captions:**
 
-- Finally got the tests passing. Turns out the cache was the whole problem. Currently on commit number 29 of this refactor.
-- Refactoring old code I wrote a year ago. CI is green and I'm emotionally fine now. Pairing with Matthew made this so much faster. 🧠
-- Rewrote a script that's been bugging me for weeks. Turned out to be a missing semicolon. 🔧📦
-- Shipped a small feature at Willis, Peterson and Brown. The fix was smaller than the investigation. Still can't believe it's 2020 and this bug exists.
-- On-call was quiet for once. Naming things is still the hardest part. Still can't believe it's 2023 and this bug exists.
+- I don't get to say this enough. I read every message even if I can't reply to all. Project number 91 coming together nicely. Tagging Stacey, thank you for believing in this.
+- Shipped a small feature at Mullins, Taylor and Garcia. Past me really did not comment anything. This is bug ticket number 43, send help.
+- On-call was quiet for once. The fix was smaller than the investigation. Working remotely from West Vanessahaven this month.
+- Learning a new part of the stack this week. Turns out the cache was the whole problem. 25 tabs of documentation open right now. 📦🔧
+- Refactoring old code I wrote a year ago. The fix was smaller than the investigation. Currently debugging from Breannamouth. AMA about the stack.
 
 ### Fake Influencer
 
 **Sample bios:**
 
-- Collab requests welcome Business inquiries only Manager: link below Susan styled this look. 💅👑
-- Email in bio for collabs Partner with the biggest brands Business inquiries only So many of you asked for this, here it is.
-- Turning passion into a career As seen on your explore page Email in bio for collabs Outfit number 85 of the week. 😍📸
-- Living my best life ✈️ As seen on your explore page Manager: link below Brand deal number 6 this month. 💅📸
-- Shop my looks — link in bio 10k+ engaged followers, ask for my rate card Full-time content creator 👑
+- Business inquiries only Email in bio for collabs Packing for Downsmouth again this week. ✨
+- Turning passion into a career Partner with the biggest brands Shop my looks — link in bio Shot this in Christinaview. 😍🌴
+- Manager: link below 10k+ engaged followers, ask for my rate card Filming this in Weberport today. 💅
+- Email in bio for collabs 10k+ engaged followers, ask for my rate card Full-time content creator Shot this in Christopherton. 👑📸
+- Thank you for supporting small business Handmade goods from South Dylanchester 82 orders packed and ready to go. 🤝
 
 **Sample captions:**
 
-- Another day, another shoot. Can't believe I get to call this my job. Brand deal number 60 this month. Code is my username at checkout. 💖📸
-- Another day, another shoot. Use my code for a discount. Trip number 44 this year, no complaints. Trip number 93 this year, no complaints. 📸👑
-- Golden hour never disappoints. Can't believe I get to call this my job. Filming this in Meaganchester today. 👑
-- Living for moments like this. So many of you have been asking about this. Filming this in Richardchester today. Filming this in Matthewborough today. 💅
-- Another day, another shoot. This is going straight into my everyday rotation. Since 2016, this has been the dream. Can't believe it's already 2025. Shop this look now.
+- This brand sent me the best package. This is going straight into my everyday rotation. Trip number 40 this year, no complaints. Look number 2 from this campaign. Link in bio for the discount.
+- Unboxing my favorite package of the month. Honestly didn't expect to love this as much as I do. Since 2025, this has been the dream. Trip number 25 this year, no complaints. Shop this look now. 🌴
+- This brand sent me the best package. Honestly didn't expect to love this as much as I do. Tagging Ashley, my glam team today. Can't believe it's already 2015. DM for collab details. 🌴💖
+- This brand sent me the best package. Use my code for a discount. Trip number 43 this year, no complaints. Packing for New Allisonfort again this week. 📸
+- Obsessed with this new find. Can't wait to show you more from this collab. Look number 42 from this campaign. Trip number 57 this year, no complaints. Shop this look now.
 
 ### Fitness Creator
 
 **Sample bios:**
 
-- Programs linked below mobility nerd Week 20 of the plan, feeling stronger.
-- Powerlifter & coach mobility nerd DM 'START' for coaching info Logged 58 miles this week.
-- believer in progressive overload Booking 1:1 sessions Certified personal trainer Logged 64 miles this week. 🏋️🏃
-- DM 'START' for coaching info Online coach @ Cross Group Coaching 51 clients this cycle. ⚡🥗
-- form check requests welcome Helping you build strength, not just muscle DM 'START' for coaching info 36 minutes of mobility work this morning.
+- Beware of fake accounts impersonating me Thank you for 46 years of support 17 years of your support means everything.
+- Helping you build strength, not just muscle DM 'START' for coaching info Coaching 73 clients this cycle.
+- Booking 1:1 sessions mobility nerd Online coach @ Moore PLC Logged 33 miles this week.
+- Certified personal trainer mobility nerd Week 83 of the plan, feeling stronger. 🏋️🔥
+- DM 'START' for coaching info form check requests welcome Powerlifter & coach Tagging Joy, my training partner today. ⚡🏃
 
 **Sample captions:**
 
-- Meal prep Sunday. Fueling properly made a huge difference. Logged 46 miles this week.
-- Ran a form check clinic today. Consistency beats intensity most days. Coaching 77 clients this cycle. 💪
-- Programming update for the week. Progress isn't always linear, and that's fine. Day 89 of the program.
-- Leg day recap. Sleep is still the most underrated recovery tool. Tagging John, my training partner today.
-- Back-to-back sessions today. Slow and controlled beats fast and sloppy. Week 64 of the plan, feeling stronger. 🏋️🥗
+- Coaching client hit a big milestone. Consistency beats intensity most days. Logged 98 miles this week. Tag your gym partner. 🔥
+- Leg day recap. Fueling properly made a huge difference. Shoutout to Linda for showing up every day.
+- Ran a form check clinic today. Fueling properly made a huge difference. 64 reps, zero regrets. Programs linked in bio.
+- Leg day recap. Form over ego, always. Logged 72 miles this week.
+- Deload week starts now. Fueling properly made a huge difference. Save this for your next session. 🧘
 
 ### Spam Account
 
 **Sample bios:**
 
-- Click the link and thank me later Link in bio NOW Already 15 success stories this month. 🎁💰
-- Limited spots left!! Free crypto signals daily Only 47 spots left today. 📩🔥
-- Follow for a shoutout!! DM for details Slot 87 almost gone. 💯👉
-- Exclusive deal for my first 100 fans Everyone is doing this, why aren't you? Tap the link before it's gone Spot number 20 just opened up.
-- DM me 'INFO' now DM for details Slot 45 almost gone. 📩
+- Free crypto signals daily MAKE $500/DAY FROM HOME Since 2016, thousands have joined.
+- Comment 'ME' below Limited spots left!! Free crypto signals daily Spot number 67 just opened up. 📩🎁
+- Get verified fast, DM now Limited spots left!! Spot number 94 just opened up. 🛒
+- Check my story for proof Follow for a shoutout!! Spot number 13 just opened up. 👉
+- Small business, big heart Thank you for supporting small business Free shipping over $50 Proudly 90 years in business this 2015.
 
 **Sample captions:**
 
-- 🚨 LAST CHANCE 🚨 No experience needed, just a phone. This worked for Jeffery too, ask them. Link in bio, click now.
-- Everyone is asking how I did this so fast. Thousands already joined, don't miss out. Spot number 19 just opened up. Tap the link in my story. 🎁👉
-- This changed everything for me. Made more money this week than my old job paid monthly. This worked for Nicholas too, ask them. Tap the link in my story. 👉
-- This changed everything for me. It's 100% legit, I was skeptical too. Link in bio, click now. 🎁
-- Everyone is asking how I did this so fast. No experience needed, just a phone. This worked for Rebekah too, ask them. DM me 'START' immediately. ✅
+- Everyone is asking how I did this so fast. This is not a scam, I promise. William just signed up, you're next. DM me 'START' immediately. 🎁
+- Behind the scenes at the shop today. Locally sourced, always. Thank you New William for 11 years of support. ✅
+- I wasn't going to share this but... It's 100% legit, I was skeptical too. Already 81 success stories this month. DM me 'START' immediately. ✅
+- Everyone is asking how I did this so fast. No experience needed, just a phone. Since 2021, thousands have joined. Comment before it's gone. 💰
+- You NEED to see this. It's 100% legit, I was skeptical too. Already helped 64 people this 2024. Tap the link in my story. 💰
 
 ### Student
 
 **Sample bios:**
 
-- trying to survive finals week Full-time student, part-time dreamer just trying to pass orgo Tagging Christian because they'd get this.
-- majoring in something I still can't explain at parties obsessed with true crime podcasts Currently 56 days away from break.
-- Junior at East Connieborough University collects vinyl I can't afford Currently 37 cups of coffee deep today. 💪🙌
-- Junior at South Jermaine University plays intramural soccer badly majoring in something I still can't explain at parties Currently 84 days away from break.
-- here for the memes and the free pizza Full-time student, part-time dreamer Somewhere in West Dominiquefurt, probably procrastinating.
+- Studying at Lewisfort University amateur baker, professional snacker counting down to graduation Can't believe it's already 2016.
+- obsessed with true crime podcasts just trying to pass orgo Studying at New Deantown University 🎬🎉
+- Full-time student, part-time dreamer just trying to pass orgo trying to survive finals week Campus tour 73 for prospective students today.
+- plays intramural soccer badly Lake Ashley University '27 here for the memes and the free pizza Currently 54 days away from break. ☕
+- here for the memes and the free pizza majoring in something I still can't explain at parties Currently 59 cups of coffee deep today.
 
 **Sample captions:**
 
-- Finals season has me questioning everything. Library until it closes, again. Somewhere in Port Molly, probably procrastinating. Wish me luck. 🙌😊
-- Coffee run before class. Somehow still passing my classes. Ran into Shannon at the library again.
-- Group project update: My professor just dropped a pop quiz, send help. Studying in South Edward has its perks.
-- Another day surviving Alexanderside University. My professor just dropped a pop quiz, send help. Campus tour 96 for prospective students today. 🙌✨
-- Group project update: Ranking my classes from bearable to soul-crushing. Fun fact: I've switched majors 66 times.
+- Coffee run before class. My professor just dropped a pop quiz, send help. Somewhere in North Adrianaton, probably procrastinating. 🎉🎬
+- Coffee run before class. Turns out procrastination is a full-time job. Studying in East Michael has its perks.
+- Coffee run before class. Somehow still passing my classes. This is assignment number 98 this semester.
+- Living for moments like this. Honestly didn't expect to love this as much as I do. Tagging Christina, my glam team today. Link in bio for the discount. 💖😍
+- Study session with Anthony turned into a nap. Somehow still passing my classes. Number 86 on my to-do list: sleep.
 
 ## Linkedin
 
@@ -408,124 +408,124 @@
 
 **Sample headlines:**
 
-- Helping businesses grow since 2016 proud to serve customers worldwide Proudly 95 years in business.
-- Serving clients worldwide since 2023 focused on long-term partnerships Based in New James, serving clients since 2022.
-- Serving clients worldwide since 2018 building a great place to work Thank you to our 60th client.
-- driven by our customers' success Serving clients worldwide since 2023 Thank you to our 82th client.
-- focused on long-term partnerships Matthewport-based company delivering results Congrats to Tracey on leading this launch.
+- Digital Marketing Guru DM me to learn my system Only 68 spots left this month.
+- Ruiz, Murray and Rivers | Official Page investing in our people and our product Opening a new office in Lindseymouth this 2023.
+- dedicated to client success Innovating in our industry since 2025 Milestone number 50 unlocked this quarter.
+- Davischester-based company delivering results investing in our people and our product Expanding into Richardmouth this 2023.
+- Wells-White | Official Page building a great place to work Thank you to our 66th client.
 
 **Sample captions:**
 
-- Reflecting on another strong quarter for the team. This wouldn't be possible without our incredible team. Welcoming 5 new team members this 2018. Expanding into East Ericshire this 2020.
-- Excited to unveil our latest product update. We're expanding into new markets this year. Expanding into Lake Laurabury this 2023. Milestone number 8 unlocked this quarter. Reach out if you'd like to collaborate.
-- Welcoming several new team members this month. Looking forward to what's next for us. Thank you to our 43th client. Welcoming 18 new team members this 2023. Reach out if you'd like to collaborate.
-- Reflecting on another strong quarter for the team. Looking forward to what's next for us. Congrats to Ricky on leading this launch. Opening a new office in Scottland this 2021.
-- Grateful for the recognition from our industry peers. Our clients' feedback keeps shaping the roadmap. We'd love to hear from you.
+- Reflecting on another strong quarter for the team. We're expanding into new markets this year. Proudly 98 years in business. Welcoming 39 new team members this 2015.
+- Welcoming several new team members this month. Our clients' feedback keeps shaping the roadmap. Opening a new office in New Nicholasland this 2016. Apply via the link in our profile.
+- As CEO, I'm proud to announce a groundbreaking initiative. Most executives think too small, I never have. DM me to discuss investment opportunities.
+- Excited to unveil our latest product update. Culture and craft both matter to how we build. Welcoming 16 new team members this 2016. Apply via the link in our profile.
+- Grateful for the recognition from our industry peers. This wouldn't be possible without our incredible team. Milestone number 79 unlocked this quarter. Partnering with Carr and Sons on this initiative. Learn more on our website.
 
 ### Consultant
 
 **Sample headlines:**
 
-- focused on measurable outcomes Helping companies navigate change 69 years advising clients across industries.
-- focused on measurable outcomes Management Consultant @ Taylor-Lane Worked alongside Daniel on this engagement.
-- Advisor to leadership teams since 2025 trusted advisor to leadership teams
-- Strategy Consultant @ Wagner Ltd trusted advisor to leadership teams Presenting findings in Andrewshire next month.
-- bringing outside perspective to hard problems Consultant based in South Jennifer Engagement number 4 wrapped this quarter.
+- high-paying opportunities available now Talent Partner based in Padillashire Recruiting drive kicking off in Joshuastad this week.
+- Talent Partner based in Deniseton connecting top talent with top pay Ask for Andrew, I'm handling this search.
+- Independent Consultant | Strategy focused on practical, durable change Based out of Jasonstad this 2023.
+- always looking for new talent Senior Talent Acquisition Specialist Working with Gonzales and Sons to fill this fast.
+- helping candidates land dream jobs fast Recruiter @ Sanchez, Brooks and Grant Working with Powers Ltd to fill this fast.
 
 **Sample captions:**
 
-- Sharing a few lessons from a recent client engagement. Every client engagement teaches me something new. Presenting findings in East Benjaminport next month. Advising a team at Perez-Brown this quarter. Open to new client conversations.
-- Wrapped up an engagement with a great client this week. The hardest part is rarely the analysis, it's the change management. Engagement number 46 wrapped this quarter. Would love your thoughts in the comments.
-- Wrapped up a multi-month transformation project. Grateful to work across such varied industries. Advising a team at Nelson-Lawson this quarter. Engagement number 55 wrapped this quarter. Would love your thoughts in the comments.
-- Sharing a few lessons from a recent client engagement. The best solutions come from listening first. Engagement number 3 wrapped this quarter. 43 years advising clients across industries.
-- Wrapped up a multi-month transformation project. Grateful to work across such varied industries. Speaking at 63 conferences this 2015. Case study number 77 published this month.
+- Some thoughts on change management. Grateful to work across such varied industries. Engagement number 67 wrapped this quarter. Happy to discuss further, DM me.
+- Speaking at a panel next month on industry trends. Grateful to work across such varied industries. Engagement number 32 wrapped this quarter. 63 years advising clients across industries.
+- Wrapped up an engagement with a great client this week. Every industry has more in common than people expect. Engagement number 25 wrapped this quarter. Case study number 42 published this month.
+- Announcing a major company milestone under my leadership. True leadership means thinking bigger than everyone else. Meeting with Heather to plan the next phase. Announcement number 23 this quarter. 💼🚀
+- As CEO, I'm proud to announce a groundbreaking initiative. Success comes to those who never settle. 6 years of industry-leading growth. 28 years of industry-leading growth.
 
 ### Developer
 
 **Sample headlines:**
 
-- advocate for good engineering practices Mobile Engineer @ Wolfe and Sons Rolling this out from our Antoniochester office.
-- believer in small, well-tested changes Software Engineer at Valdez, Thompson and Gray Working with the team at Fleming-Carpenter on this one.
-- Platform Engineer based in Katieside always tinkering with a side project Shoutout to Angela for the pairing session.
-- focused on developer experience and tooling Backend Developer | South Karatown Rolling this out from our Dorseyberg office.
-- focused on distributed systems Engineer @ Reeves, Sheppard and Hunt Working with the team at Anderson Ltd on this one.
+- focused on developer experience and tooling Backend Developer | Michelleton Based out of Davisshire, remote-first.
+- believer in small, well-tested changes Engineer @ Gregory, Vazquez and Berg Shoutout to Juan for the pairing session.
+- placing candidates across every industry Connecting talent with opportunity worldwide Position number 33 still open, apply now.
+- always tinkering with a side project Joshua | Software Engineer PR number 5 merged today.
+- Backend Developer | North Brandon always tinkering with a side project Sprint 31 retro done.
 
 **Sample captions:**
 
-- Mentored a junior engineer today and loved it. Always learning something new in this role. Based out of East Sara, remote-first. Sprint 64 retro done.
-- Excited to start using a new framework on our team. Always learning something new in this role. Based out of Lutzmouth, remote-first. Happy to share more details if useful.
-- Migrated a legacy service this week. Grateful for a team that values code quality. Shoutout to Hannah for the pairing session. Based out of Aliciamouth, remote-first.
-- Finally closed out a long-standing tech debt ticket. Small, frequent deploys keep saving us from bigger headaches. Working with the team at Conrad, Crane and Myers on this one. Mentoring 6 junior engineers this quarter.
-- Onboarded a new teammate this week. Good tooling makes the whole team faster. Rolling this out from our Mclaughlinshire office. Based out of Lake Meganside, remote-first.
+- Finally closed out a long-standing tech debt ticket. Good tooling makes the whole team faster. PR number 62 merged today.
+- I wish someone told me this five years ago. DM me and I'll show you exactly how. Ask Charles, they joined last month. Only 15 spots left this month. DM me the word 'START'.
+- We are looking for talent, apply immediately! No interview required for qualified candidates. 67 candidates placed since 2024. Position number 42 still open, apply now. Comment 'HIRE ME' below. 🚀
+- Wrote a short post on lessons from a recent outage. The postmortem taught us more than the incident did. Shipped feature number 68 this sprint.
+- Wrote a short post on lessons from a recent outage. The postmortem taught us more than the incident did. Working with the team at Perez Ltd on this one.
 
 ### Fake Executive Impersonator
 
 **Sample headlines:**
 
-- CEO & Founder | Visionary Leader obsessed with outsized growth 83 years of industry-leading growth.
-- leading global teams to success Chairman of Reynolds Ltd Announcement number 21 this quarter.
-- CEO & Founder | Visionary Leader featured thought leader in business Since 2022, leading this company forward.
-- CEO & Founder | Visionary Leader scaling companies from zero to global Meeting with Joan to plan the next phase.
-- CEO | Based in Johnsonside, thinking globally featured thought leader in business Expanding Kennedy PLC into North Theresaport this 2017. 💼
+- Chairman of Tate, Garcia and Fletcher featured thought leader in business Milestone number 18 for the company this 2019.
+- leading global teams to success Chairman & Founder since 2018 Milestone number 14 for the company this 2020. 💼
+- Chairman of Carter-Smith top 1% of executives worldwide Expanding Davis Inc into Margaretshire this 2025.
+- Chen Inc | Official Page dedicated to client success Expanding into Lake Stephen this 2025.
+- obsessed with outsized growth President & CEO, disrupting the industry Milestone number 48 for the company this 2023.
 
 **Sample captions:**
 
-- Announcing a major company milestone under my leadership. We're disrupting the entire sector. Meeting with Melanie to plan the next phase. Based in New Angela, thinking globally. Reach out if you want to learn more.
-- Announcing a major company milestone under my leadership. My journey to the top wasn't easy, but it was inevitable. Announcement number 67 this quarter. Addressed the board on this in Lake Madeline last week. DM me to discuss investment opportunities.
-- Here's the leadership lesson nobody tells you. True leadership means thinking bigger than everyone else. Expanding Kerr PLC into New Edwardmouth this 2020.
-- My latest leadership insight for aspiring executives. True leadership means thinking bigger than everyone else. Announcement number 18 this quarter. DM me to discuss investment opportunities.
-- Another record quarter under my leadership. We're disrupting the entire sector. Expanding Oconnor, Sanchez and Dillon into Lake Michael this 2025. Milestone number 65 for the company this 2016.
+- Another record quarter under my leadership. Success comes to those who never settle. Addressed the board on this in New Andremouth last week. Meeting with Jennifer to plan the next phase. DM me to discuss investment opportunities.
+- Another record quarter under my leadership. Great leaders create their own opportunities. Based in East Adam, thinking globally.
+- My latest leadership insight for aspiring executives. Great leaders create their own opportunities. Expanding Everett and Sons into New Jon this 2018.
+- My latest leadership insight for aspiring executives. Great leaders create their own opportunities. Expanding Robinson and Sons into South Ann this 2018. 💼
+- My latest leadership insight for aspiring executives. True leadership means thinking bigger than everyone else. 52 years of industry-leading growth.
 
 ### Fake Recruiter
 
 **Sample headlines:**
 
-- connecting top talent with top pay Global Recruiter | Hiring Now Filled 75 roles this month alone.
-- helping candidates land dream jobs fast Global Recruiter | Hiring Now Recruiting drive kicking off in Judithshire this week.
-- Connecting talent with opportunity worldwide placing candidates across every industry Hiring event in North Darren this week.
-- hiring for multiple remote roles Recruiter @ Ortiz-Mcknight Position number 25 still open, apply now.
-- Recruiting for Scott, Farmer and Armstrong and partners always looking for new talent Hiring event in Lake Cassandramouth this week.
+- Recruiting for Hoffman-Daniels and partners hiring for multiple remote roles Ask for Cassandra, I'm handling this search.
+- filling roles faster than anyone else Connecting talent with opportunity worldwide Recruiting drive kicking off in West Jessicaville this week.
+- always looking for new talent Recruiter @ Mccarthy Ltd
+- Talent Partner based in South Brandon always looking for new talent Recruiting drive kicking off in North Eddie this week.
+- Connecting talent with opportunity worldwide high-paying opportunities available now Position number 46 still open, apply now.
 
 **Sample captions:**
 
-- Companies are hiring fast this quarter, apply now! Send your resume and bank details to get started fast. Recruiting drive kicking off in South Tammyfort this week.
-- Hiring managers are reviewing applications TODAY. This opportunity won't last, act now. Hiring event in Butlerside this week. Recruiting drive kicking off in Kimberlyborough this week.
-- URGENT HIRING: multiple positions open now! Send your resume and bank details to get started fast. Position number 78 still open, apply now. Hiring event in North Johnton this week. Comment 'HIRE ME' below. 💰✅
-- We are looking for talent, apply immediately! No interview required for qualified candidates. 58 candidates placed since 2015. Working with Reyes Inc to fill this fast. DM me your resume today.
-- This role won't stay open long! Positions are filling up quickly this week. Ask for Christopher, I'm handling this search. Recruiting drive kicking off in Clarkport this week. Apply via the link in my profile now.
+- Exciting remote opportunity, no experience needed! Hundreds already applied, don't miss out. Filled 30 roles this month alone. Ask for Michelle, I'm handling this search. Comment 'HIRE ME' below. 🚀
+- Facilitated a strategy workshop today. Alignment across stakeholders matters more than the plan itself. Presenting findings in Port Frederickview next month.
+- This role won't stay open long! This opportunity won't last, act now. Position number 47 still open, apply now. Hiring event in Port Josephburgh this week. DM me your resume today. 🚀
+- Hiring managers are reviewing applications TODAY. We place candidates faster than anyone else. 37 candidates placed since 2025. DM me your resume today.
+- We are looking for talent, apply immediately! High salary, flexible hours guaranteed. Working with Miranda-Zimmerman to fill this fast. Apply via the link in my profile now. 🚀✅
 
 ### Spam/Bot Account
 
 **Sample headlines:**
 
-- Digital Marketing Guru sharing the system that changed my life Since 2017, thousands have joined my program.
-- turning strangers into six-figure success stories Digital Marketing Guru Only 94 spots left this month.
-- turning strangers into six-figure success stories Growth Hacker | LinkedIn Top Voice Ran a session in Ryanview last week, huge turnout.
-- self-made success story Financial Freedom Coach | Deborahfurt Only 35 spots left this month.
-- teaching thousands how to succeed online Financial Freedom Coach | Port Karen Only 26 spots left this month. 🚀
+- Financial Freedom Coach | Nicholasside self-made success story Helped 82 clients hit six figures this 2016.
+- turning strangers into six-figure success stories Passive Income Coach Since 2021, thousands have joined my program.
+- sharing the system that changed my life Growth Hacker | LinkedIn Top Voice Built this system while working out of Michaelbury. 🚀
+- helping others achieve financial freedom Financial Freedom Coach | East Kristenfurt Only 68 spots left this month.
+- teaching thousands how to succeed online Digital Marketing Guru Since 2017, thousands have joined my program. 🚀
 
 **Sample captions:**
 
-- I wish someone told me this five years ago. It's simpler than you'd expect, promise. Built this system while working out of Lake Jenny. Session number 20 of my mentorship program. Click the link in my profile. 📈
-- Everyone should be doing this in 2026. I've helped hundreds of people do the same. Case study number 93 of my system, ask me how. Ask Glenn, they joined last month. Comment below and I'll follow up.
-- Stop scrolling, this could change your career. Limited spots in my mentorship program. Helped 45 clients hit six figures this 2020. 📈
-- The algorithm doesn't want you to know this. This isn't some overnight gimmick, it actually works. Session number 47 of my mentorship program. Built this system while working out of South Deborahside. Comment below and I'll follow up.
-- Everyone should be doing this in 2026. It's simpler than you'd expect, promise. Session number 54 of my mentorship program. 💯
+- This one trick changed my whole career trajectory. This strategy works for anyone, guaranteed. Ask Bryan, they joined last month. Only 68 spots left this month.
+- Everyone should be doing this in 2026. This isn't some overnight gimmick, it actually works. Since 2023, thousands have joined my program. Built this system while working out of Jordanside. Book a free call today.
+- Everyone should be doing this in 2026. I've helped hundreds of people do the same. Case study number 44 of my system, ask me how. Book a free call today. 🚀
+- Stop scrolling, this could change your career. Comment 'INFO' and I'll send details. Built this system while working out of Williamchester. Case study number 35 of my system, ask me how. DM me the word 'START'.
+- The algorithm doesn't want you to know this. This isn't some overnight gimmick, it actually works. Helped 95 clients hit six figures this 2019. Click the link in my profile.
 
 ### Student
 
 **Sample headlines:**
 
-- eager to apply classroom learning to real problems Studying in Port Amandaside, always curious 33 credits away from graduating.
-- Jermaine | student researcher at Katherinetown University eager to apply classroom learning to real problems Cohort of 2022, Barbaratown campus.
-- passionate about learning and growth Heather | undergraduate student One of 62 students selected for the program.
-- Undergrad at North Sandraberg University, class of 2020 active in student organizations Internship application number 20 submitted.
-- Undergrad at Brendashire University, class of 2021 building a portfolio one project at a time Class of 2022, still learning every day.
+- Student at Port Jaclyn University eager to apply classroom learning to real problems Class of 2016, still learning every day.
+- building a portfolio one project at a time Tanner | undergraduate student Class of 2024, still learning every day.
+- Undergrad at Lake Michelle University, class of 2015 active in student organizations Met with a career advisor in Cristianland this week.
+- Thomas | undergraduate student passionate about learning and growth Class of 2023, still learning every day.
+- Aspiring professional, studying at Port Rickstad University seeking internship opportunities Career fair number 81 this year.
 
 **Sample captions:**
 
-- Just finished my first group case competition. Still processing everything I learned this week. Cohort of 2023, Jamesshire campus. 9 credits away from graduating.
-- Reflecting on my first year at Martinfurt University. This experience changed how I think about my major. Class of 2025, still learning every day. Internship application number 15 submitted.
-- Presented my capstone project today. Grateful for professors who go above and beyond. One of 69 students selected for the program.
-- Attended a great career fair today. This experience changed how I think about my major. Met with a career advisor in Frederickside this week. Feel free to reach out!
-- Excited to share I just finished a project for class. Learned so much about teamwork and deadlines. Met with a career advisor in Cruzmouth this week. Cohort of 2017, Lopezfort campus. Always happy to compare notes with fellow students.
+- Presented my capstone project today. Time to recharge before next semester. Project number 56 this semester. 57 credits away from graduating. Open to internship opportunities.
+- Dream job alert, don't wait on this one! High salary, flexible hours guaranteed. Hiring event in West Peggyton this week. Position number 59 still open, apply now.
+- My latest leadership insight for aspiring executives. Great leaders create their own opportunities. 23 years of industry-leading growth. Based in Stevensfort, thinking globally. DM me to discuss investment opportunities.
+- Attended a great career fair today. Still processing everything I learned this week. 69 credits away from graduating.
+- Just wrapped up finals! This experience changed how I think about my major. One of 59 students selected for the program. Met with a career advisor in New Kaylaburgh this week.

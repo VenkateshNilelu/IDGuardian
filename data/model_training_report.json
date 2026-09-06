@@ -1,0 +1,177 @@
+{
+  "platforms": {
+    "instagram": {
+      "n_train": 3500,
+      "n_test": 1500,
+      "lexical": {
+        "accuracy": 0.8493,
+        "f1": 0.8189,
+        "roc_auc": 0.8496
+      },
+      "semantic": {
+        "accuracy": 0.8473,
+        "f1": 0.8161,
+        "roc_auc": 0.8453
+      },
+      "behavioral": {
+        "accuracy": 0.8673,
+        "f1": 0.8346,
+        "roc_auc": 0.8872
+      },
+      "fusion": {
+        "accuracy": 0.876,
+        "f1": 0.8324,
+        "roc_auc": 0.9543
+      },
+      "behavioral_columns": [
+        "followers_count",
+        "following_count",
+        "posts_count",
+        "account_age_days",
+        "avg_likes",
+        "avg_comments",
+        "avg_shares",
+        "engagement_rate",
+        "profile_completion_score",
+        "is_verified",
+        "has_website",
+        "has_location",
+        "follow_ratio",
+        "follower_gap"
+      ]
+    },
+    "facebook": {
+      "n_train": 3500,
+      "n_test": 1500,
+      "lexical": {
+        "accuracy": 0.848,
+        "f1": 0.8185,
+        "roc_auc": 0.8482
+      },
+      "semantic": {
+        "accuracy": 0.8453,
+        "f1": 0.8135,
+        "roc_auc": 0.8555
+      },
+      "behavioral": {
+        "accuracy": 0.8753,
+        "f1": 0.8448,
+        "roc_auc": 0.9501
+      },
+      "fusion": {
+        "accuracy": 0.928,
+        "f1": 0.9091,
+        "roc_auc": 0.9753
+      },
+      "behavioral_columns": [
+        "friends_count",
+        "followers_count",
+        "posts_count",
+        "account_age_days",
+        "avg_likes",
+        "avg_comments",
+        "avg_shares",
+        "engagement_rate",
+        "mutual_friends_count",
+        "profile_completion_score",
+        "is_verified",
+        "has_website",
+        "has_location",
+        "friend_follower_ratio",
+        "mutual_friend_ratio"
+      ]
+    },
+    "linkedin": {
+      "n_train": 3500,
+      "n_test": 1500,
+      "lexical": {
+        "accuracy": 0.8387,
+        "f1": 0.8064,
+        "roc_auc": 0.8392
+      },
+      "semantic": {
+        "accuracy": 0.8327,
+        "f1": 0.7977,
+        "roc_auc": 0.8479
+      },
+      "behavioral": {
+        "accuracy": 0.934,
+        "f1": 0.9181,
+        "roc_auc": 0.981
+      },
+      "fusion": {
+        "accuracy": 0.9547,
+        "f1": 0.9434,
+        "roc_auc": 0.9869
+      },
+      "behavioral_columns": [
+        "connections_count",
+        "posts_count",
+        "account_age_days",
+        "avg_likes",
+        "avg_comments",
+        "avg_shares",
+        "engagement_rate",
+        "endorsements_count",
+        "skills_count",
+        "profile_completion_score",
+        "is_verified",
+        "has_website",
+        "has_location",
+        "endorsements_per_skill"
+      ]
+    },
+    "twitter": {
+      "n_train": 3500,
+      "n_test": 1500,
+      "lexical": {
+        "accuracy": 0.852,
+        "f1": 0.8227,
+        "roc_auc": 0.8514
+      },
+      "semantic": {
+        "accuracy": 0.8467,
+        "f1": 0.8148,
+        "roc_auc": 0.8501
+      },
+      "behavioral": {
+        "accuracy": 0.8593,
+        "f1": 0.8272,
+        "roc_auc": 0.8752
+      },
+      "fusion": {
+        "accuracy": 0.886,
+        "f1": 0.8496,
+        "roc_auc": 0.9532
+      },
+      "behavioral_columns": [
+        "followers_count",
+        "following_count",
+        "tweets_count",
+        "account_age_days",
+        "avg_likes",
+        "avg_comments",
+        "avg_shares",
+        "engagement_rate",
+        "profile_completion_score",
+        "is_verified",
+        "has_website",
+        "has_location",
+        "follow_ratio",
+        "follower_gap"
+      ]
+    }
+  },
+  "shared": {
+    "lexical_overall": {
+      "accuracy": 0.847,
+      "f1": 0.8166,
+      "roc_auc": 0.8472
+    },
+    "semantic_overall": {
+      "accuracy": 0.843,
+      "f1": 0.8105,
+      "roc_auc": 0.8497
+    }
+  }
+}

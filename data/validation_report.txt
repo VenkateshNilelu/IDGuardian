@@ -19,13 +19,13 @@ Overall result: ALL PLATFORMS PASSED
     Student: 750
 -- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
 -- Archetype distribution (posts) --
-    Business Account: 7409
-    Celebrity Impersonator: 6597
-    Developer: 7458
-    Fake Influencer: 6633
-    Fitness Creator: 7477
-    Spam Account: 6583
-    Student: 7562
+    Business Account: 7401
+    Celebrity Impersonator: 6523
+    Developer: 7431
+    Fake Influencer: 6537
+    Fitness Creator: 7467
+    Spam Account: 6773
+    Student: 7620
 -- Schema check: profiles --
 [PASS] Profile columns match spec (missing=[], extra=[])
     [PASS] user_id (str, actual=str): nulls=0
@@ -77,14 +77,14 @@ Overall result: ALL PLATFORMS PASSED
     Student: 750
 -- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
 -- Archetype distribution (posts) --
-    Business Page: 7373
-    Catfish/Romance-Scam Profile: 5053
-    Celebrity Impersonator: 4979
-    Developer: 7459
-    Fake Influencer: 5051
-    Fitness Creator: 7505
-    Spam Account: 4954
-    Student: 7414
+    Business Page: 7391
+    Catfish/Romance-Scam Profile: 5042
+    Celebrity Impersonator: 5012
+    Developer: 7425
+    Fake Influencer: 4837
+    Fitness Creator: 7494
+    Spam Account: 4975
+    Student: 7613
 -- Schema check: profiles --
 [PASS] Profile columns match spec (missing=[], extra=[])
     [PASS] user_id (str, actual=str): nulls=0
@@ -136,13 +136,13 @@ Overall result: ALL PLATFORMS PASSED
     Student: 750
 -- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
 -- Archetype distribution (posts) --
-    Business/Company Page: 7428
-    Consultant: 7549
-    Developer: 7449
-    Fake Executive Impersonator: 6598
-    Fake Recruiter: 6691
-    Spam/Bot Account: 6549
-    Student: 7451
+    Business/Company Page: 7417
+    Consultant: 7655
+    Developer: 7475
+    Fake Executive Impersonator: 6632
+    Fake Recruiter: 6754
+    Spam/Bot Account: 6610
+    Student: 7569
 -- Schema check: profiles --
 [PASS] Profile columns match spec (missing=[], extra=[])
     [PASS] user_id (str, actual=str): nulls=0
@@ -196,13 +196,13 @@ Overall result: ALL PLATFORMS PASSED
     Student: 750
 -- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
 -- Archetype distribution (posts) --
-    Business Account: 7527
-    Celebrity Impersonator: 6649
-    Developer: 7437
-    Fake Influencer: 6513
-    Fitness Creator: 7407
-    Spam/Bot Account: 6641
-    Student: 7440
+    Business Account: 7256
+    Celebrity Impersonator: 6799
+    Developer: 7541
+    Fake Influencer: 6612
+    Fitness Creator: 7522
+    Spam/Bot Account: 6642
+    Student: 7520
 -- Schema check: profiles --
 [PASS] Profile columns match spec (missing=[], extra=[])
     [PASS] user_id (str, actual=str): nulls=0
