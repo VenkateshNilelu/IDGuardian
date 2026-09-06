@@ -1,0 +1,236 @@
+IDGuardian DEMO dataset validation report
+Overall: ALL PLATFORMS PASSED
+
+=== INSTAGRAM_DEMO VALIDATION REPORT ===
+[PASS] Orphan posts (user_id not in profiles): 0
+[PASS] Post/profile archetype mismatches: 0
+[PASS] Post/profile is_fake mismatches: 0
+[PASS] Profile avg_likes matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile avg_comments matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile avg_shares matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile posts_count matches actual linked post count: 0 mismatches
+-- Archetype distribution (profiles) --
+    Business Account: 30
+    Celebrity Impersonator: 26
+    Developer: 30
+    Fake Influencer: 27
+    Fitness Creator: 30
+    Spam Account: 27
+    Student: 30
+-- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
+-- Archetype distribution (posts) --
+    Business Account: 306
+    Celebrity Impersonator: 266
+    Developer: 330
+    Fake Influencer: 263
+    Fitness Creator: 291
+    Spam Account: 295
+    Student: 300
+-- Schema check: profiles --
+[PASS] Profile columns match spec (missing=[], extra=[])
+    [PASS] user_id (str, actual=str): nulls=0
+    [PASS] username (str, actual=str): nulls=0
+    [PASS] bio (str, actual=str): nulls=0
+    [PASS] followers_count (int, actual=int64): nulls=0
+    [PASS] following_count (int, actual=int64): nulls=0
+    [PASS] posts_count (int, actual=int64): nulls=0
+    [PASS] account_age_days (int, actual=int64): nulls=0
+    [PASS] avg_likes (float, actual=float64): nulls=0
+    [PASS] avg_comments (float, actual=float64): nulls=0
+    [PASS] avg_shares (float, actual=float64): nulls=0
+    [PASS] engagement_rate (float, actual=float64): nulls=0
+    [PASS] is_verified (bool, actual=bool): nulls=0
+    [PASS] has_website (bool, actual=bool): nulls=0
+    [PASS] has_location (bool, actual=bool): nulls=0
+    [PASS] profile_completion_score (float, actual=float64): nulls=0
+    [PASS] archetype (str, actual=str): nulls=0
+    [PASS] is_fake (int, actual=int64): nulls=0
+-- Schema check: posts --
+[PASS] Post columns match spec (missing=[], extra=[])
+    [PASS] user_id (str, actual=str): nulls=0
+    [PASS] caption (str, actual=str): nulls=0
+    [PASS] hashtags (str, actual=str): nulls=0
+    [PASS] likes (int, actual=int64): nulls=0
+    [PASS] comments (int, actual=int64): nulls=0
+    [PASS] shares (int, actual=int64): nulls=0
+    [PASS] sentiment (float, actual=float64): nulls=0
+    [PASS] archetype (str, actual=str): nulls=0
+    [PASS] is_fake (int, actual=int64): nulls=0
+=== INSTAGRAM_DEMO: ALL CHECKS PASSED ===
+
+=== FACEBOOK_DEMO VALIDATION REPORT ===
+[PASS] Orphan posts (user_id not in profiles): 0
+[PASS] Post/profile archetype mismatches: 0
+[PASS] Post/profile is_fake mismatches: 0
+[PASS] Profile avg_likes matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile avg_comments matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile avg_shares matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile posts_count matches actual linked post count: 0 mismatches
+-- Archetype distribution (profiles) --
+    Business Page: 30
+    Catfish/Romance-Scam Profile: 20
+    Celebrity Impersonator: 20
+    Developer: 30
+    Fake Influencer: 20
+    Fitness Creator: 30
+    Spam Account: 20
+    Student: 30
+-- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
+-- Archetype distribution (posts) --
+    Business Page: 290
+    Catfish/Romance-Scam Profile: 210
+    Celebrity Impersonator: 225
+    Developer: 324
+    Fake Influencer: 226
+    Fitness Creator: 306
+    Spam Account: 209
+    Student: 283
+-- Schema check: profiles --
+[PASS] Profile columns match spec (missing=[], extra=[])
+    [PASS] user_id (str, actual=str): nulls=0
+    [PASS] username (str, actual=str): nulls=0
+    [PASS] bio (str, actual=str): nulls=0
+    [PASS] friends_count (int, actual=int64): nulls=0
+    [PASS] followers_count (int, actual=int64): nulls=0
+    [PASS] posts_count (int, actual=int64): nulls=0
+    [PASS] account_age_days (int, actual=int64): nulls=0
+    [PASS] avg_likes (float, actual=float64): nulls=0
+    [PASS] avg_comments (float, actual=float64): nulls=0
+    [PASS] avg_shares (float, actual=float64): nulls=0
+    [PASS] engagement_rate (float, actual=float64): nulls=0
+    [PASS] mutual_friends_count (int, actual=int64): nulls=0
+    [PASS] is_verified (bool, actual=bool): nulls=0
+    [PASS] has_website (bool, actual=bool): nulls=0
+    [PASS] has_location (bool, actual=bool): nulls=0
+    [PASS] profile_completion_score (float, actual=float64): nulls=0
+    [PASS] archetype (str, actual=str): nulls=0
+    [PASS] is_fake (int, actual=int64): nulls=0
+-- Schema check: posts --
+[PASS] Post columns match spec (missing=[], extra=[])
+    [PASS] user_id (str, actual=str): nulls=0
+    [PASS] caption (str, actual=str): nulls=0
+    [PASS] hashtags (str, actual=str): nulls=0
+    [PASS] likes (int, actual=int64): nulls=0
+    [PASS] comments (int, actual=int64): nulls=0
+    [PASS] shares (int, actual=int64): nulls=0
+    [PASS] sentiment (float, actual=float64): nulls=0
+    [PASS] archetype (str, actual=str): nulls=0
+    [PASS] is_fake (int, actual=int64): nulls=0
+=== FACEBOOK_DEMO: ALL CHECKS PASSED ===
+
+=== LINKEDIN_DEMO VALIDATION REPORT ===
+[PASS] Orphan posts (user_id not in profiles): 0
+[PASS] Post/profile archetype mismatches: 0
+[PASS] Post/profile is_fake mismatches: 0
+[PASS] Profile avg_likes matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile avg_comments matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile avg_shares matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile posts_count matches actual linked post count: 0 mismatches
+-- Archetype distribution (profiles) --
+    Business/Company Page: 30
+    Consultant: 30
+    Developer: 30
+    Fake Executive Impersonator: 27
+    Fake Recruiter: 27
+    Spam/Bot Account: 26
+    Student: 30
+-- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
+-- Archetype distribution (posts) --
+    Business/Company Page: 301
+    Consultant: 285
+    Developer: 311
+    Fake Executive Impersonator: 289
+    Fake Recruiter: 290
+    Spam/Bot Account: 272
+    Student: 310
+-- Schema check: profiles --
+[PASS] Profile columns match spec (missing=[], extra=[])
+    [PASS] user_id (str, actual=str): nulls=0
+    [PASS] username (str, actual=str): nulls=0
+    [PASS] headline (str, actual=str): nulls=0
+    [PASS] connections_count (int, actual=int64): nulls=0
+    [PASS] posts_count (int, actual=int64): nulls=0
+    [PASS] account_age_days (int, actual=int64): nulls=0
+    [PASS] avg_likes (float, actual=float64): nulls=0
+    [PASS] avg_comments (float, actual=float64): nulls=0
+    [PASS] avg_shares (float, actual=float64): nulls=0
+    [PASS] engagement_rate (float, actual=float64): nulls=0
+    [PASS] job_title (str, actual=str): nulls=0
+    [PASS] company_name (str, actual=str): nulls=0
+    [PASS] endorsements_count (int, actual=int64): nulls=0
+    [PASS] skills_count (int, actual=int64): nulls=0
+    [PASS] is_verified (bool, actual=bool): nulls=0
+    [PASS] has_website (bool, actual=bool): nulls=0
+    [PASS] has_location (bool, actual=bool): nulls=0
+    [PASS] profile_completion_score (float, actual=float64): nulls=0
+    [PASS] archetype (str, actual=str): nulls=0
+    [PASS] is_fake (int, actual=int64): nulls=0
+-- Schema check: posts --
+[PASS] Post columns match spec (missing=[], extra=[])
+    [PASS] user_id (str, actual=str): nulls=0
+    [PASS] caption (str, actual=str): nulls=0
+    [PASS] hashtags (str, actual=str): nulls=0
+    [PASS] likes (int, actual=int64): nulls=0
+    [PASS] comments (int, actual=int64): nulls=0
+    [PASS] shares (int, actual=int64): nulls=0
+    [PASS] sentiment (float, actual=float64): nulls=0
+    [PASS] archetype (str, actual=str): nulls=0
+    [PASS] is_fake (int, actual=int64): nulls=0
+=== LINKEDIN_DEMO: ALL CHECKS PASSED ===
+
+=== TWITTER_DEMO VALIDATION REPORT ===
+[PASS] Orphan posts (user_id not in profiles): 0
+[PASS] Post/profile archetype mismatches: 0
+[PASS] Post/profile is_fake mismatches: 0
+[PASS] Profile avg_likes matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile avg_comments matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile avg_shares matches mean of linked posts (tol=0.001): 0 mismatches
+[PASS] Profile tweets_count matches actual linked post count: 0 mismatches
+-- Archetype distribution (profiles) --
+    Business Account: 30
+    Celebrity Impersonator: 26
+    Developer: 30
+    Fake Influencer: 27
+    Fitness Creator: 30
+    Spam/Bot Account: 27
+    Student: 30
+-- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
+-- Archetype distribution (posts) --
+    Business Account: 287
+    Celebrity Impersonator: 277
+    Developer: 299
+    Fake Influencer: 283
+    Fitness Creator: 292
+    Spam/Bot Account: 291
+    Student: 270
+-- Schema check: profiles --
+[PASS] Profile columns match spec (missing=[], extra=[])
+    [PASS] user_id (str, actual=str): nulls=0
+    [PASS] username (str, actual=str): nulls=0
+    [PASS] bio (str, actual=str): nulls=0
+    [PASS] followers_count (int, actual=int64): nulls=0
+    [PASS] following_count (int, actual=int64): nulls=0
+    [PASS] tweets_count (int, actual=int64): nulls=0
+    [PASS] account_age_days (int, actual=int64): nulls=0
+    [PASS] avg_likes (float, actual=float64): nulls=0
+    [PASS] avg_comments (float, actual=float64): nulls=0
+    [PASS] avg_shares (float, actual=float64): nulls=0
+    [PASS] engagement_rate (float, actual=float64): nulls=0
+    [PASS] is_verified (bool, actual=bool): nulls=0
+    [PASS] has_website (bool, actual=bool): nulls=0
+    [PASS] has_location (bool, actual=bool): nulls=0
+    [PASS] profile_completion_score (float, actual=float64): nulls=0
+    [PASS] archetype (str, actual=str): nulls=0
+    [PASS] is_fake (int, actual=int64): nulls=0
+-- Schema check: posts --
+[PASS] Post columns match spec (missing=[], extra=[])
+    [PASS] user_id (str, actual=str): nulls=0
+    [PASS] caption (str, actual=str): nulls=0
+    [PASS] hashtags (str, actual=str): nulls=0
+    [PASS] likes (int, actual=int64): nulls=0
+    [PASS] comments (int, actual=int64): nulls=0
+    [PASS] shares (int, actual=int64): nulls=0
+    [PASS] sentiment (float, actual=float64): nulls=0
+    [PASS] archetype (str, actual=str): nulls=0
+    [PASS] is_fake (int, actual=int64): nulls=0
+=== TWITTER_DEMO: ALL CHECKS PASSED ===

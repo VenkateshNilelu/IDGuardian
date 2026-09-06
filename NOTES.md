@@ -113,6 +113,43 @@ Verified end-to-end with both a synthetic spam-styled profile (scored 55% fake) 
 synthetic catfish-styled profile (scored 96% fake) against a clean genuine-student profile
 (scored 3% fake).
 
+## Demo lookup dataset + one-box UI (`generate_demo_dataset.py`)
+
+Added a username-lookup feature so the web app's primary flow is a single input
+box ("enter a username") instead of manually filling in a profile's fields --
+without ever touching a real platform. A tool (agent-reach) was proposed for
+actually scraping Instagram/Facebook/LinkedIn to power this; declined, since it
+works via browser automation on a real logged-in account (its own README warns
+of "risk of platform detection and account suspension") and violates all three
+platforms' Terms of Service -- exactly the kind of real-user-data collection
+this project has avoided from the start. Built the same UX with synthetic data
+instead.
+
+`generate_demo_dataset.py` generates 200 profiles/platform (800 total) using
+the same generator and archetype-conditioned realism as the main dataset, but
+with a distinct RNG/Faker salt (`"<platform>_demo"`) and user_id prefix
+(`igdemo_` etc.) so these profiles are guaranteed disjoint from the
+5,000/platform set the models were trained and tested on -- a lookup is
+therefore an honest generalization check, not a replay of a memorized
+example. Verified zero `user_id` overlap with the main dataset (a handful of
+coincidental Faker *username* collisions exist, which is harmless since
+lookup only ever searches the demo set).
+
+`app.py` loads this demo set at startup, indexes it by lowercased username,
+and exposes `GET /api/lookup?username=...`: on a match it pulls that
+profile's bio/captions/hashtags and behavioral fields, runs the same
+`score_profile()` the manual form uses, and additionally returns the row's
+*true* archetype/is_fake so the UI can show "Ground truth: X" next to the
+prediction -- a transparency touch that doubles as a live accuracy check.
+The manual-entry form still exists (demoted to a collapsed "Advanced" section)
+and still calls the original `/api/predict`.
+
+Found and fixed a real CSS bug while testing this: `.results { display: flex }`
+silently overrode the browser's default `[hidden] { display: none }` rule
+(author styles always beat user-agent defaults), so the results and error
+panels were visible on first page load before any submission. Fixed with a
+global `[hidden] { display: none !important; }` rule.
+
 ## Operational note for the next phase (feature extraction)
 
 `hashtags` is stored as an empty string `""` for rows with no hashtags (Facebook/LinkedIn

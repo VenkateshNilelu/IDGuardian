@@ -15,67 +15,89 @@
   </header>
 
   <main>
-    <form id="scoreForm">
-      <section class="card">
-        <h2>1. Platform</h2>
-        <div class="platform-tabs" role="tablist">
-          {% for p in platforms %}
-          <button type="button" class="tab-btn {% if loop.first %}active{% endif %}" data-platform="{{ p }}">{{ p|capitalize }}</button>
-          {% endfor %}
-        </div>
-        <input type="hidden" id="platformInput" name="platform" value="{{ platforms[0] }}">
-      </section>
-
-      <section class="card">
-        <h2>2. Text</h2>
-        {% for p in platforms %}
-        <div class="platform-block text-block" data-platform="{{ p }}" {% if not loop.first %}hidden{% endif %}>
-          <label>{{ text_labels[p] }}</label>
-          <textarea name="text" rows="2" placeholder="Paste the profile's {{ text_labels[p]|lower }} here..."></textarea>
-        </div>
+    <section class="card lookup-card">
+      <h2>Look up a demo profile</h2>
+      <p class="lookup-sub">Type a username from IDGuardian's synthetic demo set — the app fetches that profile's bio, posts, and stats and scores it automatically. No real accounts are ever accessed.</p>
+      <form id="lookupForm" class="lookup-form">
+        <input type="text" id="usernameInput" placeholder="Enter a username..." autocomplete="off">
+        <button type="submit" id="lookupBtn" class="submit-btn">Look up &amp; score</button>
+      </form>
+      <div class="chip-row">
+        <span class="hint">Try:</span>
+        {% for s in sample_usernames %}
+        <button type="button" class="chip {% if s.is_fake %}chip-fake{% endif %}" data-username="{{ s.username }}">{{ s.username }} <small>({{ s.platform }})</small></button>
         {% endfor %}
-        <label>Recent captions / posts <span class="hint">(one per line, up to 8 used)</span></label>
-        <textarea name="captions" rows="5" placeholder="Paste a few recent post captions, one per line..."></textarea>
-        <label>Hashtags <span class="hint">(optional, space or comma separated)</span></label>
-        <input type="text" name="hashtags" placeholder="#travel #ad #discount">
-      </section>
+      </div>
+    </section>
 
-      <section class="card">
-        <h2>3. Behavioral signals</h2>
-        {% for p in platforms %}
-        <div class="platform-block behavioral-block" data-platform="{{ p }}" {% if not loop.first %}hidden{% endif %}>
-          <div class="field-grid">
-            {% for f in specs[p] %}
-              {% if f.type == 'bool' %}
-              <label class="check-field">
-                <input type="checkbox" data-field="{{ f.name }}">
-                {{ f.label }}
-              </label>
-              {% elif f.type == 'float' %}
-              <label class="num-field">
-                {{ f.label }}
-                <input type="range" min="0" max="1" step="0.01" value="0.5" data-field="{{ f.name }}"
-                       oninput="this.nextElementSibling.textContent = this.value">
-                <output>0.5</output>
-              </label>
-              {% else %}
-              <label class="num-field">
-                {{ f.label }}
-                <input type="number" min="0" step="1" value="0" data-field="{{ f.name }}">
-              </label>
-              {% endif %}
+    <details class="card advanced-details">
+      <summary>Advanced: manual entry</summary>
+      <p class="lookup-sub">Don't have a username to try? Enter a profile's details by hand instead.</p>
+      <form id="scoreForm">
+        <section class="sub-section">
+          <h2>1. Platform</h2>
+          <div class="platform-tabs" role="tablist">
+            {% for p in platforms %}
+            <button type="button" class="tab-btn {% if loop.first %}active{% endif %}" data-platform="{{ p }}">{{ p|capitalize }}</button>
             {% endfor %}
           </div>
-        </div>
-        {% endfor %}
-      </section>
+          <input type="hidden" id="platformInput" name="platform" value="{{ platforms[0] }}">
+        </section>
 
-      <button type="submit" id="submitBtn" class="submit-btn">Score this profile</button>
-    </form>
+        <section class="sub-section">
+          <h2>2. Text</h2>
+          {% for p in platforms %}
+          <div class="platform-block text-block" data-platform="{{ p }}" {% if not loop.first %}hidden{% endif %}>
+            <label>{{ text_labels[p] }}</label>
+            <textarea name="text" rows="2" placeholder="Paste the profile's {{ text_labels[p]|lower }} here..."></textarea>
+          </div>
+          {% endfor %}
+          <label>Recent captions / posts <span class="hint">(one per line, up to 8 used)</span></label>
+          <textarea name="captions" rows="5" placeholder="Paste a few recent post captions, one per line..."></textarea>
+          <label>Hashtags <span class="hint">(optional, space or comma separated)</span></label>
+          <input type="text" name="hashtags" placeholder="#travel #ad #discount">
+        </section>
+
+        <section class="sub-section">
+          <h2>3. Behavioral signals</h2>
+          {% for p in platforms %}
+          <div class="platform-block behavioral-block" data-platform="{{ p }}" {% if not loop.first %}hidden{% endif %}>
+            <div class="field-grid">
+              {% for f in specs[p] %}
+                {% if f.type == 'bool' %}
+                <label class="check-field">
+                  <input type="checkbox" data-field="{{ f.name }}">
+                  {{ f.label }}
+                </label>
+                {% elif f.type == 'float' %}
+                <label class="num-field">
+                  {{ f.label }}
+                  <input type="range" min="0" max="1" step="0.01" value="0.5" data-field="{{ f.name }}"
+                         oninput="this.nextElementSibling.textContent = this.value">
+                  <output>0.5</output>
+                </label>
+                {% else %}
+                <label class="num-field">
+                  {{ f.label }}
+                  <input type="number" min="0" step="1" value="0" data-field="{{ f.name }}">
+                </label>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </section>
+
+        <button type="submit" id="submitBtn" class="submit-btn">Score this profile</button>
+      </form>
+    </details>
 
     <section id="results" class="card results" hidden>
       <h2>Result</h2>
-      <div id="verdictBadge" class="verdict-badge"></div>
+      <div class="result-header">
+        <div id="verdictBadge" class="verdict-badge"></div>
+        <div id="groundTruthBadge" class="ground-truth-badge" hidden></div>
+      </div>
       <div class="score-bars">
         <div class="score-row">
           <span class="score-label">Lexical <small>(TF-IDF + LogReg)</small></span>

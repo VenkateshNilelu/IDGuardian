@@ -12,6 +12,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
@@ -44,6 +45,66 @@ main {
   padding: 22px 24px;
 }
 .card h2 { margin: 0 0 14px; font-size: 1.05rem; color: var(--text); }
+.sub-section { margin-top: 22px; }
+.sub-section:first-child { margin-top: 18px; }
+.sub-section h2 { font-size: .95rem; color: var(--muted); }
+
+.lookup-card {
+  border-color: rgba(91, 140, 255, .5);
+  background: linear-gradient(160deg, #171f37, #141a2c);
+}
+.lookup-sub { margin: 0 0 16px; color: var(--muted); font-size: .88rem; }
+.lookup-form { display: flex; gap: 10px; }
+.lookup-form input[type="text"] {
+  flex: 1;
+  background: #0e1524;
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 12px 14px;
+  font-size: .95rem;
+}
+.lookup-form input[type="text"]:focus { outline: none; border-color: var(--accent); }
+.lookup-form .submit-btn { width: auto; padding: 12px 22px; white-space: nowrap; }
+
+.chip-row { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip-row .hint { margin: 0; }
+.chip {
+  border: 1px solid var(--panel-border);
+  background: #101728;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: .8rem;
+  cursor: pointer;
+  transition: border-color .15s ease;
+}
+.chip:hover { border-color: var(--accent); }
+.chip small { color: var(--muted); }
+.chip-fake { border-color: rgba(255, 91, 110, .4); }
+.chip-fake:hover { border-color: var(--danger); }
+
+.advanced-details summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.05rem;
+  list-style: none;
+}
+.advanced-details summary::-webkit-details-marker { display: none; }
+.advanced-details summary::before { content: "▸ "; color: var(--muted); }
+.advanced-details[open] summary::before { content: "▾ "; }
+.advanced-details[open] summary { margin-bottom: 4px; }
+
+.result-header { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.ground-truth-badge {
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: .85rem;
+  background: rgba(147, 160, 187, .12);
+  border: 1px solid var(--panel-border);
+  color: var(--muted);
+}
 
 .platform-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
 .tab-btn {

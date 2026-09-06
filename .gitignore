@@ -2,3 +2,7 @@
 __pycache__/
 *.pyc
 data/*.csv
+# The demo lookup dataset is small and required for app.py to run out of the
+# box (it's not regenerated as part of the main training pipeline), so it's
+# tracked despite the blanket data/*.csv ignore above.
+!data/demo_*.csv
