@@ -100,6 +100,19 @@ After the fix, every base layer sits in a realistic, non-trivial range, and Trus
 shows a real, positive lift over the best single layer on every platform (+0.006 to +0.078
 ROC-AUC) -- the multi-layer architecture is finally doing what it's meant to do.
 
+## Scoring web app (`app.py`)
+
+A small Flask app (`app.py` + `templates/index.html` + `static/`) loads all 10 trained
+models once at startup and exposes a single-page UI + `POST /api/predict` JSON endpoint
+to score one profile at a time through the full pipeline (platform tabs switch which
+behavioral fields and text label are shown). Run with `python app.py` after installing
+`requirements-webapp.txt`, then open `http://127.0.0.1:5000`. It's a local Flask dev
+server (explicitly not for production use, and not deployed anywhere) — built as the
+demo/manual-testing surface for the trained models, not a scraping or moderation tool.
+Verified end-to-end with both a synthetic spam-styled profile (scored 55% fake) and a
+synthetic catfish-styled profile (scored 96% fake) against a clean genuine-student profile
+(scored 3% fake).
+
 ## Operational note for the next phase (feature extraction)
 
 `hashtags` is stored as an empty string `""` for rows with no hashtags (Facebook/LinkedIn

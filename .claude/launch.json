@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "idguardian-webapp",
+      "runtimeExecutable": "C:\\Users\\venki\\OneDrive\\Desktop\\IDGuardianFinal\\.venv\\Scripts\\python.exe",
+      "runtimeArgs": ["app.py"],
+      "port": 5000
+    }
+  ]
+}

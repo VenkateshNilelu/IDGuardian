@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IDGuardian — Fake Profile Scorer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <h1>🛡️ IDGuardian</h1>
+      <p>Score a social profile through the four-layer fake-detection pipeline: Lexical &rarr; Semantic &rarr; Behavioral &rarr; Trust Fusion.</p>
+    </div>
+  </header>
+
+  <main>
+    <form id="scoreForm">
+      <section class="card">
+        <h2>1. Platform</h2>
+        <div class="platform-tabs" role="tablist">
+          {% for p in platforms %}
+          <button type="button" class="tab-btn {% if loop.first %}active{% endif %}" data-platform="{{ p }}">{{ p|capitalize }}</button>
+          {% endfor %}
+        </div>
+        <input type="hidden" id="platformInput" name="platform" value="{{ platforms[0] }}">
+      </section>
+
+      <section class="card">
+        <h2>2. Text</h2>
+        {% for p in platforms %}
+        <div class="platform-block text-block" data-platform="{{ p }}" {% if not loop.first %}hidden{% endif %}>
+          <label>{{ text_labels[p] }}</label>
+          <textarea name="text" rows="2" placeholder="Paste the profile's {{ text_labels[p]|lower }} here..."></textarea>
+        </div>
+        {% endfor %}
+        <label>Recent captions / posts <span class="hint">(one per line, up to 8 used)</span></label>
+        <textarea name="captions" rows="5" placeholder="Paste a few recent post captions, one per line..."></textarea>
+        <label>Hashtags <span class="hint">(optional, space or comma separated)</span></label>
+        <input type="text" name="hashtags" placeholder="#travel #ad #discount">
+      </section>
+
+      <section class="card">
+        <h2>3. Behavioral signals</h2>
+        {% for p in platforms %}
+        <div class="platform-block behavioral-block" data-platform="{{ p }}" {% if not loop.first %}hidden{% endif %}>
+          <div class="field-grid">
+            {% for f in specs[p] %}
+              {% if f.type == 'bool' %}
+              <label class="check-field">
+                <input type="checkbox" data-field="{{ f.name }}">
+                {{ f.label }}
+              </label>
+              {% elif f.type == 'float' %}
+              <label class="num-field">
+                {{ f.label }}
+                <input type="range" min="0" max="1" step="0.01" value="0.5" data-field="{{ f.name }}"
+                       oninput="this.nextElementSibling.textContent = this.value">
+                <output>0.5</output>
+              </label>
+              {% else %}
+              <label class="num-field">
+                {{ f.label }}
+                <input type="number" min="0" step="1" value="0" data-field="{{ f.name }}">
+              </label>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </section>
+
+      <button type="submit" id="submitBtn" class="submit-btn">Score this profile</button>
+    </form>
+
+    <section id="results" class="card results" hidden>
+      <h2>Result</h2>
+      <div id="verdictBadge" class="verdict-badge"></div>
+      <div class="score-bars">
+        <div class="score-row">
+          <span class="score-label">Lexical <small>(TF-IDF + LogReg)</small></span>
+          <div class="bar"><div class="bar-fill" id="bar-lexical"></div></div>
+          <span class="score-val" id="val-lexical"></span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">Semantic <small>(SBERT + XGBoost)</small></span>
+          <div class="bar"><div class="bar-fill" id="bar-semantic"></div></div>
+          <span class="score-val" id="val-semantic"></span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">Behavioral <small>(XGBoost)</small></span>
+          <div class="bar"><div class="bar-fill" id="bar-behavioral"></div></div>
+          <span class="score-val" id="val-behavioral"></span>
+        </div>
+        <div class="score-row fusion-row">
+          <span class="score-label">Trust Fusion <small>(final)</small></span>
+          <div class="bar"><div class="bar-fill" id="bar-fusion"></div></div>
+          <span class="score-val" id="val-fusion"></span>
+        </div>
+      </div>
+      <p class="disclaimer">Score is the model's estimated probability the profile is fake, trained on synthetic data — treat as a research demo signal, not a moderation decision.</p>
+    </section>
+
+    <div id="errorBox" class="error-box" hidden></div>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
