@@ -150,6 +150,101 @@ silently overrode the browser's default `[hidden] { display: none }` rule
 panels were visible on first page load before any submission. Fixed with a
 global `[hidden] { display: none !important; }` rule.
 
+## Per-layer explanations (grounded, not LLM-generated)
+
+The user asked for the UI to explain *why* each layer scored a profile the way
+it did, and mentioned using "GPT" for this. Clarified first: this app has no
+usable LLM API key available to it (Claude Code's own auth doesn't hand
+backend scripts a callable key), and offered a choice between wiring one in
+(cost/latency/key management) versus data-driven template explanations
+computed directly from each model's own math. User chose the latter.
+
+Implementation, per layer:
+- **Lexical**: for the profile's actual TF-IDF vector, multiply each non-zero
+  term by the logistic regression's coefficient for that term -- the top
+  positive/negative contributions are literally which words swung the score.
+- **Semantic**: SBERT's 384 embedding dimensions aren't individually
+  interpretable, so this stays qualitative (score + agreement/disagreement
+  with the lexical layer) rather than claiming a false level of precision.
+- **Behavioral**: XGBoost's booster supports true per-prediction SHAP-style
+  contributions natively (`booster.predict(dmatrix, pred_contribs=True)`) --
+  no extra library needed. Ranked by |contribution| and paired with
+  "genuine-typical" / "fake-typical" reference values precomputed from the
+  training set (`compute_reference_stats.py` -> `models/behavioral_reference_stats.json`,
+  a small checked-in artifact so the app never needs the full, gitignored
+  training CSVs at runtime).
+- **Fusion**: its own logistic regression only has 3 inputs, so its learned
+  `coef_` directly says which layer it trusts most for that platform.
+
+None of this calls out to Claude/GPT/any external model -- every explanation
+is a direct readout of numbers the pipeline already computed, so there's
+nothing to hallucinate a reason that isn't what actually happened.
+
+## Single-box lookup: username or URL, structured profile display
+
+The lookup box now accepts a bare demo username *or* a full profile URL
+(instagram.com/facebook.com/linkedin.com (`/in/`, `/company/`)/twitter.com
+and x.com) -- `parse_profile_input()` in app.py extracts platform + username
+from the URL when present, otherwise searches the demo set by username alone
+across all four platforms. After a lookup, the UI shows exactly what was
+fetched (bio/headline, every caption used, hashtags, and every behavioral
+field with its label) before showing the score -- so "what did the model
+actually see" is never a black box.
+
+## Dashboard redesign: sidebar shell, glassmorphism, brand icons
+
+The user shared a reference screenshot of a dashboard-style layout (sidebar
+nav, top bar, hero search with platform branding, "try examples" chips,
+quick-action cards, bottom platform switcher) and asked for that instead of
+the earlier single-column card layout. Rebuilt `templates/index.html` +
+`static/style.css` around that shell:
+
+- Sidebar (Home / Analysis History / Reports / Settings / Help & Support) --
+  only Home does anything real; the others show an honest inline toast
+  ("isn't wired up in this research demo") rather than pretending to be full
+  pages, since building real history/reports/settings screens wasn't asked
+  for and would be misleading to fake.
+- "Upgrade to Pro" from the reference became a plain "Research demo /
+  synthetic data only, no paid tier" card -- kept the visual slot but didn't
+  imply a real subscription tier that doesn't exist.
+- Manual entry (previously a `<details>` element) is now a Quick Action card
+  that toggles the same form; still posts to the unchanged `/api/predict`.
+- Platform switcher pills drive `selectPlatform()` in app.js, which updates
+  the hero icon/title/gradient, the input placeholder, the per-platform
+  example chips (from `SAMPLE_USERNAMES`, bumped to 2 genuine + 2 fake per
+  platform to fill the row out), and the manual form's visible fields --
+  all client-side, no extra request.
+
+Then two follow-up refinement requests, both purely visual/CSS + a small
+icon-plumbing change, no backend logic touched:
+
+- **"proper glassmorphism, make it look luxurious"**: switched every panel
+  (sidebar, cards, search bar, chips, platform switcher) to semi-transparent
+  backgrounds with `backdrop-filter: blur(22px) saturate(180%)`, added a
+  fixed colorful gradient-mesh background (radial gradients) behind
+  everything so the blur has something to blur, added a `--gold` gradient
+  variable used sparingly (tagline, active-nav accent bar, plan label) for a
+  premium accent, switched the font to Plus Jakarta Sans (Google Fonts), and
+  gave cards/buttons soft lift shadows + hover transitions. Both light and
+  dark theme variants (toggle in the top bar, persisted to localStorage)
+  define their own glass/mesh tokens.
+- **"use original icons of platforms"**: replaced the emoji/text placeholders
+  (📷, plain "f", "in", ✖) with small inline SVG brand marks in the same
+  style commonly shipped in open icon libraries (Simple Icons / Font
+  Awesome) -- recognizable simplified glyphs for identifying which platform
+  a button relates to, not exact proprietary logo files. Defined once in
+  `app.py` (`PLATFORM_ICONS`), rendered server-side for the static platform-
+  switcher pills (Jinja `|safe`) and exposed via `window.PLATFORM_ICONS` for
+  the JS-driven hero icon swap, so there's one source of truth instead of
+  duplicating markup between template and JS.
+
+Hit one real snag while testing this: edits to `app.py` don't take effect
+until the Flask process restarts (debug/reloader is off on purpose -- see
+the "Scoring web app" note above), so after adding `PLATFORM_ICONS` the
+already-running dev server kept serving the old template context
+(`window.PLATFORM_ICONS` empty, icons blank) until restarted. Worth
+remembering for any future backend change: restart, don't just reload.
+
 ## Operational note for the next phase (feature extraction)
 
 `hashtags` is stored as an empty string `""` for rows with no hashtags (Facebook/LinkedIn

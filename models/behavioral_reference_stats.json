@@ -1,0 +1,238 @@
+{
+  "instagram": {
+    "followers_count": {
+      "genuine_mean": 8104.2577,
+      "fake_mean": 20827.797
+    },
+    "following_count": {
+      "genuine_mean": 904.7623,
+      "fake_mean": 2930.254
+    },
+    "posts_count": {
+      "genuine_mean": 9.973,
+      "fake_mean": 9.9165
+    },
+    "account_age_days": {
+      "genuine_mean": 1687.567,
+      "fake_mean": 515.5895
+    },
+    "avg_likes": {
+      "genuine_mean": 343.578,
+      "fake_mean": 182.8184
+    },
+    "avg_comments": {
+      "genuine_mean": 37.2533,
+      "fake_mean": 15.4095
+    },
+    "avg_shares": {
+      "genuine_mean": 13.8088,
+      "fake_mean": 4.5199
+    },
+    "engagement_rate": {
+      "genuine_mean": 0.0576,
+      "fake_mean": 0.0179
+    },
+    "profile_completion_score": {
+      "genuine_mean": 0.6927,
+      "fake_mean": 0.5407
+    },
+    "is_verified": {
+      "genuine_mean": 0.025,
+      "fake_mean": 0.0095
+    },
+    "has_website": {
+      "genuine_mean": 0.4133,
+      "fake_mean": 0.375
+    },
+    "has_location": {
+      "genuine_mean": 0.4423,
+      "fake_mean": 0.171
+    },
+    "follow_ratio": {
+      "genuine_mean": 26.9853,
+      "fake_mean": 102.4424
+    },
+    "follower_gap": {
+      "genuine_mean": 7199.4953,
+      "fake_mean": 17897.543
+    }
+  },
+  "facebook": {
+    "friends_count": {
+      "genuine_mean": 359.1383,
+      "fake_mean": 158.295
+    },
+    "followers_count": {
+      "genuine_mean": 4381.1323,
+      "fake_mean": 9864.5705
+    },
+    "posts_count": {
+      "genuine_mean": 9.9743,
+      "fake_mean": 9.933
+    },
+    "account_age_days": {
+      "genuine_mean": 1706.176,
+      "fake_mean": 459.3825
+    },
+    "avg_likes": {
+      "genuine_mean": 191.9249,
+      "fake_mean": 104.454
+    },
+    "avg_comments": {
+      "genuine_mean": 26.2126,
+      "fake_mean": 10.3594
+    },
+    "avg_shares": {
+      "genuine_mean": 9.5308,
+      "fake_mean": 3.0132
+    },
+    "engagement_rate": {
+      "genuine_mean": 0.0751,
+      "fake_mean": 0.0349
+    },
+    "mutual_friends_count": {
+      "genuine_mean": 102.8403,
+      "fake_mean": 17.2375
+    },
+    "profile_completion_score": {
+      "genuine_mean": 0.6907,
+      "fake_mean": 0.51
+    },
+    "is_verified": {
+      "genuine_mean": 0.0227,
+      "fake_mean": 0.007
+    },
+    "has_website": {
+      "genuine_mean": 0.3893,
+      "fake_mean": 0.2745
+    },
+    "has_location": {
+      "genuine_mean": 0.486,
+      "fake_mean": 0.151
+    },
+    "friend_follower_ratio": {
+      "genuine_mean": 33.8763,
+      "fake_mean": 7.6665
+    },
+    "mutual_friend_ratio": {
+      "genuine_mean": 0.7088,
+      "fake_mean": 0.3145
+    }
+  },
+  "linkedin": {
+    "connections_count": {
+      "genuine_mean": 2579.913,
+      "fake_mean": 3696.6195
+    },
+    "posts_count": {
+      "genuine_mean": 10.0387,
+      "fake_mean": 9.998
+    },
+    "account_age_days": {
+      "genuine_mean": 1673.5293,
+      "fake_mean": 408.885
+    },
+    "avg_likes": {
+      "genuine_mean": 82.3758,
+      "fake_mean": 36.046
+    },
+    "avg_comments": {
+      "genuine_mean": 11.1898,
+      "fake_mean": 3.3828
+    },
+    "avg_shares": {
+      "genuine_mean": 4.1711,
+      "fake_mean": 1.0263
+    },
+    "engagement_rate": {
+      "genuine_mean": 0.0468,
+      "fake_mean": 0.0154
+    },
+    "endorsements_count": {
+      "genuine_mean": 21.6453,
+      "fake_mean": 26.0745
+    },
+    "skills_count": {
+      "genuine_mean": 23.0447,
+      "fake_mean": 6.1565
+    },
+    "profile_completion_score": {
+      "genuine_mean": 0.6721,
+      "fake_mean": 0.4258
+    },
+    "is_verified": {
+      "genuine_mean": 0.0143,
+      "fake_mean": 0.0015
+    },
+    "has_website": {
+      "genuine_mean": 0.3883,
+      "fake_mean": 0.2315
+    },
+    "has_location": {
+      "genuine_mean": 0.5533,
+      "fake_mean": 0.174
+    },
+    "endorsements_per_skill": {
+      "genuine_mean": 2.1765,
+      "fake_mean": 7.932
+    }
+  },
+  "twitter": {
+    "followers_count": {
+      "genuine_mean": 8112.0203,
+      "fake_mean": 20493.17
+    },
+    "following_count": {
+      "genuine_mean": 916.2927,
+      "fake_mean": 2981.1035
+    },
+    "tweets_count": {
+      "genuine_mean": 9.9463,
+      "fake_mean": 10.0265
+    },
+    "account_age_days": {
+      "genuine_mean": 1701.1463,
+      "fake_mean": 528.464
+    },
+    "avg_likes": {
+      "genuine_mean": 345.0245,
+      "fake_mean": 189.1046
+    },
+    "avg_comments": {
+      "genuine_mean": 37.5208,
+      "fake_mean": 17.6277
+    },
+    "avg_shares": {
+      "genuine_mean": 13.7118,
+      "fake_mean": 4.749
+    },
+    "engagement_rate": {
+      "genuine_mean": 0.0574,
+      "fake_mean": 0.0181
+    },
+    "profile_completion_score": {
+      "genuine_mean": 0.6917,
+      "fake_mean": 0.5423
+    },
+    "is_verified": {
+      "genuine_mean": 0.0257,
+      "fake_mean": 0.011
+    },
+    "has_website": {
+      "genuine_mean": 0.41,
+      "fake_mean": 0.3675
+    },
+    "has_location": {
+      "genuine_mean": 0.4477,
+      "fake_mean": 0.1655
+    },
+    "follow_ratio": {
+      "genuine_mean": 26.5691,
+      "fake_mean": 102.9509
+    },
+    "follower_gap": {
+      "genuine_mean": 7195.7277,
+      "fake_mean": 17512.0665
+    }
+  }
+}
