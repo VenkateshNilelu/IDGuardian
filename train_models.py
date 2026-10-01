@@ -58,23 +58,35 @@ TEXT_COL = {"instagram": "bio", "facebook": "bio", "linkedin": "headline", "twit
 POSTS_COUNT_COL = {"instagram": "posts_count", "facebook": "posts_count",
                     "linkedin": "posts_count", "twitter": "tweets_count"}
 
+# Platform-owner trust & safety telemetry -- shared across all 4 platforms (see
+# common.sample_trust_signals / generate_dataset.py). Internal signals a real
+# platform's systems would track but no public API exposes; city/state are
+# descriptive only (not fed to the model -- no discriminative signal in which
+# Indian city a profile is in, and XGBoost can't take raw strings anyway).
+TRUST_SIGNAL_COLS = ["email_verified", "phone_verified", "two_factor_enabled", "device_count_30d",
+                      "login_ip_diversity_30d", "signup_to_first_post_hours", "posting_time_entropy",
+                      "follower_growth_rate_7d", "reports_received_count", "content_removed_count"]
+
 # Numeric/boolean behavioral columns per platform -- "the same kind of signals a real
 # system would see" (spec Rule 6), including the documented-but-not-stored derived ratios.
 BEHAVIORAL_BASE_COLS = {
     "instagram": ["followers_count", "following_count", "posts_count", "account_age_days",
                   "avg_likes", "avg_comments", "avg_shares", "engagement_rate",
-                  "profile_completion_score", "is_verified", "has_website", "has_location"],
+                  "profile_completion_score", "is_verified", "has_website", "has_location",
+                  "story_post_rate_weekly", *TRUST_SIGNAL_COLS],
     "twitter": ["followers_count", "following_count", "tweets_count", "account_age_days",
                 "avg_likes", "avg_comments", "avg_shares", "engagement_rate",
-                "profile_completion_score", "is_verified", "has_website", "has_location"],
+                "profile_completion_score", "is_verified", "has_website", "has_location",
+                "retweet_ratio", *TRUST_SIGNAL_COLS],
     "facebook": ["friends_count", "followers_count", "posts_count", "account_age_days",
                  "avg_likes", "avg_comments", "avg_shares", "engagement_rate",
-                 "mutual_friends_count", "profile_completion_score",
-                 "is_verified", "has_website", "has_location"],
+                 "mutual_friends_count", "group_membership_count", "profile_completion_score",
+                 "is_verified", "has_website", "has_location", *TRUST_SIGNAL_COLS],
     "linkedin": ["connections_count", "posts_count", "account_age_days",
                  "avg_likes", "avg_comments", "avg_shares", "engagement_rate",
-                 "endorsements_count", "skills_count", "profile_completion_score",
-                 "is_verified", "has_website", "has_location"],
+                 "endorsements_count", "skills_count", "recommendation_count",
+                 "connection_acceptance_rate", "profile_completion_score",
+                 "is_verified", "has_website", "has_location", *TRUST_SIGNAL_COLS],
 }
 # Derived columns computed here (not stored in the CSVs -- see NOTES.md) and appended
 # to the base columns above for behavioral-layer training.
@@ -123,7 +135,8 @@ def load_platform(platform: str) -> pd.DataFrame:
     for name, series in DERIVED_COLS[platform](profiles).items():
         profiles[name] = series
 
-    for col in ["is_verified", "has_website", "has_location"]:
+    for col in ["is_verified", "has_website", "has_location",
+                "email_verified", "phone_verified", "two_factor_enabled"]:
         profiles[col] = profiles[col].astype(int)
 
     profiles["platform"] = platform

@@ -3,212 +3,340 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>IDGuardian — Fake Profile Scorer</title>
+  <title>IDGuardian — Trust the Real</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-icon">🛡️</div>
-        <div>
-          <div class="brand-name">IDGuardian</div>
-          <div class="brand-tag">Detect. Verify. Protect.</div>
-        </div>
-      </div>
+<body class="bg-slate-50 text-slate-900">
 
-      <nav class="side-nav">
-        <button class="nav-item active" data-view="home"><span>🏠</span> Home</button>
-        <button class="nav-item" data-view="history"><span>📄</span> Analysis History</button>
-        <button class="nav-item" data-view="reports"><span>📊</span> Reports</button>
+  <!-- ===================== Top navbar ===================== -->
+  <header class="h-16 bg-white border-b border-slate-200 flex items-center gap-4 px-4 md:px-6 sticky top-0 z-40">
+    <div class="flex items-center gap-2.5 shrink-0">
+      <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 5v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <div class="leading-tight">
+        <div class="font-extrabold text-[15px]">IDGuardian</div>
+        <div class="text-[11px] text-slate-400 -mt-0.5">Trust the Real</div>
+      </div>
+    </div>
+
+    <form id="lookupForm" class="flex-1 flex items-center gap-2 max-w-xl mx-auto bg-slate-50 border border-slate-200 rounded-lg px-3 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-400 shrink-0"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="usernameInput" placeholder="Analyze a social media profile..." autocomplete="off"
+             class="flex-1 bg-transparent py-2.5 text-sm outline-none placeholder:text-slate-400">
+      <button type="submit" id="lookupBtn" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-md transition shrink-0">Analyze</button>
+    </form>
+
+    <div class="hidden sm:flex items-center gap-2 shrink-0">
+      {% for p in platforms %}
+      <button type="button" class="platform-toggle" data-platform="{{ p }}" title="{{ p|capitalize }}">
+        <span class="pill-icon pill-icon-{{ p }}">{{ platform_icons[p]|safe }}</span>
+      </button>
+      {% endfor %}
+      <button type="button" id="themeToggle" class="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 ml-1" aria-label="Toggle theme">🌙</button>
+      <div class="w-9 h-9 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-sm">V</div>
+    </div>
+  </header>
+
+  <div class="flex items-start min-h-[calc(100vh-4rem)]">
+
+    <!-- ===================== Sidebar ===================== -->
+    <aside class="w-60 shrink-0 bg-slate-900 min-h-[calc(100vh-4rem)] flex flex-col p-4 sticky top-16">
+      <nav class="flex flex-col gap-1 mt-2">
+        <button class="nav-item" data-view="dashboard"><span>🏠</span> Dashboard</button>
+        <button class="nav-item active" data-view="home"><span>🔍</span> Check Profile</button>
+        <button class="nav-item" data-view="history"><span>🕐</span> History</button>
+        <button class="nav-item" data-view="saved"><span>🔖</span> Saved Reports</button>
         <button class="nav-item" data-view="settings"><span>⚙️</span> Settings</button>
-        <button class="nav-item" data-view="help"><span>❓</span> Help &amp; Support</button>
       </nav>
-
-      <div class="sidebar-spacer"></div>
-
-      <div class="info-card">
-        <div class="info-card-icon">🛡️</div>
-        <div class="info-card-title">Research demo</div>
-        <div class="info-card-sub">Synthetic data only — no live scraping, no paid tier.</div>
-      </div>
-
-      <div class="user-card">
-        <div class="avatar">V</div>
-        <div>
-          <div class="user-name">Venkatesh</div>
-          <div class="user-plan">Local demo</div>
-        </div>
+      <div class="flex-1"></div>
+      <div class="rounded-xl bg-slate-800/70 border border-slate-700/60 p-4">
+        <div class="w-8 h-8 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center mb-2">🛡️</div>
+        <div class="text-white text-sm font-semibold leading-snug">Safer Social Media<br>for a Better Internet</div>
+        <div class="h-1 rounded-full bg-slate-700 mt-3 overflow-hidden"><div class="h-full w-1/3 bg-gradient-to-r from-blue-500 to-indigo-400"></div></div>
       </div>
     </aside>
 
-    <div class="main-col">
-      <header class="topbar">
-        <button class="icon-btn" id="menuBtn" aria-label="Toggle sidebar">☰</button>
-        <div class="topbar-spacer"></div>
-        <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">🌙</button>
-      </header>
+    <!-- ===================== Main ===================== -->
+    <main class="flex-1 min-w-0 p-4 md:p-6 space-y-5">
 
-      <main class="content">
-        <section class="hero">
-          <div class="hero-icon" id="platformIcon">📷</div>
-          <h1 id="platformTitle">Instagram</h1>
-          <p class="hero-sub">Detect fake and copied accounts through IDGuardian's four-layer trust model</p>
+      {% if not semantic_available %}
+      <div class="rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm px-4 py-3">
+        ⚠️ <strong class="text-slate-800">Semantic layer unavailable</strong> on this machine — Lexical, Behavioral, and Fusion still work normally.
+      </div>
+      {% endif %}
 
-          <form id="lookupForm" class="search-bar">
-            <span class="at-icon">@</span>
-            <input type="text" id="usernameInput" placeholder="Enter a username or paste a profile URL" autocomplete="off">
-            <button type="submit" id="lookupBtn"><span class="btn-icon">🔍</span> Analyze Account</button>
-          </form>
-
-          <div class="examples-row">
-            <span class="hint">Try examples:</span>
-            <div id="exampleChips" class="example-chips"></div>
+      <!-- ---------- Dashboard view ---------- -->
+      <div id="view-dashboard" class="view" hidden>
+        <h1 class="text-xl font-bold mb-1">Dashboard</h1>
+        <p class="text-sm text-slate-500 mb-5">Session overview — computed live from your Analysis History.</p>
+        <div id="dashboardEmpty" class="empty-card" hidden>No analyses yet. Head to <strong>Check Profile</strong> to analyze your first account.</div>
+        <div id="dashboardBody" hidden>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="dashStatGrid"></div>
+          <div class="card p-5">
+            <h3 class="font-semibold text-sm mb-4">Recent activity</h3>
+            <div id="dashRecent" class="flex flex-col gap-2"></div>
           </div>
-        </section>
+        </div>
+      </div>
 
-        <section id="quickActions" class="quick-actions">
-          <button type="button" class="action-card" id="manualEntryToggle">
-            <div class="action-icon action-icon-purple">✍️</div>
-            <div>
-              <div class="action-title">Manual Entry</div>
-              <div class="action-sub">Don't have a username? Enter a profile's details by hand.</div>
-            </div>
-            <span class="chevron">›</span>
-          </button>
-          <button type="button" class="action-card" id="downloadListLink">
-            <div class="action-icon action-icon-blue">📋</div>
-            <div>
-              <div class="action-title">Sample Usernames</div>
-              <div class="action-sub">Browse all 800 demo profiles you can look up.</div>
-            </div>
-            <span class="chevron">›</span>
-          </button>
-        </section>
+      <!-- ---------- Check Profile (search + results) ---------- -->
+      <div id="view-home" class="view">
+        <div id="searchLanding">
+          <div class="card p-8 text-center max-w-xl mx-auto">
+            <div class="hero-icon mx-auto mb-4" id="platformIcon"></div>
+            <h1 class="text-xl font-bold mb-1" id="platformTitle">Instagram</h1>
+            <p class="text-sm text-slate-500 mb-5">Type a username above and hit Analyze, or try one of these demo profiles:</p>
+            <div id="exampleChips" class="flex flex-wrap gap-2 justify-center"></div>
+          </div>
 
-        <section id="manualEntryCard" class="card manual-card" hidden>
-          <h2>Manual entry</h2>
-          <form id="scoreForm">
-            <section class="sub-section">
-              <label>{{ platforms[0]|capitalize }} — text</label>
-              {% for p in platforms %}
-              <div class="platform-block text-block" data-platform="{{ p }}" {% if not loop.first %}hidden{% endif %}>
-                <textarea name="text" rows="2" placeholder="Paste the profile's {{ text_labels[p]|lower }} here..."></textarea>
+          <div class="grid sm:grid-cols-4 gap-2 max-w-xl mx-auto mt-4">
+            {% for p in platforms %}
+            <button type="button" class="platform-pill {% if loop.first %}active{% endif %}" data-platform="{{ p }}">
+              <span class="pill-icon pill-icon-{{ p }}">{{ platform_icons[p]|safe }}</span>
+              {{ p|capitalize if p != 'twitter' else 'X' }}
+            </button>
+            {% endfor %}
+          </div>
+
+          <div class="max-w-xl mx-auto mt-4">
+            <button type="button" id="sampleUsernamesToggle" class="w-full flex items-center gap-3 card p-4 text-left hover:shadow-md transition">
+              <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">📋</div>
+              <div class="flex-1">
+                <div class="text-sm font-semibold">Browse demo usernames</div>
+                <div class="text-xs text-slate-500">A curated sample of the 800 synthetic profiles you can look up.</div>
               </div>
-              {% endfor %}
-              <label>Recent captions / posts <span class="hint">(one per line, up to 8 used)</span></label>
-              <textarea name="captions" rows="4" placeholder="Paste a few recent post captions, one per line..."></textarea>
-              <label>Hashtags <span class="hint">(optional, space or comma separated)</span></label>
-              <input type="text" name="hashtags" placeholder="#travel #ad #discount">
-            </section>
+              <span class="text-slate-400">›</span>
+            </button>
+            <div id="sampleUsernamesPanel" class="card p-4 mt-2" hidden>
+              <div class="text-xs text-slate-500 mb-2">Showing <span id="sampleUsernamesPlatform">Instagram</span> — click any to analyze instantly.</div>
+              <div id="expandedChips" class="flex flex-wrap gap-2 max-h-64 overflow-y-auto"></div>
+            </div>
+          </div>
+        </div>
 
-            <section class="sub-section">
-              <h2>Behavioral signals</h2>
-              {% for p in platforms %}
-              <div class="platform-block behavioral-block" data-platform="{{ p }}" {% if not loop.first %}hidden{% endif %}>
-                <div class="field-grid">
-                  {% for f in specs[p] %}
-                    {% if f.type == 'bool' %}
-                    <label class="check-field">
-                      <input type="checkbox" data-field="{{ f.name }}">
-                      {{ f.label }}
-                    </label>
-                    {% elif f.type == 'float' %}
-                    <label class="num-field">
-                      {{ f.label }}
-                      <input type="range" min="0" max="1" step="0.01" value="0.5" data-field="{{ f.name }}"
-                             oninput="this.nextElementSibling.textContent = this.value">
-                      <output>0.5</output>
-                    </label>
-                    {% else %}
-                    <label class="num-field">
-                      {{ f.label }}
-                      <input type="number" min="0" step="1" value="0" data-field="{{ f.name }}">
-                    </label>
-                    {% endif %}
-                  {% endfor %}
+        <div id="resultWrap" hidden>
+          <button type="button" id="backToSearch" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 mb-4">
+            <span>←</span> Back to Search
+          </button>
+
+          <!-- Profile header -->
+          <div class="card p-5 mb-5">
+            <div class="flex flex-col lg:flex-row gap-5 lg:items-center">
+              <div class="flex gap-4 flex-1 min-w-0">
+                <div id="avatarInitial" class="avatar-lg shrink-0"></div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <h2 id="resUsername" class="text-lg font-bold truncate"></h2>
+                    <span id="resArchetypeBadge" class="badge badge-slate"></span>
+                  </div>
+                  <p id="resBio" class="text-sm text-slate-500 mt-1 line-clamp-2"></p>
+                  <div id="resStats" class="flex gap-6 mt-3"></div>
                 </div>
               </div>
-              {% endfor %}
-            </section>
 
-            <input type="hidden" id="platformInput" value="{{ platforms[0] }}">
-            <button type="submit" id="submitBtn" class="primary-btn">Score this profile</button>
-          </form>
-        </section>
+              <div id="resVerdictCard" class="verdict-card shrink-0 w-full lg:w-80">
+                <div id="resVerdictIcon" class="verdict-icon"></div>
+                <div>
+                  <div id="resVerdictLabel" class="font-bold text-lg"></div>
+                  <div id="resVerdictSub" class="text-xs text-slate-500 mt-0.5"></div>
+                </div>
+              </div>
 
-        <section id="profileCard" class="card profile-card" hidden>
-          <h2>Fetched profile data</h2>
-          <p class="lookup-sub">This is exactly what the models saw — nothing more.</p>
-          <div id="profileText"></div>
-          <div id="profileCaptions"></div>
-          <div id="profileHashtags"></div>
-          <div id="profileBehavioral" class="field-grid behavioral-readout"></div>
-        </section>
-
-        <section id="results" class="card results" hidden>
-          <h2>Result</h2>
-          <div class="result-header">
-            <div id="verdictBadge" class="verdict-badge"></div>
-            <div id="groundTruthBadge" class="ground-truth-badge" hidden></div>
-          </div>
-          <div class="score-bars">
-            <div class="layer-block">
-              <div class="score-row">
-                <span class="score-label">Lexical <small>(TF-IDF + LogReg)</small></span>
-                <div class="bar"><div class="bar-fill" id="bar-lexical"></div></div>
-                <span class="score-val" id="val-lexical"></span>
+              <div class="shrink-0 text-sm w-full lg:w-44">
+                <div class="text-xs text-slate-400">Analyzed on</div>
+                <div id="resAnalyzedOn" class="text-slate-700 mb-3"></div>
+                <div class="flex flex-col gap-2">
+                  <button type="button" id="saveReportBtn" class="btn-outline">🔖 Save Report</button>
+                  <button type="button" id="platformLinkBtn" class="btn-outline">↗ About this data</button>
+                </div>
               </div>
-              <p class="explain-text" id="explain-lexical"></p>
-            </div>
-            <div class="layer-block">
-              <div class="score-row">
-                <span class="score-label">Semantic <small>(SBERT + XGBoost)</small></span>
-                <div class="bar"><div class="bar-fill" id="bar-semantic"></div></div>
-                <span class="score-val" id="val-semantic"></span>
-              </div>
-              <p class="explain-text" id="explain-semantic"></p>
-            </div>
-            <div class="layer-block">
-              <div class="score-row">
-                <span class="score-label">Behavioral <small>(XGBoost)</small></span>
-                <div class="bar"><div class="bar-fill" id="bar-behavioral"></div></div>
-                <span class="score-val" id="val-behavioral"></span>
-              </div>
-              <p class="explain-text" id="explain-behavioral"></p>
-            </div>
-            <div class="layer-block">
-              <div class="score-row fusion-row">
-                <span class="score-label">Trust Fusion <small>(final)</small></span>
-                <div class="bar"><div class="bar-fill" id="bar-fusion"></div></div>
-                <span class="score-val" id="val-fusion"></span>
-              </div>
-              <p class="explain-text" id="explain-fusion"></p>
             </div>
           </div>
-          <p class="disclaimer">Score is the model's estimated probability the profile is fake, trained on synthetic data — treat as a research demo signal, not a moderation decision. Explanations above are computed directly from each model's own math (word weights, per-prediction feature contributions, fusion weights), not generated by a separate AI.</p>
-        </section>
 
-        <div id="errorBox" class="error-box" hidden></div>
+          <!-- Trust Score / Model Layer Scores / Classification -->
+          <div class="grid lg:grid-cols-3 gap-5 mb-5">
+            <div class="card p-5">
+              <h3 class="card-title">Trust Score <span class="info-dot" title="100 minus the final fake probability from Trust Fusion.">ⓘ</span></h3>
+              <div class="flex flex-col items-center py-2">
+                <div class="relative w-48">
+                  <svg viewBox="0 0 200 120" class="w-48 h-auto block">
+                    <path d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="#E2E8F0" stroke-width="14" stroke-linecap="round"/>
+                    <path id="trustArc" d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="#10B981" stroke-width="14" stroke-linecap="round"/>
+                  </svg>
+                  <div class="absolute inset-x-0 text-center" style="top:64%;">
+                    <span id="trustScoreNum" class="text-4xl font-extrabold"></span>
+                    <span class="text-slate-400 text-lg">/100</span>
+                  </div>
+                </div>
+                <div id="trustScoreLabel" class="text-sm font-semibold text-slate-500 mt-1"></div>
+              </div>
+              <div id="trustSummaryBox" class="rounded-lg p-3 flex gap-3 items-start mt-2">
+                <div id="trustSummaryIcon" class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm"></div>
+                <div>
+                  <div id="trustSummaryTitle" class="text-sm font-bold"></div>
+                  <div id="trustSummarySub" class="text-xs text-slate-500 mt-0.5"></div>
+                </div>
+              </div>
+            </div>
 
-        <nav class="platform-switcher" id="platformSwitcher">
-          {% for p in platforms %}
-          <button type="button" class="platform-pill {% if loop.first %}active{% endif %}" data-platform="{{ p }}">
-            <span class="pill-icon pill-icon-{{ p }}">{{ platform_icons[p]|safe }}</span>
-            {{ p|capitalize if p != 'twitter' else 'Twitter / X' }}
-          </button>
-          {% endfor %}
-        </nav>
-      </main>
-    </div>
+            <div class="card p-5">
+              <h3 class="card-title">Model Layer Scores <span class="info-dot" id="layerInfoDot" title="">ⓘ</span></h3>
+              <div class="flex flex-col gap-4 mt-3" id="layerScoreRows"></div>
+              <div id="fakeProbBox" class="mt-4 rounded-lg bg-indigo-50 px-4 py-3 flex items-center justify-between">
+                <span class="text-sm font-bold text-indigo-700">Final Fake Probability</span>
+                <span id="fakeProbVal" class="text-lg font-extrabold text-indigo-700"></span>
+              </div>
+            </div>
+
+            <div class="card p-5">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="card-title mb-0">Classification</h3>
+                <span id="classificationBadge" class="badge"></span>
+              </div>
+              <dl id="classificationList" class="mt-3 flex flex-col divide-y divide-slate-100"></dl>
+            </div>
+          </div>
+
+          <!-- Lexical / Semantic / Behavioral detail cards -->
+          <div class="grid lg:grid-cols-3 gap-5 mb-5">
+            <div class="card p-5">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="card-title mb-0 flex items-center gap-2">📄 Top Text Indicators <span class="text-xs font-normal text-slate-400">(Lexical)</span></h3>
+                <span id="lexicalSupportBadge" class="badge"></span>
+              </div>
+              <div class="text-xs font-semibold text-slate-500 mb-1.5">Genuine-leaning words</div>
+              <div id="genuineWords" class="flex flex-wrap gap-1.5 mb-3"></div>
+              <div class="text-xs font-semibold text-slate-500 mb-1.5">Fake-leaning words</div>
+              <div id="fakeWords" class="flex flex-wrap gap-1.5"></div>
+              <p id="lexicalFooter" class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100"></p>
+            </div>
+
+            <div class="card p-5">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="card-title mb-0 flex items-center gap-2">🧩 Semantic Analysis <span class="text-xs font-normal text-slate-400">(SBERT)</span></h3>
+                <span id="semanticSupportBadge" class="badge"></span>
+              </div>
+              <div class="text-xs font-semibold text-slate-500 mb-1.5">Overall content meaning</div>
+              <p id="semanticSummary" class="text-sm text-slate-600 leading-relaxed"></p>
+              <div class="border-t border-slate-100 mt-3 pt-3">
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-500 mb-1.5">
+                  <span>Similarity to genuine profiles</span>
+                  <span id="semanticSimVal"></span>
+                </div>
+                <div class="bar-track"><div id="semanticSimBar" class="bar-fill-blue"></div></div>
+              </div>
+            </div>
+
+            <div class="card p-5">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="card-title mb-0 flex items-center gap-2">📈 Behavioral Indicators</h3>
+                <span id="behavioralSupportBadge" class="badge"></span>
+              </div>
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-xs text-slate-400 text-left">
+                    <th class="font-medium pb-2">Feature</th>
+                    <th class="font-medium pb-2">Value</th>
+                    <th class="font-medium pb-2">Typical</th>
+                    <th class="font-medium pb-2 text-right">Signal</th>
+                  </tr>
+                </thead>
+                <tbody id="behavioralTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Final conclusion -->
+          <div class="grid lg:grid-cols-[1fr_320px] gap-5">
+            <div class="card conclusion-card p-5 flex gap-4 items-start">
+              <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-lg shrink-0">💡</div>
+              <div>
+                <div class="font-bold text-sm mb-1">Final Conclusion</div>
+                <p id="finalConclusion" class="text-sm leading-relaxed"></p>
+              </div>
+            </div>
+            <div class="card quote-card p-5 flex items-center justify-center text-center">
+              <p id="quoteText" class="text-sm italic leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- History & Analytics (merged) ---------- -->
+      <div id="view-history" class="view" hidden>
+        <div class="flex items-center justify-between mb-1">
+          <h1 class="text-xl font-bold">History &amp; Analytics</h1>
+          <button type="button" id="clearHistoryBtn" class="btn-outline">Clear history</button>
+        </div>
+        <p class="text-sm text-slate-500 mb-5">Every profile you've analyzed this session — stored only in your browser.</p>
+
+        <div id="historyEmpty" class="empty-card" hidden>No lookups yet. Head to Check Profile to analyze one.</div>
+
+        <div id="historyBody" hidden>
+          <div class="flex flex-wrap gap-2 mb-5" id="historyPlatformFilter"></div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="statGrid"></div>
+
+          <div id="historyList" class="flex flex-col gap-2"></div>
+          <div id="historyFilterEmpty" class="empty-card" hidden>No analyses for this platform yet.</div>
+        </div>
+      </div>
+
+      <!-- ---------- Saved Reports ---------- -->
+      <div id="view-saved" class="view" hidden>
+        <div class="flex items-center justify-between mb-1">
+          <h1 class="text-xl font-bold">Saved Reports</h1>
+          <button type="button" id="clearSavedBtn" class="btn-outline">Clear saved</button>
+        </div>
+        <p class="text-sm text-slate-500 mb-5">Reports you've explicitly bookmarked with "Save Report".</p>
+        <div id="savedList" class="flex flex-col gap-2"></div>
+        <div id="savedEmpty" class="empty-card" hidden>Nothing saved yet — open a result on Check Profile and click "Save Report".</div>
+      </div>
+
+      <!-- ---------- Settings ---------- -->
+      <div id="view-settings" class="view" hidden>
+        <h1 class="text-xl font-bold mb-5">Settings</h1>
+        <div class="card p-5 divide-y divide-slate-100">
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">Fake-probability threshold</div>
+              <div class="settings-sub">Profiles scoring at or above this become "Likely Fake". Applies live everywhere.</div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <input type="range" id="thresholdSlider" min="10" max="90" step="1" value="50" class="w-36 accent-blue-600">
+              <output id="thresholdValue" class="font-bold text-sm w-10 text-right">50%</output>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">Theme</div>
+              <div class="settings-sub">Switch between light and dark.</div>
+            </div>
+            <button type="button" id="settingsThemeToggle" class="btn-outline">Toggle theme</button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">Analysis history</div>
+              <div class="settings-sub" id="historyCountLabel">0 saved lookups.</div>
+            </div>
+            <button type="button" id="settingsClearHistory" class="btn-outline btn-danger">Clear all</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="errorBox" class="error-box" hidden></div>
+    </main>
   </div>
 
   <script>
     window.SAMPLE_USERNAMES = {{ sample_usernames|tojson }};
     window.PLATFORM_ICONS = {{ platform_icons|tojson }};
+    window.DB_AVAILABLE = {{ db_available|tojson }};
   </script>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>

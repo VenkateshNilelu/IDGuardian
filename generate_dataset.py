@@ -53,6 +53,18 @@ class Archetype:
     has_website_p: float = 0.2
     has_location_p: float = 0.4
     profile_completion_range: tuple = (0.5, 0.9)
+    # Platform-owner trust & safety telemetry -- optional per-archetype overrides;
+    # None means "use the is_fake-conditioned default" (see common.TRUST_SIGNAL_DEFAULTS).
+    email_verified_p: Optional[float] = None
+    phone_verified_p: Optional[float] = None
+    two_factor_p: Optional[float] = None
+    device_count_range: Optional[tuple] = None
+    ip_diversity_range: Optional[tuple] = None
+    signup_to_post_range: Optional[tuple] = None
+    posting_entropy_range: Optional[tuple] = None
+    follower_growth_range: Optional[tuple] = None
+    reports_range: Optional[tuple] = None
+    content_removed_range: Optional[tuple] = None
 
 
 def make_username(rng: np.random.Generator, fk, archetype: Archetype) -> str:
@@ -102,6 +114,13 @@ def sample_numeric_fields(rng: np.random.Generator, source: Archetype, k: int) -
         secondary = np.round(C.sample_lognormal_clipped(rng, *source.secondary_range, k)).astype(int)
     else:
         secondary = np.zeros(k, dtype=int)
+    trust = C.sample_trust_signals(rng, source.is_fake, k, overrides=dict(
+        email_verified_p=source.email_verified_p, phone_verified_p=source.phone_verified_p,
+        two_factor_p=source.two_factor_p, device_count_range=source.device_count_range,
+        ip_diversity_range=source.ip_diversity_range, signup_to_post_range=source.signup_to_post_range,
+        posting_entropy_range=source.posting_entropy_range, follower_growth_range=source.follower_growth_range,
+        reports_range=source.reports_range, content_removed_range=source.content_removed_range,
+    ))
     return dict(
         age=age, primary=primary, secondary=secondary,
         eng_base=C.sample_uniform_float(rng, *source.engagement_rate_range, k),
@@ -111,6 +130,7 @@ def sample_numeric_fields(rng: np.random.Generator, source: Archetype, k: int) -
         verified=C.sample_bool(rng, source.is_verified_p, k),
         website=C.sample_bool(rng, source.has_website_p, k),
         location=C.sample_bool(rng, source.has_location_p, k),
+        **trust,
     )
 
 
@@ -183,12 +203,16 @@ def build_platform_dataset(
     fake_counts = even_split(n_fake, len(fake))
     blocks = list(zip(genuine, genuine_counts)) + list(zip(fake, fake_counts))
 
+    TRUST_COLS = ["email_verified", "phone_verified", "two_factor_enabled", "device_count_30d",
+                  "login_ip_diversity_30d", "signup_to_first_post_hours", "posting_time_entropy",
+                  "follower_growth_rate_7d", "reports_received_count", "content_removed_count"]
     cols: dict[str, list] = {
         "text": [], "username": [], "archetype": [], "is_fake": [], "text_source": [],
         "account_age_days": [], "is_verified": [], "has_website": [], "has_location": [],
         "profile_completion_score": [], "primary": [], "secondary": [],
         "engagement_rate_base": [], "comment_ratio": [], "share_ratio": [],
         "post_noise_sigma": [], "n_posts": [],
+        **{c: [] for c in TRUST_COLS},
     }
     extra_accum: dict[str, list[np.ndarray]] = {}
     caption_banks: dict[str, C.CaptionBank] = {}
@@ -222,6 +246,12 @@ def build_platform_dataset(
         verified = np.empty(cnt, dtype=bool)
         website = np.empty(cnt, dtype=bool)
         location = np.empty(cnt, dtype=bool)
+        trust_arrs = {
+            c: np.empty(cnt, dtype=bool if c in ("email_verified", "phone_verified", "two_factor_enabled")
+                        else float if c in ("signup_to_first_post_hours", "posting_time_entropy",
+                                             "follower_growth_rate_7d") else int)
+            for c in TRUST_COLS
+        }
 
         for src in {id(s): s for s in sources}.values():
             idxs = np.array([i for i in range(cnt) if sources[i] is src])
@@ -236,6 +266,8 @@ def build_platform_dataset(
             verified[idxs] = vals["verified"]
             website[idxs] = vals["website"]
             location[idxs] = vals["location"]
+            for c in TRUST_COLS:
+                trust_arrs[c][idxs] = vals[c]
 
         cols["account_age_days"].extend(age.tolist())
         cols["is_verified"].extend(verified.tolist())
@@ -249,6 +281,8 @@ def build_platform_dataset(
         cols["share_ratio"].extend(share_ratio.tolist())
         cols["post_noise_sigma"].extend(C.sample_uniform_float(rng, *arche.post_noise_sigma_range, cnt).tolist())
         cols["n_posts"].extend(C.sample_poisson_min1(rng, C.POSTS_PER_PROFILE_LAMBDA, cnt).tolist())
+        for c in TRUST_COLS:
+            cols[c].extend(trust_arrs[c].tolist())
 
         if arche.name in extra_field_builders:
             extras = extra_field_builders[arche.name](rng, fk, cnt)
@@ -301,6 +335,7 @@ def build_platform_dataset(
 
     agg = C.derive_profile_aggregates(posts, user_ids.tolist())
 
+    cities, states = C.sample_city_state(rng, n_total)
     profile_data = {
         "user_id": user_ids,
         "username": P("username"),
@@ -310,6 +345,17 @@ def build_platform_dataset(
         "has_website": Pnum("has_website", "bool"),
         "has_location": Pnum("has_location", "bool"),
         "profile_completion_score": Pnum("profile_completion_score", "float64"),
+        "city": np.array(cities), "state": np.array(states),
+        "email_verified": Pnum("email_verified", "bool"),
+        "phone_verified": Pnum("phone_verified", "bool"),
+        "two_factor_enabled": Pnum("two_factor_enabled", "bool"),
+        "device_count_30d": Pnum("device_count_30d", "int64"),
+        "login_ip_diversity_30d": Pnum("login_ip_diversity_30d", "int64"),
+        "signup_to_first_post_hours": Pnum("signup_to_first_post_hours", "float64"),
+        "posting_time_entropy": Pnum("posting_time_entropy", "float64"),
+        "follower_growth_rate_7d": Pnum("follower_growth_rate_7d", "float64"),
+        "reports_received_count": Pnum("reports_received_count", "int64"),
+        "content_removed_count": Pnum("content_removed_count", "int64"),
         "archetype": archetype_arr,
         "is_fake": is_fake_arr,
     }
@@ -487,8 +533,9 @@ def bank_student() -> C.PhraseBank:
             "hobby": ["obsessed with true crime podcasts", "into indie films and bad puns",
                       "weekend hiker, weekday procrastinator", "plays intramural soccer badly",
                       "collects vinyl I can't afford", "amateur baker, professional snacker"],
-            "vibe": ["living on iced coffee and hope", "counting down to graduation",
-                     "here for the memes and the free pizza", "just trying to pass orgo"],
+            "vibe": ["living on {food} and hope", "counting down to graduation",
+                     "here for the memes and the free food", "just trying to pass exams",
+                     "already counting days to {festival} break", "can't wait for {cricket}"],
         },
         emoji_pool=EMOJI_CASUAL, emoji_prob=0.5, parts_range=(2, 3),
         high_card_pool=DET_STUDENT,
@@ -518,11 +565,11 @@ def bank_business(kind: str = "Account") -> C.PhraseBank:
             "role": [f"{{company}} — official {kind.lower()}", "Family-owned, {city}-based",
                      "Serving {city} since {year}", "Small business, big heart",
                      "Handmade goods from {city}", "Local favorite in {city}"],
-            "offer": ["Custom orders welcome", "DM us for inquiries", "Free shipping over $50",
+            "offer": ["Custom orders welcome", "DM us for inquiries", "Free shipping over ₹999",
                       "New drops every {number} weeks", "Booking now for {year}",
-                      "Quality you can trust"],
+                      "Quality you can trust", "Special {festival} offers running now"],
             "vibe": ["Proudly independent", "Woman-owned & operated", "Community first, always",
-                     "Thank you for supporting small business"],
+                     "Thank you for supporting small business", "Made in India, made with love"],
         },
         emoji_pool=EMOJI_BIZ, emoji_prob=0.3, parts_range=(2, 3),
         high_card_pool=DET_BIZ,
@@ -537,7 +584,7 @@ def bank_fitness() -> C.PhraseBank:
                      "Marathoner turned strength coach"],
             "focus": ["macro-friendly recipes on the blog", "form check requests welcome",
                       "5am workouts, no excuses", "mobility nerd", "believer in progressive overload",
-                      "recovering cardio-phobe turned lifter"],
+                      "recovering cardio-phobe turned lifter", "swapped fried snacks for home-cooked {food}"],
             "cta": ["Programs linked below", "DM 'START' for coaching info", "Free workout guide in bio",
                     "Booking 1:1 sessions"],
         },
@@ -1155,6 +1202,10 @@ LI_GENUINE_ENDORSEMENT_OVERLAP = (0, 10)     # what a fake account's endorsement
 LI_GENUINE_SKILLS_OVERLAP = (0, 5)
 LI_FAKE_ENDORSEMENT_OVERLAP = (60, 350)      # what a genuine account's endorsements typically look like
 LI_FAKE_SKILLS_OVERLAP = (8, 45)
+LI_GENUINE_RECOMMENDATION_OVERLAP = (0, 1)   # what a fake account's recommendation count typically looks like
+LI_FAKE_RECOMMENDATION_OVERLAP = (3, 12)     # what a genuine account's recommendation count typically looks like
+LI_GENUINE_ACCEPTANCE_OVERLAP = (0.05, 0.3)  # what a fake account's connection acceptance rate typically looks like
+LI_FAKE_ACCEPTANCE_OVERLAP = (0.35, 0.85)    # what a genuine account's connection acceptance rate typically looks like
 
 
 def _apply_overlap(rng, arr, n, own_is_fake, genuine_overlap_range, fake_overlap_range, sampler):
@@ -1170,13 +1221,17 @@ def _apply_overlap(rng, arr, n, own_is_fake, genuine_overlap_range, fake_overlap
     return arr
 
 
+def _indian_company(rng) -> str:
+    return C.INDIAN_COMPANY_NAMES[int(rng.integers(0, len(C.INDIAN_COMPANY_NAMES)))]
+
+
 def linkedin_extra_builders() -> dict[str, ExtraFieldBuilder]:
     def genuine_builder(archetype_name: str) -> ExtraFieldBuilder:
         titles = JOB_TITLES_GENUINE[archetype_name]
 
         def build(rng, fk, n):
             job_title = [titles[int(rng.integers(0, len(titles)))] for _ in range(n)]
-            company_name = [fk.company() for _ in range(n)]
+            company_name = [_indian_company(rng) for _ in range(n)]
             endorsements = np.round(C.sample_lognormal_clipped(rng, 0, 400, n)).astype(int)
             skills = np.round(C.sample_uniform_float(rng, 3, 50, n)).astype(int)
             endorsements = _apply_overlap(rng, endorsements, n, 0, LI_GENUINE_ENDORSEMENT_OVERLAP,
@@ -1184,15 +1239,28 @@ def linkedin_extra_builders() -> dict[str, ExtraFieldBuilder]:
                                            lambda r, lo, hi, k: np.round(C.sample_lognormal_clipped(r, lo, hi, k)).astype(int))
             skills = _apply_overlap(rng, skills, n, 0, LI_GENUINE_SKILLS_OVERLAP, LI_FAKE_SKILLS_OVERLAP,
                                      lambda r, lo, hi, k: np.round(C.sample_uniform_float(r, lo, hi, k)).astype(int))
+            # Written recommendations are far harder to fake at scale than one-click
+            # endorsements (they require a real second party to write real text), so
+            # genuine profiles carry a modest but real count; connection acceptance
+            # sits in the normal professional-networking range.
+            recommendations = np.round(C.sample_lognormal_clipped(rng, 0, 12, n)).astype(int)
+            acceptance = np.round(C.sample_uniform_float(rng, 0.35, 0.85, n), 3)
+            recommendations = _apply_overlap(rng, recommendations, n, 0, LI_GENUINE_RECOMMENDATION_OVERLAP,
+                                              LI_FAKE_RECOMMENDATION_OVERLAP,
+                                              lambda r, lo, hi, k: np.round(C.sample_lognormal_clipped(r, lo, hi, k)).astype(int))
+            acceptance = _apply_overlap(rng, acceptance, n, 0, LI_GENUINE_ACCEPTANCE_OVERLAP,
+                                         LI_FAKE_ACCEPTANCE_OVERLAP,
+                                         lambda r, lo, hi, k: np.round(C.sample_uniform_float(r, lo, hi, k), 3))
             return {"job_title": job_title, "company_name": company_name,
-                    "endorsements_count": endorsements, "skills_count": skills}
+                    "endorsements_count": endorsements, "skills_count": skills,
+                    "recommendation_count": recommendations, "connection_acceptance_rate": acceptance}
         return build
 
     def fake_recruiter_builder(rng, fk, n):
         job_title = [JOB_TITLES_FAKE_RECRUITER[int(rng.integers(0, len(JOB_TITLES_FAKE_RECRUITER)))]
                      for _ in range(n)]
         company_name = [IMPLAUSIBLE_COMPANIES[int(rng.integers(0, len(IMPLAUSIBLE_COMPANIES)))]
-                        if rng.random() < 0.6 else fk.company() for _ in range(n)]
+                        if rng.random() < 0.6 else _indian_company(rng) for _ in range(n)]
         endorsements = np.round(C.sample_lognormal_clipped(rng, 0, 20, n)).astype(int)
         skills = np.round(C.sample_uniform_float(rng, 0, 8, n)).astype(int)
         endorsements = _apply_overlap(rng, endorsements, n, 1, LI_GENUINE_ENDORSEMENT_OVERLAP,
@@ -1200,8 +1268,20 @@ def linkedin_extra_builders() -> dict[str, ExtraFieldBuilder]:
                                        lambda r, lo, hi, k: np.round(C.sample_lognormal_clipped(r, lo, hi, k)).astype(int))
         skills = _apply_overlap(rng, skills, n, 1, LI_GENUINE_SKILLS_OVERLAP, LI_FAKE_SKILLS_OVERLAP,
                                  lambda r, lo, hi, k: np.round(C.sample_uniform_float(r, lo, hi, k)).astype(int))
+        # Fake recruiters mass-send cold connection requests to source "candidates" --
+        # low acceptance rate is the signature; recommendations are nearly impossible
+        # to fake since real people rarely write one for a stranger.
+        recommendations = np.round(C.sample_lognormal_clipped(rng, 0, 2, n)).astype(int)
+        acceptance = np.round(C.sample_uniform_float(rng, 0.05, 0.3, n), 3)
+        recommendations = _apply_overlap(rng, recommendations, n, 1, LI_GENUINE_RECOMMENDATION_OVERLAP,
+                                          LI_FAKE_RECOMMENDATION_OVERLAP,
+                                          lambda r, lo, hi, k: np.round(C.sample_lognormal_clipped(r, lo, hi, k)).astype(int))
+        acceptance = _apply_overlap(rng, acceptance, n, 1, LI_GENUINE_ACCEPTANCE_OVERLAP,
+                                     LI_FAKE_ACCEPTANCE_OVERLAP,
+                                     lambda r, lo, hi, k: np.round(C.sample_uniform_float(r, lo, hi, k), 3))
         return {"job_title": job_title, "company_name": company_name,
-                "endorsements_count": endorsements, "skills_count": skills}
+                "endorsements_count": endorsements, "skills_count": skills,
+                "recommendation_count": recommendations, "connection_acceptance_rate": acceptance}
 
     def fake_exec_builder(rng, fk, n):
         job_title = [JOB_TITLES_FAKE_EXEC[int(rng.integers(0, len(JOB_TITLES_FAKE_EXEC)))] for _ in range(n)]
@@ -1214,12 +1294,21 @@ def linkedin_extra_builders() -> dict[str, ExtraFieldBuilder]:
                                        lambda r, lo, hi, k: np.round(C.sample_lognormal_clipped(r, lo, hi, k)).astype(int))
         skills = _apply_overlap(rng, skills, n, 1, LI_GENUINE_SKILLS_OVERLAP, LI_FAKE_SKILLS_OVERLAP,
                                  lambda r, lo, hi, k: np.round(C.sample_uniform_float(r, lo, hi, k)).astype(int))
+        recommendations = np.round(C.sample_lognormal_clipped(rng, 0, 3, n)).astype(int)
+        acceptance = np.round(C.sample_uniform_float(rng, 0.05, 0.35, n), 3)
+        recommendations = _apply_overlap(rng, recommendations, n, 1, LI_GENUINE_RECOMMENDATION_OVERLAP,
+                                          LI_FAKE_RECOMMENDATION_OVERLAP,
+                                          lambda r, lo, hi, k: np.round(C.sample_lognormal_clipped(r, lo, hi, k)).astype(int))
+        acceptance = _apply_overlap(rng, acceptance, n, 1, LI_GENUINE_ACCEPTANCE_OVERLAP,
+                                     LI_FAKE_ACCEPTANCE_OVERLAP,
+                                     lambda r, lo, hi, k: np.round(C.sample_uniform_float(r, lo, hi, k), 3))
         return {"job_title": job_title, "company_name": company_name,
-                "endorsements_count": endorsements, "skills_count": skills}
+                "endorsements_count": endorsements, "skills_count": skills,
+                "recommendation_count": recommendations, "connection_acceptance_rate": acceptance}
 
     def spam_builder(rng, fk, n):
         job_title = [JOB_TITLES_SPAM[int(rng.integers(0, len(JOB_TITLES_SPAM)))] for _ in range(n)]
-        company_name = ["Self-Employed" if rng.random() < 0.7 else fk.company() for _ in range(n)]
+        company_name = ["Self-Employed" if rng.random() < 0.7 else _indian_company(rng) for _ in range(n)]
         endorsements = np.round(C.sample_lognormal_clipped(rng, 0, 10, n)).astype(int)
         skills = np.round(C.sample_uniform_float(rng, 0, 5, n)).astype(int)
         endorsements = _apply_overlap(rng, endorsements, n, 1, LI_GENUINE_ENDORSEMENT_OVERLAP,
@@ -1227,8 +1316,17 @@ def linkedin_extra_builders() -> dict[str, ExtraFieldBuilder]:
                                        lambda r, lo, hi, k: np.round(C.sample_lognormal_clipped(r, lo, hi, k)).astype(int))
         skills = _apply_overlap(rng, skills, n, 1, LI_GENUINE_SKILLS_OVERLAP, LI_FAKE_SKILLS_OVERLAP,
                                  lambda r, lo, hi, k: np.round(C.sample_uniform_float(r, lo, hi, k)).astype(int))
+        recommendations = np.round(C.sample_lognormal_clipped(rng, 0, 1, n)).astype(int)
+        acceptance = np.round(C.sample_uniform_float(rng, 0.02, 0.2, n), 3)
+        recommendations = _apply_overlap(rng, recommendations, n, 1, LI_GENUINE_RECOMMENDATION_OVERLAP,
+                                          LI_FAKE_RECOMMENDATION_OVERLAP,
+                                          lambda r, lo, hi, k: np.round(C.sample_lognormal_clipped(r, lo, hi, k)).astype(int))
+        acceptance = _apply_overlap(rng, acceptance, n, 1, LI_GENUINE_ACCEPTANCE_OVERLAP,
+                                     LI_FAKE_ACCEPTANCE_OVERLAP,
+                                     lambda r, lo, hi, k: np.round(C.sample_uniform_float(r, lo, hi, k), 3))
         return {"job_title": job_title, "company_name": company_name,
-                "endorsements_count": endorsements, "skills_count": skills}
+                "endorsements_count": endorsements, "skills_count": skills,
+                "recommendation_count": recommendations, "connection_acceptance_rate": acceptance}
 
     return {
         "Student": genuine_builder("Student"),
@@ -1255,8 +1353,19 @@ def facebook_extra_builders() -> dict[str, ExtraFieldBuilder]:
     genuine_overlap_range = (0, 12)     # mutual_friends_count typical of a fake account
     fake_overlap_range = (25, 400)      # mutual_friends_count typical of a genuine account
 
+    # A real user joins a handful of interest/community groups over time; fake
+    # accounts rarely bother (no incentive) or join a suspiciously large spammy set.
+    group_ranges = {
+        "Student": (2, 15), "Developer": (1, 10), "Business Page": (0, 4), "Fitness Creator": (1, 8),
+        "Spam Account": (0, 2), "Fake Influencer": (0, 3), "Celebrity Impersonator": (0, 2),
+        "Catfish/Romance-Scam Profile": (0, 1),
+    }
+    genuine_group_overlap = (0, 2)    # what a fake account's group count typically looks like
+    fake_group_overlap = (3, 15)      # what a genuine account's group count typically looks like
+
     def make(name):
         lo, hi = ranges[name]
+        glo, ghi = group_ranges[name]
         is_fake = is_fake_by_name[name]
 
         def build(rng, fk, n):
@@ -1266,7 +1375,70 @@ def facebook_extra_builders() -> dict[str, ExtraFieldBuilder]:
                 idx = rng.choice(n, size=n_ov, replace=False)
                 opp_range = genuine_overlap_range if is_fake == 0 else fake_overlap_range
                 mutual[idx] = np.round(C.sample_lognormal_clipped(rng, *opp_range, n_ov)).astype(int)
-            return {"mutual_friends_count": mutual}
+            groups = np.round(C.sample_uniform_float(rng, glo, ghi, n)).astype(int)
+            groups = _apply_overlap(rng, groups, n, is_fake, genuine_group_overlap, fake_group_overlap,
+                                     lambda r, lo2, hi2, k: np.round(C.sample_uniform_float(r, lo2, hi2, k)).astype(int))
+            return {"mutual_friends_count": mutual, "group_membership_count": groups}
+        return build
+
+    return {name: make(name) for name in ranges}
+
+
+def instagram_extra_builders() -> dict[str, ExtraFieldBuilder]:
+    # Stories are low-effort/high-frequency for genuine, engaged users; fake/spam
+    # accounts optimize for feed posts and reach, not ephemeral content nobody pays for.
+    ranges = {
+        "Student": (1.0, 8.0), "Developer": (0.2, 4.0), "Business Account": (1.0, 10.0),
+        "Fitness Creator": (2.0, 14.0), "Spam Account": (0.0, 0.5),
+        "Fake Influencer": (0.0, 2.0), "Celebrity Impersonator": (0.0, 1.0),
+    }
+    is_fake_by_name = {
+        "Student": 0, "Developer": 0, "Business Account": 0, "Fitness Creator": 0,
+        "Spam Account": 1, "Fake Influencer": 1, "Celebrity Impersonator": 1,
+    }
+    genuine_overlap = (0.0, 1.0)   # what a fake account's story rate typically looks like
+    fake_overlap = (1.5, 9.0)      # what a genuine account's story rate typically looks like
+
+    def make(name):
+        lo, hi = ranges[name]
+        is_fake = is_fake_by_name[name]
+
+        def build(rng, fk, n):
+            vals = C.sample_uniform_float(rng, lo, hi, n)
+            vals = _apply_overlap(rng, vals, n, is_fake, genuine_overlap, fake_overlap,
+                                   lambda r, lo2, hi2, k: C.sample_uniform_float(r, lo2, hi2, k))
+            return {"story_post_rate_weekly": np.round(vals, 2)}
+        return build
+
+    return {name: make(name) for name in ranges}
+
+
+def twitter_extra_builders() -> dict[str, ExtraFieldBuilder]:
+    # retweet_ratio = share of a profile's activity that's retweets vs. original
+    # tweets. Genuine users mix both; bot/spam accounts often either retweet
+    # almost nothing original (pure amplification bots) or never retweet at all
+    # (pure broadcast spam) -- both ends of the range are covered per archetype.
+    ranges = {
+        "Student": (0.15, 0.55), "Developer": (0.2, 0.6), "Business Account": (0.05, 0.35),
+        "Fitness Creator": (0.1, 0.45), "Spam/Bot Account": (0.6, 0.98),
+        "Fake Influencer": (0.5, 0.9), "Celebrity Impersonator": (0.0, 0.15),
+    }
+    is_fake_by_name = {
+        "Student": 0, "Developer": 0, "Business Account": 0, "Fitness Creator": 0,
+        "Spam/Bot Account": 1, "Fake Influencer": 1, "Celebrity Impersonator": 1,
+    }
+    genuine_overlap = (0.45, 0.75)  # what a fake account's retweet ratio typically looks like
+    fake_overlap = (0.15, 0.45)     # what a genuine account's retweet ratio typically looks like
+
+    def make(name):
+        lo, hi = ranges[name]
+        is_fake = is_fake_by_name[name]
+
+        def build(rng, fk, n):
+            vals = C.sample_uniform_float(rng, lo, hi, n)
+            vals = _apply_overlap(rng, vals, n, is_fake, genuine_overlap, fake_overlap,
+                                   lambda r, lo2, hi2, k: C.sample_uniform_float(r, lo2, hi2, k))
+            return {"retweet_ratio": np.round(vals, 3)}
         return build
 
     return {name: make(name) for name in ranges}
@@ -1283,24 +1455,39 @@ OVERLAP_FRAC = 0.13
 # the numeric layer alone is realistically noisy).
 TEXT_OVERLAP_FRAC = 0.15
 
+# Shared platform-owner telemetry columns, appended in the same order on every
+# platform (see build_platform_dataset / common.sample_trust_signals).
+TRUST_COLUMN_ORDER = ["city", "state", "email_verified", "phone_verified", "two_factor_enabled",
+                       "device_count_30d", "login_ip_diversity_30d", "signup_to_first_post_hours",
+                       "posting_time_entropy", "follower_growth_rate_7d", "reports_received_count",
+                       "content_removed_count"]
+TRUST_COLUMN_SCHEMA = {
+    "city": "str", "state": "str", "email_verified": "bool", "phone_verified": "bool",
+    "two_factor_enabled": "bool", "device_count_30d": "int", "login_ip_diversity_30d": "int",
+    "signup_to_first_post_hours": "float", "posting_time_entropy": "float",
+    "follower_growth_rate_7d": "float", "reports_received_count": "int", "content_removed_count": "int",
+}
+
 PLATFORM_SPECS = {
     "ig": dict(
         platform="instagram", prefix="ig", archetypes_fn=instagram_archetypes,
         posts_count_field="posts_count", primary_field="followers_count", secondary_field="following_count",
-        engagement_denominator_fields=["followers_count"], extra_field_builders={}, text_field="bio",
+        engagement_denominator_fields=["followers_count"], extra_field_builders=instagram_extra_builders(),
+        text_field="bio",
         profile_column_order=["user_id", "username", "bio", "followers_count", "following_count", "posts_count",
                                "account_age_days", "avg_likes", "avg_comments", "avg_shares", "engagement_rate",
                                "is_verified", "has_website", "has_location", "profile_completion_score",
-                               "archetype", "is_fake"],
+                               "story_post_rate_weekly", *TRUST_COLUMN_ORDER, "archetype", "is_fake"],
     ),
     "tw": dict(
         platform="twitter", prefix="tw", archetypes_fn=twitter_archetypes,
         posts_count_field="tweets_count", primary_field="followers_count", secondary_field="following_count",
-        engagement_denominator_fields=["followers_count"], extra_field_builders={}, text_field="bio",
+        engagement_denominator_fields=["followers_count"], extra_field_builders=twitter_extra_builders(),
+        text_field="bio",
         profile_column_order=["user_id", "username", "bio", "followers_count", "following_count", "tweets_count",
                                "account_age_days", "avg_likes", "avg_comments", "avg_shares", "engagement_rate",
                                "is_verified", "has_website", "has_location", "profile_completion_score",
-                               "archetype", "is_fake"],
+                               "retweet_ratio", *TRUST_COLUMN_ORDER, "archetype", "is_fake"],
     ),
     "fb": dict(
         platform="facebook", prefix="fb", archetypes_fn=facebook_archetypes,
@@ -1309,8 +1496,9 @@ PLATFORM_SPECS = {
         extra_field_builders=facebook_extra_builders(), text_field="bio",
         profile_column_order=["user_id", "username", "bio", "friends_count", "followers_count", "posts_count",
                                "account_age_days", "avg_likes", "avg_comments", "avg_shares", "engagement_rate",
-                               "mutual_friends_count", "is_verified", "has_website", "has_location",
-                               "profile_completion_score", "archetype", "is_fake"],
+                               "mutual_friends_count", "group_membership_count", "is_verified", "has_website",
+                               "has_location", "profile_completion_score", *TRUST_COLUMN_ORDER,
+                               "archetype", "is_fake"],
     ),
     "li": dict(
         platform="linkedin", prefix="li", archetypes_fn=linkedin_archetypes,
@@ -1320,8 +1508,9 @@ PLATFORM_SPECS = {
         profile_column_order=["user_id", "username", "headline", "connections_count", "posts_count",
                                "account_age_days", "avg_likes", "avg_comments", "avg_shares", "engagement_rate",
                                "job_title", "company_name", "endorsements_count", "skills_count",
+                               "recommendation_count", "connection_acceptance_rate",
                                "is_verified", "has_website", "has_location", "profile_completion_score",
-                               "archetype", "is_fake"],
+                               *TRUST_COLUMN_ORDER, "archetype", "is_fake"],
     ),
 }
 
@@ -1329,21 +1518,25 @@ PROFILE_SCHEMA = {
     "ig": {"user_id": "str", "username": "str", "bio": "str", "followers_count": "int", "following_count": "int",
            "posts_count": "int", "account_age_days": "int", "avg_likes": "float", "avg_comments": "float",
            "avg_shares": "float", "engagement_rate": "float", "is_verified": "bool", "has_website": "bool",
-           "has_location": "bool", "profile_completion_score": "float", "archetype": "str", "is_fake": "int"},
+           "has_location": "bool", "profile_completion_score": "float", "story_post_rate_weekly": "float",
+           **TRUST_COLUMN_SCHEMA, "archetype": "str", "is_fake": "int"},
     "tw": {"user_id": "str", "username": "str", "bio": "str", "followers_count": "int", "following_count": "int",
            "tweets_count": "int", "account_age_days": "int", "avg_likes": "float", "avg_comments": "float",
            "avg_shares": "float", "engagement_rate": "float", "is_verified": "bool", "has_website": "bool",
-           "has_location": "bool", "profile_completion_score": "float", "archetype": "str", "is_fake": "int"},
+           "has_location": "bool", "profile_completion_score": "float", "retweet_ratio": "float",
+           **TRUST_COLUMN_SCHEMA, "archetype": "str", "is_fake": "int"},
     "fb": {"user_id": "str", "username": "str", "bio": "str", "friends_count": "int", "followers_count": "int",
            "posts_count": "int", "account_age_days": "int", "avg_likes": "float", "avg_comments": "float",
-           "avg_shares": "float", "engagement_rate": "float", "mutual_friends_count": "int", "is_verified": "bool",
-           "has_website": "bool", "has_location": "bool", "profile_completion_score": "float", "archetype": "str",
-           "is_fake": "int"},
+           "avg_shares": "float", "engagement_rate": "float", "mutual_friends_count": "int",
+           "group_membership_count": "int", "is_verified": "bool",
+           "has_website": "bool", "has_location": "bool", "profile_completion_score": "float",
+           **TRUST_COLUMN_SCHEMA, "archetype": "str", "is_fake": "int"},
     "li": {"user_id": "str", "username": "str", "headline": "str", "connections_count": "int", "posts_count": "int",
            "account_age_days": "int", "avg_likes": "float", "avg_comments": "float", "avg_shares": "float",
            "engagement_rate": "float", "job_title": "str", "company_name": "str", "endorsements_count": "int",
-           "skills_count": "int", "is_verified": "bool", "has_website": "bool", "has_location": "bool",
-           "profile_completion_score": "float", "archetype": "str", "is_fake": "int"},
+           "skills_count": "int", "recommendation_count": "int", "connection_acceptance_rate": "float",
+           "is_verified": "bool", "has_website": "bool", "has_location": "bool",
+           "profile_completion_score": "float", **TRUST_COLUMN_SCHEMA, "archetype": "str", "is_fake": "int"},
 }
 
 POST_SCHEMA = {

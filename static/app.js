@@ -1,266 +1,710 @@
-const PLATFORM_META = {
-  instagram: { grad: "linear-gradient(135deg, #f58529, #dd2a7b, #8134af, #515bd4)", label: "Instagram" },
-  twitter: { grad: "linear-gradient(135deg, #333333, #000000)", label: "Twitter / X" },
-  facebook: { grad: "linear-gradient(135deg, #4f8cff, #1877f2)", label: "Facebook" },
-  linkedin: { grad: "linear-gradient(135deg, #2a8fd8, #0a66c2)", label: "LinkedIn" },
+// IDGuardian dashboard UI logic. Talks to GET /api/lookup for scoring.
+// History and Saved Reports go through the /api/history and /api/saved
+// endpoints (backed by MongoDB) when the server has a database connection
+// (window.DB_AVAILABLE); otherwise they fall back to localStorage so the
+// app keeps working without MongoDB configured. Theme/Threshold are always
+// localStorage -- they're per-browser UI preferences, not data worth
+// persisting server-side.
+
+const THEME_KEY = "idguardian_theme";
+const THRESHOLD_KEY = "idguardian_threshold_v1";
+const CLIENT_ID_KEY = "idguardian_client_id";
+const HISTORY_KEY = "idguardian_history_v1";
+const SAVED_KEY = "idguardian_saved_v1";
+const HISTORY_MAX = 50;
+const DB_AVAILABLE = !!window.DB_AVAILABLE;
+
+function getClientId() {
+  let id;
+  try { id = localStorage.getItem(CLIENT_ID_KEY); } catch { /* ignore */ }
+  if (!id) {
+    id = window.crypto && crypto.randomUUID ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    try { localStorage.setItem(CLIENT_ID_KEY, id); } catch { /* ignore */ }
+  }
+  return id;
+}
+const CLIENT_ID = getClientId();
+
+const PLATFORM_GRADIENTS = {
+  instagram: "linear-gradient(135deg, #f58529, #dd2a7b, #8134af, #515bd4)",
+  facebook: "linear-gradient(135deg, #1877f2, #0a58ca)",
+  linkedin: "linear-gradient(135deg, #0a66c2, #004182)",
+  twitter: "linear-gradient(135deg, #111827, #374151)",
 };
 
-const platformInput = document.getElementById("platformInput");
-const form = document.getElementById("scoreForm");
-const submitBtn = document.getElementById("submitBtn");
-const lookupForm = document.getElementById("lookupForm");
-const lookupBtn = document.getElementById("lookupBtn");
-const usernameInput = document.getElementById("usernameInput");
-const resultsBox = document.getElementById("results");
-const profileCard = document.getElementById("profileCard");
-const errorBox = document.getElementById("errorBox");
-const groundTruthBadge = document.getElementById("groundTruthBadge");
-const manualEntryCard = document.getElementById("manualEntryCard");
+const QUOTES_GENUINE = [
+  "“Trust is built in drops and lost in buckets — this one earned its drops.”",
+  "“Real accounts don't need to fake their history — the numbers just fit.”",
+  "“Consistency across every layer is the strongest signature of a real person.”",
+  "“The quiet, unremarkable normalcy of this profile is exactly what genuine looks like.”",
+];
+const QUOTES_FAKE = [
+  "“Fake profiles are easy to build but hard to make consistent — the cracks show here.”",
+  "“When every layer disagrees with real-world norms at once, that's not a coincidence.”",
+  "“Synthetic accounts optimize for looking good, not for making sense.”",
+  "“The pattern here is engineered, not lived — that's what the models are picking up.”",
+];
 
-// ---------------- Sidebar + theme ----------------
-document.getElementById("menuBtn").addEventListener("click", () => {
-  document.querySelector(".sidebar").classList.toggle("collapsed");
-});
+// The gauge path (`M20,110 A80,80 0 0,1 180,110`) is a true semicircle
+// (chord 160 == 2 * radius 80), so its length is exactly pi*r -- but it's
+// still measured directly rather than assumed, so the dash-offset math stays
+// correct even if the path's `d` ever changes. getTotalLength() works even
+// while the element is display:none since path length is pure geometry,
+// independent of layout.
+function getArcLength() {
+  const path = $("trustArc");
+  try {
+    const len = path.getTotalLength();
+    if (len > 0) return len;
+  } catch (e) { /* fall through to the precomputed fallback below */ }
+  return Math.PI * 80; // radius-80 semicircle, precomputed
+}
 
-const themeToggle = document.getElementById("themeToggle");
+let currentPlatform = "instagram";
+let currentResult = null;
+let threshold = 50;
+
+const $ = (id) => document.getElementById(id);
+const escapeHtml = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+}[c]));
+const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const platformLabel = (p) => (p === "twitter" ? "X (Twitter)" : capitalize(p));
+const fmtNum = (n) => {
+  if (n === null || n === undefined || Number.isNaN(n)) return "—";
+  if (Math.abs(n) >= 1000) return Math.round(n).toLocaleString();
+  const r = Math.round(n * 100) / 100;
+  return String(r);
+};
+const fmtPct = (frac) => `${Math.round(frac * 100)}%`;
+
+// ---------------------------------------------------------------------------
+// Theme
+// ---------------------------------------------------------------------------
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
-  themeToggle.textContent = theme === "dark" ? "☀️" : "🌙";
-  localStorage.setItem("idguardian-theme", theme);
+  const icon = theme === "dark" ? "☀️" : "🌙";
+  if ($("themeToggle")) $("themeToggle").textContent = icon;
 }
-applyTheme(localStorage.getItem("idguardian-theme") || "light");
-themeToggle.addEventListener("click", () => {
-  const current = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-  applyTheme(current);
-});
-
-document.querySelectorAll(".nav-item").forEach((item) => {
-  item.addEventListener("click", () => {
-    document.querySelectorAll(".nav-item").forEach((i) => i.classList.remove("active"));
-    item.classList.add("active");
-    if (item.dataset.view !== "home") {
-      showToast(`"${item.textContent.trim()}" isn't wired up in this research demo — only the lookup flow on Home is implemented.`, false);
-    }
-  });
-});
-
-document.getElementById("manualEntryToggle").addEventListener("click", () => {
-  manualEntryCard.hidden = !manualEntryCard.hidden;
-  if (!manualEntryCard.hidden) manualEntryCard.scrollIntoView({ behavior: "smooth", block: "start" });
-});
-
-document.getElementById("downloadListLink").addEventListener("click", () => {
-  const row = document.querySelector(".examples-row");
-  row.scrollIntoView({ behavior: "smooth", block: "center" });
-  row.classList.add("pulse");
-  setTimeout(() => row.classList.remove("pulse"), 900);
-});
-
-// ---------------- Platform switching ----------------
-function setManualPlatform(platform) {
-  platformInput.value = platform;
-  document.querySelectorAll(".platform-block").forEach((el) => {
-    el.hidden = el.dataset.platform !== platform;
-  });
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  const next = cur === "dark" ? "light" : "dark";
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
 }
 
-function renderExampleChips(platform) {
-  const container = document.getElementById("exampleChips");
-  const items = (window.SAMPLE_USERNAMES || []).filter((s) => s.platform === platform);
-  container.innerHTML = items.map((s) =>
-    `<button type="button" class="chip ${s.is_fake ? "chip-fake" : ""}" data-username="${s.username}">@${s.username}</button>`
-  ).join("");
-  container.querySelectorAll(".chip").forEach((chip) => {
-    chip.addEventListener("click", () => {
-      usernameInput.value = chip.dataset.username;
-      lookupForm.requestSubmit();
-    });
-  });
-}
-
-function selectPlatform(platform) {
-  const meta = PLATFORM_META[platform];
-  if (!meta) return;
-  document.getElementById("platformIcon").innerHTML = (window.PLATFORM_ICONS || {})[platform] || "";
-  document.getElementById("platformTitle").textContent = meta.label;
-  document.documentElement.style.setProperty("--platform-grad", meta.grad);
-  usernameInput.placeholder = `Enter a ${meta.label} username or paste a profile URL`;
-  document.querySelectorAll(".platform-pill").forEach((b) => b.classList.toggle("active", b.dataset.platform === platform));
-  renderExampleChips(platform);
-  setManualPlatform(platform);
-}
-
-document.querySelectorAll(".platform-pill").forEach((btn) => {
-  btn.addEventListener("click", () => selectPlatform(btn.dataset.platform));
-});
-
-const firstPillPlatform = document.querySelector(".platform-pill")?.dataset.platform;
-if (firstPillPlatform) selectPlatform(firstPillPlatform);
-
-// ---------------- Helpers ----------------
-function collectBehavioral(platform) {
-  const block = document.querySelector(`.behavioral-block[data-platform="${platform}"]`);
-  const out = {};
-  block.querySelectorAll("[data-field]").forEach((el) => {
-    if (el.type === "checkbox") {
-      out[el.dataset.field] = el.checked;
-    } else {
-      out[el.dataset.field] = parseFloat(el.value) || 0;
-    }
-  });
-  return out;
-}
-
-function splitLines(text) {
-  return text.split("\n").map((s) => s.trim()).filter(Boolean);
-}
-
-function splitHashtags(text) {
-  return text.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
-}
-
-function scoreColor(v) {
-  if (v < 0.35) return "var(--safe)";
-  if (v < 0.65) return "var(--warn)";
-  return "var(--danger)";
-}
-
-function setBar(id, value) {
-  const bar = document.getElementById(`bar-${id}`);
-  const val = document.getElementById(`val-${id}`);
-  bar.style.width = `${Math.round(value * 100)}%`;
-  bar.style.background = scoreColor(value);
-  val.textContent = `${Math.round(value * 100)}%`;
-}
-
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function formatNumber(v) {
-  if (typeof v !== "number") return v;
-  return Number.isInteger(v) ? v.toLocaleString() : v.toFixed(3);
-}
-
-function showToast(msg, isError) {
-  errorBox.textContent = msg;
-  errorBox.classList.toggle("info", !isError);
-  errorBox.hidden = false;
-  errorBox.scrollIntoView({ behavior: "smooth", block: "center" });
-}
-
-function renderProfileData(pd) {
-  if (!pd) {
-    profileCard.hidden = true;
-    return;
+// ---------------------------------------------------------------------------
+// Toast (lightweight, replaces the removed "view on real platform" link)
+// ---------------------------------------------------------------------------
+function showToast(msg) {
+  let toast = $("__toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "__toast";
+    toast.style.cssText = "position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);" +
+      "background:#1e293b;color:#fff;padding:11px 18px;border-radius:10px;font-size:.83rem;font-weight:600;" +
+      "z-index:100;opacity:0;transition:opacity .25s ease, transform .25s ease;max-width:420px;text-align:center;" +
+      "box-shadow:0 8px 24px rgba(0,0,0,.25);";
+    document.body.appendChild(toast);
   }
-  document.getElementById("profileText").innerHTML =
-    `<label>${escapeHtml(pd.text_label)}</label><p class="readout-text">${escapeHtml(pd.text) || "(none provided)"}</p>`;
-
-  document.getElementById("profileCaptions").innerHTML = (pd.captions && pd.captions.length)
-    ? `<label>Recent captions (${pd.captions.length} used)</label><ul class="caption-list">${
-        pd.captions.map((c) => `<li>${escapeHtml(c)}</li>`).join("")}</ul>`
-    : `<label>Recent captions</label><p class="readout-text">(none provided)</p>`;
-
-  document.getElementById("profileHashtags").innerHTML = (pd.hashtags && pd.hashtags.length)
-    ? `<label>Hashtags</label><p class="readout-text">${
-        pd.hashtags.map((h) => `#${escapeHtml(h.replace(/^#/, ""))}`).join(" ")}</p>`
-    : "";
-
-  document.getElementById("profileBehavioral").innerHTML = pd.behavioral.map((f) => {
-    const display = f.is_bool ? (f.value ? "Yes" : "No") : formatNumber(f.value);
-    return `<div class="readout-field"><span>${escapeHtml(f.label)}</span><strong>${display}</strong></div>`;
-  }).join("");
-
-  profileCard.hidden = false;
+  toast.textContent = msg;
+  requestAnimationFrame(() => {
+    toast.style.opacity = "1";
+    toast.style.transform = "translateX(-50%) translateY(0)";
+  });
+  clearTimeout(toast.__timer);
+  toast.__timer = setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(-50%) translateY(20px)";
+  }, 3200);
 }
 
-function renderResult(data) {
-  setBar("lexical", data.lexical_score);
-  setBar("semantic", data.semantic_score);
-  setBar("behavioral", data.behavioral_score);
-  setBar("fusion", data.fusion_score);
-
-  const ex = data.explanations || {};
-  document.getElementById("explain-lexical").textContent = ex.lexical ? ex.lexical.summary : "";
-  document.getElementById("explain-semantic").textContent = ex.semantic ? ex.semantic.summary : "";
-  document.getElementById("explain-behavioral").textContent = ex.behavioral ? ex.behavioral.summary : "";
-  document.getElementById("explain-fusion").textContent = ex.fusion ? ex.fusion.summary : "";
-
-  const badge = document.getElementById("verdictBadge");
-  const isFake = data.verdict === "Likely Fake";
-  const namePrefix = data.username ? `@${data.username} — ` : "";
-  badge.textContent = `${namePrefix}${data.verdict} (${Math.round(data.fusion_score * 100)}% fake probability)`;
-  badge.className = "verdict-badge " + (isFake ? "fake" : "genuine");
-
-  if (data.ground_truth_archetype) {
-    const truth = data.ground_truth_is_fake ? "Fake" : "Genuine";
-    groundTruthBadge.textContent = `Ground truth: ${truth} — ${data.ground_truth_archetype}`;
-    groundTruthBadge.hidden = false;
-  } else {
-    groundTruthBadge.hidden = true;
-  }
-
-  if (data.platform) selectPlatform(data.platform);
-  renderProfileData(data.profile_data);
-
-  resultsBox.hidden = false;
-  (data.profile_data ? profileCard : resultsBox).scrollIntoView({ behavior: "smooth", block: "start" });
+// ---------------------------------------------------------------------------
+// View switching
+// ---------------------------------------------------------------------------
+function showView(name) {
+  document.querySelectorAll(".view").forEach((el) => { el.hidden = el.id !== `view-${name}`; });
+  document.querySelectorAll(".nav-item").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.view === name);
+  });
+  // Fire-and-forget: each render function is async (may fetch from the
+  // server) and updates the DOM once its own data resolves.
+  if (name === "dashboard") renderDashboard();
+  if (name === "history") renderHistory();
+  if (name === "saved") renderSaved();
+  if (name === "settings") renderSettings();
 }
 
-// ---------------- Form submissions ----------------
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  errorBox.hidden = true;
-  const platform = platformInput.value;
-
-  const textBlock = document.querySelector(`.text-block[data-platform="${platform}"] textarea`);
-  const payload = {
-    platform,
-    text: textBlock ? textBlock.value : "",
-    captions: splitLines(form.querySelector('textarea[name="captions"]').value),
-    hashtags: splitHashtags(form.querySelector('input[name="hashtags"]').value),
-    behavioral: collectBehavioral(platform),
-  };
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Scoring...";
-  try {
-    const res = await fetch("/api/predict", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Request failed");
-    renderResult(data);
-  } catch (err) {
-    showToast(`Error: ${err.message}`, true);
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Score this profile";
+// ---------------------------------------------------------------------------
+// Platform selection (landing page only -- lookup itself is cross-platform)
+// ---------------------------------------------------------------------------
+function setPlatform(p) {
+  currentPlatform = p;
+  document.querySelectorAll(".platform-toggle").forEach((btn) => {
+    btn.classList.toggle("ring-2", btn.dataset.platform === p);
+    btn.classList.toggle("ring-blue-400", btn.dataset.platform === p);
+  });
+  document.querySelectorAll(".platform-pill").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.platform === p);
+  });
+  const iconEl = $("platformIcon");
+  if (iconEl) {
+    iconEl.innerHTML = window.PLATFORM_ICONS[p] || "";
+    iconEl.style.setProperty("--hero-grad", PLATFORM_GRADIENTS[p]);
   }
-});
+  if ($("platformTitle")) $("platformTitle").textContent = platformLabel(p);
+  renderExampleChips();
+  if (!$("sampleUsernamesPanel").hidden) renderExpandedChips();
+}
 
-lookupForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  errorBox.hidden = true;
-  const query = usernameInput.value.trim();
-  if (!query) return;
+// ---------------------------------------------------------------------------
+// Sample username chips
+// ---------------------------------------------------------------------------
+function chipHtml(entry) {
+  const cls = entry.is_fake ? "chip chip-fake" : "chip chip-genuine";
+  return `<button type="button" class="${cls}" data-username="${escapeHtml(entry.username)}">@${escapeHtml(entry.username)}</button>`;
+}
+function renderExampleChips() {
+  const box = $("exampleChips");
+  const entries = window.SAMPLE_USERNAMES.filter((s) => s.platform === currentPlatform).slice(0, 6);
+  box.innerHTML = entries.map(chipHtml).join("") || `<span class="text-xs text-slate-400">No samples for this platform.</span>`;
+}
+function renderExpandedChips() {
+  const box = $("expandedChips");
+  const entries = window.SAMPLE_USERNAMES.filter((s) => s.platform === currentPlatform);
+  $("sampleUsernamesPlatform").textContent = platformLabel(currentPlatform);
+  box.innerHTML = entries.map(chipHtml).join("");
+}
 
-  lookupBtn.disabled = true;
-  lookupBtn.innerHTML = "Looking up...";
+// ---------------------------------------------------------------------------
+// Lookup flow
+// ---------------------------------------------------------------------------
+async function doLookup(query) {
+  const btn = $("lookupBtn");
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Analyzing…";
+  $("errorBox").hidden = true;
   try {
     const res = await fetch(`/api/lookup?query=${encodeURIComponent(query)}`);
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Request failed");
+    if (!res.ok) {
+      $("errorBox").className = "error-box";
+      $("errorBox").textContent = data.error || "Something went wrong.";
+      $("errorBox").hidden = false;
+      return;
+    }
+    currentResult = data;
+    setPlatform(data.platform);
     renderResult(data);
+    historyAdd(data).catch(() => { /* history save failure shouldn't break scoring */ });
+    $("searchLanding").hidden = true;
+    $("resultWrap").hidden = false;
+    $("resultWrap").scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (err) {
-    showToast(`Error: ${err.message}`, true);
+    $("errorBox").className = "error-box";
+    $("errorBox").textContent = "Network error — is the server running?";
+    $("errorBox").hidden = false;
   } finally {
-    lookupBtn.disabled = false;
-    lookupBtn.innerHTML = '<span class="btn-icon">🔍</span> Analyze Account';
+    btn.disabled = false;
+    btn.textContent = originalLabel;
   }
-});
+}
+
+// ---------------------------------------------------------------------------
+// Result rendering
+// ---------------------------------------------------------------------------
+function verdictFor(fusionScore) {
+  return fusionScore * 100 >= threshold;
+}
+
+function renderResult(data) {
+  const isFake = verdictFor(data.fusion_score);
+  const trustScore = Math.round((1 - data.fusion_score) * 100);
+
+  // --- Profile header ---
+  $("avatarInitial").textContent = data.username.charAt(0).toUpperCase();
+  $("avatarInitial").style.setProperty("--hero-grad", PLATFORM_GRADIENTS[data.platform]);
+  $("resUsername").textContent = `@${data.username}`;
+  const archBadge = $("resArchetypeBadge");
+  archBadge.textContent = data.ground_truth_archetype.replace(/_/g, " ");
+  archBadge.className = `badge ${data.ground_truth_is_fake ? "badge-red" : "badge-green"}`;
+  archBadge.title = "Ground-truth label from the synthetic dataset";
+  $("resBio").textContent = data.profile_data.text || "(no bio provided)";
+
+  const statFields = data.profile_data.behavioral.filter((f) => !f.is_bool).slice(0, 3);
+  $("resStats").innerHTML = statFields.map((f) => (
+    `<div><div class="text-sm font-bold">${fmtNum(f.value)}</div><div class="text-[11px] text-slate-400">${escapeHtml(f.label)}</div></div>`
+  )).join("");
+
+  const verdictCard = $("resVerdictCard");
+  verdictCard.classList.remove("genuine", "fake");
+  verdictCard.classList.add(isFake ? "fake" : "genuine");
+  const verdictIcon = $("resVerdictIcon");
+  verdictIcon.classList.remove("genuine", "fake");
+  verdictIcon.classList.add(isFake ? "fake" : "genuine");
+  verdictIcon.textContent = isFake ? "✕" : "✓";
+  $("resVerdictLabel").textContent = isFake ? "Likely Fake" : "Likely Genuine";
+  $("resVerdictSub").textContent = `${fmtPct(data.fusion_score)} fake probability · ${platformLabel(data.platform)}`;
+  $("resAnalyzedOn").textContent = new Date().toLocaleString();
+
+  // --- Trust score gauge ---
+  let arcColor = "#EF4444", trustLabel = "Low Trust";
+  if (trustScore >= 75) { arcColor = "#10B981"; trustLabel = "High Trust"; }
+  else if (trustScore >= 45) { arcColor = "#F59E0B"; trustLabel = "Moderate Trust"; }
+  const arc = $("trustArc");
+  const arcLen = getArcLength();
+  arc.style.transition = "stroke-dashoffset .6s ease, stroke .3s ease";
+  arc.style.strokeDasharray = `${arcLen}`;
+  arc.style.strokeDashoffset = `${arcLen * (1 - trustScore / 100)}`;
+  arc.setAttribute("stroke", arcColor);
+  $("trustScoreNum").textContent = trustScore;
+  $("trustScoreNum").style.color = arcColor;
+  $("trustScoreLabel").textContent = trustLabel;
+
+  const summaryBox = $("trustSummaryBox");
+  summaryBox.classList.remove("trust-summary-genuine", "trust-summary-fake");
+  summaryBox.classList.add(isFake ? "trust-summary-fake" : "trust-summary-genuine");
+  const summaryIcon = $("trustSummaryIcon");
+  summaryIcon.classList.remove("trust-summary-genuine", "trust-summary-fake");
+  summaryIcon.classList.add(isFake ? "trust-summary-fake" : "trust-summary-genuine");
+  summaryIcon.textContent = isFake ? "⚠️" : "✅";
+  $("trustSummaryTitle").textContent = isFake
+    ? "Multiple risk signals detected" : "Strong authenticity signals";
+  $("trustSummarySub").textContent = isFake
+    ? "This profile diverges from genuine-account norms across one or more layers."
+    : "This profile's text, meaning, and behavior are all consistent with real accounts.";
+
+  // --- Model layer scores ---
+  const layers = [
+    { name: "Lexical", tag: "TF-IDF + LogReg", score: data.lexical_score, available: true },
+    { name: "Semantic", tag: "SBERT + XGBoost", score: data.semantic_score, available: data.semantic_available },
+    { name: "Behavioral", tag: "XGBoost", score: data.behavioral_score, available: true },
+  ];
+  $("layerScoreRows").innerHTML = layers.map((l) => {
+    if (!l.available) {
+      return `<div>
+        <div class="flex items-center justify-between text-sm mb-1">
+          <span class="font-semibold">${l.name} <span class="text-xs font-normal text-slate-400">${l.tag}</span></span>
+          <span class="badge badge-slate">Unavailable</span>
+        </div>
+        <div class="bar-track"><div class="layer-bar-fill" style="width:0%;background:#cbd5e1;"></div></div>
+      </div>`;
+    }
+    const pct = Math.round(l.score * 100);
+    const color = pct >= 50 ? "#EF4444" : "#10B981";
+    return `<div>
+      <div class="flex items-center justify-between text-sm mb-1">
+        <span class="font-semibold">${l.name} <span class="text-xs font-normal text-slate-400">${l.tag}</span></span>
+        <span class="font-bold" style="color:${color}">${pct}%</span>
+      </div>
+      <div class="bar-track"><div class="layer-bar-fill" style="width:${pct}%;background:${color};"></div></div>
+    </div>`;
+  }).join("");
+  $("fakeProbVal").textContent = fmtPct(data.fusion_score);
+  $("layerInfoDot").title = "Each layer's own fake-probability score, before Trust Fusion learns how much to weight it.";
+
+  // --- Classification ---
+  const clsBadge = $("classificationBadge");
+  clsBadge.textContent = isFake ? "✗ Fake" : "✓ Genuine";
+  clsBadge.className = `badge ${isFake ? "badge-red" : "badge-green"}`;
+
+  const confidence = Math.max(data.fusion_score, 1 - data.fusion_score);
+  const riskLevel = data.fusion_score < 0.3 ? ["Low", "#10B981"] : data.fusion_score < 0.7 ? ["Medium", "#F59E0B"] : ["High", "#EF4444"];
+  const verifiedField = data.profile_data.behavioral.find((f) => f.label === "Verified");
+  const rows = [
+    ["Category", capitalize(data.ground_truth_archetype.replace(/_/g, " "))],
+    ["Platform", platformLabel(data.platform)],
+    ["Confidence", fmtPct(confidence)],
+    ["Risk Level", `<span class="inline-flex items-center gap-1.5"><span style="width:7px;height:7px;border-radius:50%;background:${riskLevel[1]};display:inline-block;"></span>${riskLevel[0]}</span>`],
+    ["Verified Account", verifiedField ? (verifiedField.value ? "Yes" : "No") : "—"],
+    ["Posts Analyzed", String(data.profile_data.captions.length)],
+    ["Analysis Time", `${data.analysis_time_seconds}s`],
+  ];
+  $("classificationList").innerHTML = rows.map(([label, value]) => (
+    `<div><span class="cl-label">${escapeHtml(label)}</span><span class="cl-value">${value}</span></div>`
+  )).join("");
+
+  // --- Lexical card ---
+  const lex = data.explanations.lexical;
+  $("lexicalSupportBadge").className = `badge ${data.lexical_score >= 0.5 ? "badge-red" : "badge-green"}`;
+  $("lexicalSupportBadge").textContent = data.lexical_score >= 0.5 ? "Supports Fake" : "Supports Genuine";
+  $("genuineWords").innerHTML = lex.top_genuine_words.length
+    ? lex.top_genuine_words.map((w) => `<span class="chip chip-genuine" style="cursor:default;">${escapeHtml(w)}</span>`).join("")
+    : `<span class="text-xs text-slate-400">None detected</span>`;
+  $("fakeWords").innerHTML = lex.top_fake_words.length
+    ? lex.top_fake_words.map((w) => `<span class="chip chip-fake" style="cursor:default;">${escapeHtml(w)}</span>`).join("")
+    : `<span class="text-xs text-slate-400">None detected</span>`;
+  $("lexicalFooter").textContent = lex.summary;
+
+  // --- Semantic card ---
+  const sem = data.explanations.semantic;
+  if (data.semantic_available) {
+    $("semanticSupportBadge").className = `badge ${data.semantic_score >= 0.5 ? "badge-red" : "badge-green"}`;
+    $("semanticSupportBadge").textContent = data.semantic_score >= 0.5 ? "Supports Fake" : "Supports Genuine";
+    const simPct = Math.round((1 - data.semantic_score) * 100);
+    $("semanticSimVal").textContent = `${simPct}%`;
+    $("semanticSimBar").style.width = `${simPct}%`;
+  } else {
+    $("semanticSupportBadge").className = "badge badge-slate";
+    $("semanticSupportBadge").textContent = "Unavailable";
+    $("semanticSimVal").textContent = "—";
+    $("semanticSimBar").style.width = "0%";
+  }
+  $("semanticSummary").textContent = sem.summary;
+
+  // --- Behavioral card ---
+  const beh = data.explanations.behavioral;
+  $("behavioralSupportBadge").className = `badge ${data.behavioral_score >= 0.5 ? "badge-red" : "badge-green"}`;
+  $("behavioralSupportBadge").textContent = data.behavioral_score >= 0.5 ? "Supports Fake" : "Supports Genuine";
+  $("behavioralTable").innerHTML = beh.top_features.length
+    ? beh.top_features.map((f) => `
+        <tr>
+          <td>${escapeHtml(f.feature)}</td>
+          <td>${fmtNum(f.value)}</td>
+          <td class="text-slate-400">${fmtNum(f.genuine_typical)}</td>
+          <td class="text-right">${f.direction === "fake" ? '<span style="color:#EF4444">🚩 Fake</span>' : '<span style="color:#10B981">✓ Genuine</span>'}</td>
+        </tr>`).join("")
+    : `<tr><td colspan="4" class="text-slate-400">No standout behavioral signals.</td></tr>`;
+
+  // --- Final conclusion + quote ---
+  const lead = isFake
+    ? "This profile shows a pattern consistent with synthetic or fake accounts."
+    : "This profile shows a pattern consistent with genuine, real accounts.";
+  $("finalConclusion").textContent = `${lead} ${data.explanations.fusion.summary}`;
+  const quotes = isFake ? QUOTES_FAKE : QUOTES_GENUINE;
+  const qIdx = Math.abs(hashCode(data.username)) % quotes.length;
+  $("quoteText").textContent = quotes[qIdx];
+}
+
+function hashCode(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h << 5) - h + str.charCodeAt(i) | 0;
+  return h;
+}
+
+// ---------------------------------------------------------------------------
+// History -- MongoDB via /api/history when available, localStorage fallback
+// ---------------------------------------------------------------------------
+const isValidEntry = (e) => e && e.result && e.result.username && e.platform && typeof e.fusion_score === "number";
+
+function localList(key) {
+  try { return (JSON.parse(localStorage.getItem(key)) || []).filter(isValidEntry); } catch { return []; }
+}
+function localSave(key, list) { try { localStorage.setItem(key, JSON.stringify(list)); } catch { /* ignore */ } }
+function makeLocalEntry(result) {
+  return {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    platform: result.platform, username: result.username,
+    archetype: result.ground_truth_archetype, ground_truth_is_fake: result.ground_truth_is_fake,
+    fusion_score: result.fusion_score, ts: Date.now(), result,
+  };
+}
+
+async function historyGetAll() {
+  if (DB_AVAILABLE) {
+    try {
+      const res = await fetch(`/api/history?client_id=${encodeURIComponent(CLIENT_ID)}`);
+      if (res.ok) return await res.json();
+    } catch { /* fall through to localStorage */ }
+  }
+  return localList(HISTORY_KEY);
+}
+async function historyAdd(result) {
+  if (DB_AVAILABLE) {
+    const res = await fetch("/api/history", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ client_id: CLIENT_ID, result }),
+    });
+    if (res.ok) return;
+  }
+  const list = localList(HISTORY_KEY);
+  list.unshift(makeLocalEntry(result));
+  localSave(HISTORY_KEY, list.slice(0, HISTORY_MAX));
+}
+async function historyRemove(id) {
+  if (DB_AVAILABLE) {
+    const res = await fetch(`/api/history/${encodeURIComponent(id)}?client_id=${encodeURIComponent(CLIENT_ID)}`, { method: "DELETE" });
+    if (res.ok) return;
+  }
+  localSave(HISTORY_KEY, localList(HISTORY_KEY).filter((e) => e.id !== id));
+}
+async function historyClear() {
+  if (DB_AVAILABLE) {
+    const res = await fetch(`/api/history?client_id=${encodeURIComponent(CLIENT_ID)}`, { method: "DELETE" });
+    if (res.ok) return;
+  }
+  localSave(HISTORY_KEY, []);
+}
+
+function historyRowHtml(entry, removable, onRemoveAttr) {
+  const isFake = verdictFor(entry.fusion_score);
+  return `<div class="history-row" data-id="${entry.id}">
+    <div class="history-icon">${window.PLATFORM_ICONS[entry.platform] ? `<span class="pill-icon pill-icon-${entry.platform}">${window.PLATFORM_ICONS[entry.platform]}</span>` : ""}</div>
+    <div class="history-main">
+      <div class="history-name">@${escapeHtml(entry.username)}</div>
+      <div class="history-sub">${platformLabel(entry.platform)} · ${new Date(entry.ts).toLocaleString()}</div>
+    </div>
+    <span class="badge ${isFake ? "badge-red" : "badge-green"}">${isFake ? "Fake" : "Genuine"}</span>
+    ${removable ? `<button type="button" class="history-remove" data-remove="${entry.id}">✕</button>` : ""}
+  </div>`;
+}
+
+// History & Analytics are one merged view: a platform filter (pills, plus
+// clicking "Total Analyses" resets to "All") drives both the stat grid and
+// the list below, so they always agree with each other.
+let historyFilterPlatform = "all";
+
+async function renderHistory() {
+  const all = await historyGetAll();
+  $("historyEmpty").hidden = all.length > 0;
+  $("historyBody").hidden = all.length === 0;
+  if (!all.length) return;
+
+  const platformsPresent = [...new Set(all.map((e) => e.platform))];
+  if (historyFilterPlatform !== "all" && !platformsPresent.includes(historyFilterPlatform)) {
+    historyFilterPlatform = "all"; // the filtered platform's only entries were just removed
+  }
+  const pills = ["all", ...platformsPresent];
+  $("historyPlatformFilter").innerHTML = pills.map((p) => {
+    const active = p === historyFilterPlatform;
+    const label = p === "all" ? "All Platforms" : platformLabel(p);
+    const style = active ? "background:#2563eb;border-color:#2563eb;color:#fff;" : "";
+    return `<button type="button" class="chip" data-filter-platform="${p}" style="${style}">${label}</button>`;
+  }).join("");
+  $("historyPlatformFilter").querySelectorAll("[data-filter-platform]").forEach((btn) => {
+    btn.addEventListener("click", () => { historyFilterPlatform = btn.dataset.filterPlatform; renderHistory(); });
+  });
+
+  const list = historyFilterPlatform === "all" ? all : all.filter((e) => e.platform === historyFilterPlatform);
+  const fake = list.filter((e) => verdictFor(e.fusion_score)).length;
+  const avgConf = list.length
+    ? Math.round(list.reduce((s, e) => s + Math.max(e.fusion_score, 1 - e.fusion_score), 0) / list.length * 100)
+    : 0;
+  $("statGrid").innerHTML = [
+    `<div class="stat-card" id="totalAnalysesCard" style="cursor:pointer;" title="Click to clear the platform filter">`
+      + `<div class="stat-value">${list.length}</div><div class="stat-label">Total Analyses</div></div>`,
+    statCardHtml(list.length ? fmtPct(fake / list.length) : "—", "Flagged Fake"),
+    statCardHtml(list.length ? fmtPct((list.length - fake) / list.length) : "—", "Flagged Genuine"),
+    statCardHtml(`${avgConf}%`, "Avg Confidence"),
+  ].join("");
+  $("totalAnalysesCard").addEventListener("click", () => { historyFilterPlatform = "all"; renderHistory(); });
+
+  $("historyFilterEmpty").hidden = list.length > 0;
+  $("historyList").innerHTML = list.map((e) => historyRowHtml(e, true)).join("");
+  $("historyList").querySelectorAll(".history-row").forEach((row) => {
+    row.addEventListener("click", (ev) => {
+      if (ev.target.closest("[data-remove]")) return;
+      const entry = list.find((e) => e.id === row.dataset.id);
+      if (!entry) return;
+      currentResult = entry.result;
+      setPlatform(entry.platform);
+      renderResult(entry.result);
+      $("searchLanding").hidden = true;
+      $("resultWrap").hidden = false;
+      showView("home");
+    });
+  });
+  $("historyList").querySelectorAll("[data-remove]").forEach((btn) => {
+    btn.addEventListener("click", async (ev) => {
+      ev.stopPropagation();
+      await historyRemove(btn.dataset.remove);
+      renderHistory();
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Saved Reports -- MongoDB via /api/saved when available (deduped
+// server-side by client_id+platform+username), localStorage fallback.
+// ---------------------------------------------------------------------------
+async function savedGetAll() {
+  if (DB_AVAILABLE) {
+    try {
+      const res = await fetch(`/api/saved?client_id=${encodeURIComponent(CLIENT_ID)}`);
+      if (res.ok) return await res.json();
+    } catch { /* fall through to localStorage */ }
+  }
+  return localList(SAVED_KEY);
+}
+async function savedAdd(result) {
+  if (DB_AVAILABLE) {
+    const res = await fetch("/api/saved", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ client_id: CLIENT_ID, result }),
+    });
+    if (res.ok) return;
+  }
+  const list = localList(SAVED_KEY).filter((e) => !(e.platform === result.platform && e.username === result.username));
+  list.unshift(makeLocalEntry(result));
+  localSave(SAVED_KEY, list);
+}
+async function savedRemove(id) {
+  if (DB_AVAILABLE) {
+    const res = await fetch(`/api/saved/${encodeURIComponent(id)}?client_id=${encodeURIComponent(CLIENT_ID)}`, { method: "DELETE" });
+    if (res.ok) return;
+  }
+  localSave(SAVED_KEY, localList(SAVED_KEY).filter((e) => e.id !== id));
+}
+async function savedClear() {
+  if (DB_AVAILABLE) {
+    const res = await fetch(`/api/saved?client_id=${encodeURIComponent(CLIENT_ID)}`, { method: "DELETE" });
+    if (res.ok) return;
+  }
+  localSave(SAVED_KEY, []);
+}
+
+async function renderSaved() {
+  const list = await savedGetAll();
+  $("savedEmpty").hidden = list.length > 0;
+  $("savedList").innerHTML = list.map((e) => historyRowHtml(e, true)).join("");
+  $("savedList").querySelectorAll(".history-row").forEach((row) => {
+    row.addEventListener("click", (ev) => {
+      if (ev.target.closest("[data-remove]")) return;
+      const entry = list.find((e) => e.id === row.dataset.id);
+      if (!entry) return;
+      currentResult = entry.result;
+      setPlatform(entry.platform);
+      renderResult(entry.result);
+      $("searchLanding").hidden = true;
+      $("resultWrap").hidden = false;
+      showView("home");
+    });
+  });
+  $("savedList").querySelectorAll("[data-remove]").forEach((btn) => {
+    btn.addEventListener("click", async (ev) => {
+      ev.stopPropagation();
+      await savedRemove(btn.dataset.remove);
+      renderSaved();
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Dashboard
+// ---------------------------------------------------------------------------
+function statCardHtml(value, label) {
+  return `<div class="stat-card"><div class="stat-value">${value}</div><div class="stat-label">${escapeHtml(label)}</div></div>`;
+}
+
+async function renderDashboard() {
+  const list = await historyGetAll();
+  $("dashboardEmpty").hidden = list.length > 0;
+  $("dashboardBody").hidden = list.length === 0;
+  if (!list.length) return;
+  const fake = list.filter((e) => verdictFor(e.fusion_score)).length;
+  const avgTrust = Math.round(list.reduce((s, e) => s + (1 - e.fusion_score) * 100, 0) / list.length);
+  $("dashStatGrid").innerHTML = [
+    statCardHtml(list.length, "Total Analyses"),
+    statCardHtml(fake, "Likely Fake"),
+    statCardHtml(list.length - fake, "Likely Genuine"),
+    statCardHtml(`${avgTrust}`, "Avg Trust Score"),
+  ].join("");
+  $("dashRecent").innerHTML = list.slice(0, 5).map((e) => historyRowHtml(e, false)).join("");
+}
+
+// ---------------------------------------------------------------------------
+// Settings
+// ---------------------------------------------------------------------------
+async function renderSettings() {
+  $("thresholdSlider").value = threshold;
+  $("thresholdValue").textContent = `${threshold}%`;
+  const list = await historyGetAll();
+  $("historyCountLabel").textContent = `${list.length} saved lookups`
+    + (DB_AVAILABLE ? " (MongoDB)." : " (this browser only).");
+}
+
+// ---------------------------------------------------------------------------
+// Init
+// ---------------------------------------------------------------------------
+function init() {
+  applyTheme(localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light");
+  threshold = parseInt(localStorage.getItem(THRESHOLD_KEY), 10) || 50;
+
+  document.querySelectorAll(".nav-item").forEach((btn) => {
+    btn.addEventListener("click", () => showView(btn.dataset.view));
+  });
+
+  document.querySelectorAll(".platform-toggle, .platform-pill").forEach((btn) => {
+    btn.addEventListener("click", () => setPlatform(btn.dataset.platform));
+  });
+
+  $("themeToggle").addEventListener("click", toggleTheme);
+  $("settingsThemeToggle").addEventListener("click", toggleTheme);
+
+  $("lookupForm").addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    const q = $("usernameInput").value.trim();
+    if (q) doLookup(q);
+  });
+
+  document.body.addEventListener("click", (ev) => {
+    const chip = ev.target.closest("[data-username]");
+    if (chip) {
+      $("usernameInput").value = chip.dataset.username;
+      doLookup(chip.dataset.username);
+    }
+  });
+
+  $("sampleUsernamesToggle").addEventListener("click", () => {
+    const panel = $("sampleUsernamesPanel");
+    panel.hidden = !panel.hidden;
+    if (!panel.hidden) renderExpandedChips();
+  });
+
+  $("backToSearch").addEventListener("click", () => {
+    $("resultWrap").hidden = true;
+    $("searchLanding").hidden = false;
+    $("usernameInput").value = "";
+    $("usernameInput").focus();
+  });
+
+  $("saveReportBtn").addEventListener("click", async () => {
+    if (!currentResult) return;
+    const btn = $("saveReportBtn");
+    const original = btn.textContent;
+    try {
+      await savedAdd(currentResult);
+      btn.textContent = "✓ Saved";
+    } catch {
+      btn.textContent = "Save failed";
+    }
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  });
+
+  $("platformLinkBtn").addEventListener("click", () => {
+    showToast("This is a synthetic demo profile from IDGuardian's research dataset — it doesn't correspond to a real account.");
+  });
+
+  $("clearHistoryBtn").addEventListener("click", async () => {
+    const list = await historyGetAll();
+    if (list.length && !confirm("Clear all analysis history? This can't be undone.")) return;
+    await historyClear();
+    renderHistory();
+  });
+  $("settingsClearHistory").addEventListener("click", async () => {
+    const list = await historyGetAll();
+    if (list.length && !confirm("Clear all analysis history? This can't be undone.")) return;
+    await historyClear();
+    renderSettings();
+  });
+  $("clearSavedBtn").addEventListener("click", async () => {
+    const list = await savedGetAll();
+    if (list.length && !confirm("Clear all saved reports? This can't be undone.")) return;
+    await savedClear();
+    renderSaved();
+  });
+
+  $("thresholdSlider").addEventListener("input", () => {
+    threshold = parseInt($("thresholdSlider").value, 10);
+    $("thresholdValue").textContent = `${threshold}%`;
+    localStorage.setItem(THRESHOLD_KEY, String(threshold));
+    if (currentResult && !$("resultWrap").hidden) renderResult(currentResult);
+  });
+
+  setPlatform("instagram");
+  showView("home");
+}
+
+document.addEventListener("DOMContentLoaded", init);

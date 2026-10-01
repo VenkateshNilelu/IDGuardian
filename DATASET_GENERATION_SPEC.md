@@ -30,6 +30,51 @@ field so it matches the actual number of linked posts).
 
 ---
 
+## Addendum (v2): scale, India localization, platform-owner telemetry
+
+Supersedes the volume line above and adds new columns. Applied in `common.py`/
+`generate_dataset.py`; see `NOTES.md` for the full rationale.
+
+- **Volume**: 20,000 profiles / ~200,000 posts per platform (4x v1), same ~10
+  posts/profile distribution.
+- **Locale**: Faker runs as `en_IN` (`common.FAKER_LOCALE`) -- every
+  `{name}`/`{first}`/`{city}`/`{handle}` template fill is now Indian. Faker's
+  `company()` under `en_IN` still leans Western-suffixed ("Kale LLC"), so
+  `{company}` instead draws from a curated `INDIAN_COMPANY_NAMES` pool
+  (Pvt Ltd / Technologies / Solutions style names). City/state are sampled
+  together from a curated `INDIAN_CITY_STATE_PAIRS` list so they never
+  mismatch (e.g. never "Mumbai, Sikkim"). New template placeholders
+  `{festival}`/`{cricket}`/`{food}` (Diwali/Holi/IPL/chai/biryani, etc.) add
+  cultural flavor to a subset of phrase-bank fragments (student/business/
+  fitness banks).
+- **New profile-level columns, shared across all 4 platforms** -- modeled as
+  "platform owner" internal trust & safety telemetry: data a real platform's
+  own systems would log, that no public scraping API ever exposes. Sampled
+  per-archetype conditioned on `is_fake` (see `common.TRUST_SIGNAL_DEFAULTS` /
+  `sample_trust_signals`), with per-archetype override support:
+  - `city`, `state` -- descriptive only, not a model input (no discriminative
+    signal in *which* Indian city a profile is in).
+  - `email_verified`, `phone_verified`, `two_factor_enabled` (bool)
+  - `device_count_30d`, `login_ip_diversity_30d` (int)
+  - `signup_to_first_post_hours`, `posting_time_entropy` (float) -- bots skip
+    the browse-before-posting delay real users show, and post on scripted,
+    low-entropy schedules.
+  - `follower_growth_rate_7d` (float) -- sudden spikes signal bought followers.
+  - `reports_received_count`, `content_removed_count` (int) -- direct
+    moderation history.
+- **New platform-specific columns**:
+  - Instagram: `story_post_rate_weekly`
+  - Twitter/X: `retweet_ratio`
+  - Facebook: `group_membership_count` (alongside existing `mutual_friends_count`)
+  - LinkedIn: `recommendation_count`, `connection_acceptance_rate` (alongside
+    existing `endorsements_count`/`skills_count`) -- written recommendations
+    are far harder to fake at scale than one-click endorsements.
+- All new numeric/boolean columns (excluding `city`/`state`) were added to
+  `train_models.py`'s `BEHAVIORAL_BASE_COLS` as real Behavioral-layer model
+  inputs, not just descriptive fields.
+
+---
+
 ## 1. Cross-Cutting Rules (apply to all four platforms)
 
 1. **Linkage.** Every row in a Post Dataset must carry a `user_id` that references an

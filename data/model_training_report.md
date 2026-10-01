@@ -14,51 +14,51 @@
 
 | Layer | Accuracy | F1 | ROC-AUC |
 |---|---|---|---|
-| Lexical | 0.847 | 0.8166 | 0.8472 |
-| Semantic | 0.843 | 0.8105 | 0.8497 |
+| Lexical | 0.8495 | 0.8186 | 0.8469 |
+| Semantic | 0.8473 | 0.8152 | 0.8511 |
 
 ## Per-platform results
 
-### Instagram (train=3500, test=1500)
+### Instagram (train=14000, test=6000)
 
 | Layer | Accuracy | F1 | ROC-AUC |
 |---|---|---|---|
-| Lexical | 0.8493 | 0.8189 | 0.8496 |
-| Semantic | 0.8473 | 0.8161 | 0.8453 |
-| Behavioral | 0.8673 | 0.8346 | 0.8872 |
-| Fusion | 0.876 | 0.8324 | 0.9543 |
+| Lexical | 0.8477 | 0.8167 | 0.8415 |
+| Semantic | 0.8465 | 0.8148 | 0.845 |
+| Behavioral | 0.8947 | 0.8644 | 0.9574 |
+| Fusion | 0.9363 | 0.92 | 0.9781 |
 
-Fusion vs. best single layer (ROC-AUC): 0.9543 vs. 0.8872 (+0.0671)
+Fusion vs. best single layer (ROC-AUC): 0.9781 vs. 0.9574 (+0.0207)
 
-### Facebook (train=3500, test=1500)
-
-| Layer | Accuracy | F1 | ROC-AUC |
-|---|---|---|---|
-| Lexical | 0.848 | 0.8185 | 0.8482 |
-| Semantic | 0.8453 | 0.8135 | 0.8555 |
-| Behavioral | 0.8753 | 0.8448 | 0.9501 |
-| Fusion | 0.928 | 0.9091 | 0.9753 |
-
-Fusion vs. best single layer (ROC-AUC): 0.9753 vs. 0.9501 (+0.0252)
-
-### Linkedin (train=3500, test=1500)
+### Facebook (train=14000, test=6000)
 
 | Layer | Accuracy | F1 | ROC-AUC |
 |---|---|---|---|
-| Lexical | 0.8387 | 0.8064 | 0.8392 |
-| Semantic | 0.8327 | 0.7977 | 0.8479 |
-| Behavioral | 0.934 | 0.9181 | 0.981 |
-| Fusion | 0.9547 | 0.9434 | 0.9869 |
+| Lexical | 0.8518 | 0.8215 | 0.8528 |
+| Semantic | 0.8498 | 0.8185 | 0.8585 |
+| Behavioral | 0.9297 | 0.9122 | 0.9744 |
+| Fusion | 0.9442 | 0.9298 | 0.9866 |
 
-Fusion vs. best single layer (ROC-AUC): 0.9869 vs. 0.9810 (+0.0059)
+Fusion vs. best single layer (ROC-AUC): 0.9866 vs. 0.9744 (+0.0122)
 
-### Twitter (train=3500, test=1500)
+### Linkedin (train=14000, test=6000)
 
 | Layer | Accuracy | F1 | ROC-AUC |
 |---|---|---|---|
-| Lexical | 0.852 | 0.8227 | 0.8514 |
-| Semantic | 0.8467 | 0.8148 | 0.8501 |
-| Behavioral | 0.8593 | 0.8272 | 0.8752 |
-| Fusion | 0.886 | 0.8496 | 0.9532 |
+| Lexical | 0.8498 | 0.8193 | 0.8447 |
+| Semantic | 0.8453 | 0.8123 | 0.8511 |
+| Behavioral | 0.9668 | 0.9587 | 0.9949 |
+| Fusion | 0.974 | 0.9676 | 0.9961 |
 
-Fusion vs. best single layer (ROC-AUC): 0.9532 vs. 0.8752 (+0.0780)
+Fusion vs. best single layer (ROC-AUC): 0.9961 vs. 0.9949 (+0.0012)
+
+### Twitter (train=14000, test=6000)
+
+| Layer | Accuracy | F1 | ROC-AUC |
+|---|---|---|---|
+| Lexical | 0.8485 | 0.8168 | 0.8485 |
+| Semantic | 0.8475 | 0.8152 | 0.8494 |
+| Behavioral | 0.9232 | 0.9011 | 0.9736 |
+| Fusion | 0.9477 | 0.9336 | 0.9867 |
+
+Fusion vs. best single layer (ROC-AUC): 0.9867 vs. 0.9736 (+0.0131)

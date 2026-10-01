@@ -13,14 +13,20 @@ SHAP-style feature contributions, the Trust Fusion layer's learned weights) --
 no external LLM call, so there's nothing to hallucinate a reason that isn't
 actually what the model computed.
 
-Run: python app.py   (serves http://127.0.0.1:5000)
+Run (dev or production -- both use the same production-grade waitress WSGI
+server; see the __main__ block at the bottom):
+    python app.py                          # serves http://127.0.0.1:5000
+    HOST=0.0.0.0 PORT=8080 python app.py   # override bind address/port
 """
 from __future__ import annotations
 
 import json
+import logging
 import os
 import random
 import re
+import time
+from logging.handlers import RotatingFileHandler
 from urllib.parse import urlparse
 
 import joblib
@@ -28,13 +34,68 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from flask import Flask, jsonify, render_template, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
+import db
 import train_models as T
+from instagram_scraper import scrape_instagram_profile
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODELS_DIR = T.MODELS_DIR
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+
+# ---------------------------------------------------------------------------
+# Logging -- console + a rotating file (5MB x 3 backups), so a deployment
+# doesn't need to rely on scraping stdout for anything beyond the immediate
+# session. Startup diagnostics below still use print() on purpose (they're
+# one-time human-readable status lines at import time, before the logger's
+# handlers -- or even a container's log driver -- are necessarily attached);
+# request-time errors and rate-limit events go through `logger`.
+# ---------------------------------------------------------------------------
+os.makedirs(LOG_DIR, exist_ok=True)
+logger = logging.getLogger("idguardian")
+logger.setLevel(logging.INFO)
+_file_handler = RotatingFileHandler(os.path.join(LOG_DIR, "app.log"), maxBytes=5_000_000, backupCount=3)
+_file_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
+logger.addHandler(_file_handler)
+_console_handler = logging.StreamHandler()
+_console_handler.setFormatter(logging.Formatter("%(levelname)s: %(message)s"))
+logger.addHandler(_console_handler)
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024  # 1MB cap on any request body
+
+# Only trust X-Forwarded-For (for rate-limiting by real client IP, not a
+# proxy's IP) when this app is actually deployed behind a reverse proxy/load
+# balancer -- blindly trusting it otherwise would let any client spoof their
+# apparent IP and dodge rate limits.
+if os.environ.get("TRUST_PROXY") == "1":
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+
+limiter = Limiter(get_remote_address, app=app, default_limits=["200 per hour"], storage_uri="memory://")
+
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify({"error": f"Rate limit exceeded: {e.description}"}), 429
+
+
+@app.errorhandler(500)
+def internal_error_handler(e):
+    logger.exception("Unhandled server error")
+    return jsonify({"error": "Internal server error"}), 500
+
+
+@app.after_request
+def add_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    return response
+
 
 print("Loading models...")
 tfidf = joblib.load(os.path.join(MODELS_DIR, "lexical_tfidf_vectorizer.joblib"))
@@ -44,8 +105,39 @@ semantic_model = joblib.load(os.path.join(MODELS_DIR, "semantic_xgboost.joblib")
 with open(os.path.join(MODELS_DIR, "semantic_sbert_model.txt")) as f:
     SBERT_MODEL_NAME = f.read().strip()
 
-from sentence_transformers import SentenceTransformer  # noqa: E402  (heavy import, after Flask setup)
-sbert = SentenceTransformer(SBERT_MODEL_NAME)
+# The Semantic layer's default backend is PyTorch, which on some locked-down
+# Windows machines gets blocked at import time by an Application Control/WDAC
+# policy (an OSError naming a specific unsigned .dll -- PyPI's torch wheels
+# aren't code-signed, so this can recur any time the venv is rebuilt, even
+# though it happened to clear on its own last time). ONNX Runtime's DLLs
+# *are* Microsoft-signed, so try that backend first; fall back to the default
+# (torch) backend if ONNX isn't available for some reason; only if both fail
+# does the app degrade (Lexical + Behavioral + Fusion keep working, and the
+# UI says plainly that Semantic is unavailable instead of faking a score).
+sbert = None
+SEMANTIC_AVAILABLE = False
+SEMANTIC_BACKEND = None
+SEMANTIC_UNAVAILABLE_REASON = ""
+try:
+    # Even this import can transitively pull in torch (sentence_transformers ->
+    # transformers -> torch at module level in some version combos), so it has
+    # to be inside the try too -- picking backend="onnx" below doesn't help if
+    # the import itself already failed.
+    from sentence_transformers import SentenceTransformer
+    try:
+        sbert = SentenceTransformer(SBERT_MODEL_NAME, backend="onnx",
+                                    model_kwargs={"file_name": "onnx/model.onnx"})
+        SEMANTIC_BACKEND = "onnx"
+    except Exception as onnx_exc:
+        print(f"Semantic layer: ONNX backend unavailable ({onnx_exc}); trying the default backend...")
+        sbert = SentenceTransformer(SBERT_MODEL_NAME)
+        SEMANTIC_BACKEND = "torch"
+    SEMANTIC_AVAILABLE = True
+    print(f"Semantic layer ready (backend: {SEMANTIC_BACKEND}).")
+except Exception as exc:  # broad on purpose -- import/load failures vary by platform
+    SEMANTIC_UNAVAILABLE_REASON = str(exc)
+    print(f"WARNING: Semantic layer unavailable ({exc}). Continuing with "
+          f"Lexical + Behavioral + Fusion only.")
 
 behavioral_models = {p: joblib.load(os.path.join(MODELS_DIR, f"behavioral_{p}_xgboost.joblib"))
                      for p in T.PLATFORMS}
@@ -55,9 +147,30 @@ with open(os.path.join(MODELS_DIR, "platform_behavioral_columns.json")) as f:
     behavioral_columns = json.load(f)
 with open(os.path.join(MODELS_DIR, "behavioral_reference_stats.json")) as f:
     reference_stats = json.load(f)  # see compute_reference_stats.py
+
+# Per-word (genuine_freq, fake_freq) in the training corpus -- see
+# compute_lexical_word_stats.py. Used only to filter which words
+# explain_lexical() surfaces (never changes lexical_score or any prediction):
+# LogisticRegression fits coefficients jointly, so an individual word's
+# coefficient sign can end up flipped relative to its own raw frequency
+# skew; showing that in a "why" explanation reads as flatly wrong even
+# though it's an accurate reflection of the joint fit. Optional file --
+# missing it just disables the filter (every word passes), same
+# graceful-degradation pattern used elsewhere.
+LEXICAL_WORD_FREQ_PATH = os.path.join(MODELS_DIR, "lexical_word_class_freq.json")
+lexical_word_freq = {}
+if os.path.exists(LEXICAL_WORD_FREQ_PATH):
+    with open(LEXICAL_WORD_FREQ_PATH) as f:
+        lexical_word_freq = json.load(f)
+    print(f"Lexical word-frequency stats loaded ({len(lexical_word_freq)} words).")
+else:
+    print("Lexical word-frequency stats not found -- run compute_lexical_word_stats.py "
+          "to filter out frequency-inconsistent words from the Lexical explanation.")
+
 print("Models loaded. Ready.")
 
-BOOL_FIELDS = {"is_verified", "has_website", "has_location"}
+BOOL_FIELDS = {"is_verified", "has_website", "has_location",
+               "email_verified", "phone_verified", "two_factor_enabled"}
 PLATFORM_TEXT_LABEL = {"instagram": "Bio", "facebook": "About / Bio",
                        "linkedin": "Headline", "twitter": "Bio"}
 
@@ -101,6 +214,15 @@ FIELD_LABELS = {
     "follow_ratio": "Follow ratio", "follower_gap": "Follower gap",
     "friend_follower_ratio": "Friend/follower ratio", "mutual_friend_ratio": "Mutual friend ratio",
     "endorsements_per_skill": "Endorsements per skill",
+    "story_post_rate_weekly": "Stories / week", "retweet_ratio": "Retweet ratio",
+    "group_membership_count": "Groups joined", "recommendation_count": "Recommendations",
+    "connection_acceptance_rate": "Connection acceptance rate",
+    "email_verified": "Email verified", "phone_verified": "Phone verified",
+    "two_factor_enabled": "Two-factor enabled", "device_count_30d": "Devices (30d)",
+    "login_ip_diversity_30d": "Login IP diversity (30d)",
+    "signup_to_first_post_hours": "Signup to first post (hrs)",
+    "posting_time_entropy": "Posting time entropy", "follower_growth_rate_7d": "Follower growth (7d)",
+    "reports_received_count": "Reports received", "content_removed_count": "Content removed",
 }
 
 
@@ -128,17 +250,17 @@ for p in T.PLATFORMS:
 
 _rng = random.Random(7)
 SAMPLE_USERNAMES = []
-SAMPLES_PER_LABEL = 2  # 2 genuine + 2 fake per platform, to fill out the "try examples" row
+# Every demo profile (all ~200/platform, shuffled) -- the frontend's compact
+# "try examples" row shows just the first few (see app.js renderExampleChips,
+# .slice(0, 6)), while the "Browse demo usernames" expandable panel shows this
+# whole list per platform (renderExpandedChips, unsliced), so it's a genuine
+# browse of the full ~800-profile demo set, not a small fixed sample.
 for p in T.PLATFORMS:
-    prof = demo_profiles[p]
-    for is_fake_val in (0, 1):
-        subset = prof[prof["is_fake"] == is_fake_val]
-        if len(subset):
-            n = min(SAMPLES_PER_LABEL, len(subset))
-            picks = subset.sample(n, random_state=_rng.randint(0, 10_000))
-            for _, pick in picks.iterrows():
-                SAMPLE_USERNAMES.append({"username": pick["username"], "platform": p,
-                                          "is_fake": bool(is_fake_val)})
+    prof = demo_profiles[p].sample(frac=1, random_state=_rng.randint(0, 10_000))  # shuffle
+    for _, pick in prof.iterrows():
+        SAMPLE_USERNAMES.append({"username": pick["username"], "platform": p,
+                                  "is_fake": bool(pick["is_fake"]),
+                                  "archetype": str(pick["archetype"])})
 print(f"Demo dataset loaded: {sum(len(v) for v in demo_profiles.values())} profiles across "
       f"{len(T.PLATFORMS)} platforms.")
 
@@ -158,19 +280,26 @@ def parse_profile_input(raw: str) -> tuple[str | None, str]:
     """Return (platform_hint_or_None, username). Accepts a bare username or a
     profile URL for any of the four platforms; only used to narrow the search
     to one platform when a URL makes that unambiguous -- lookup still falls
-    back to a cross-platform username search either way."""
+    back to a cross-platform username search either way.
+
+    Only treats the input as a URL when it already has a scheme, or its first
+    path segment is an *exact* match for a known platform domain -- a bare
+    username containing a dot (a common, legitimate Instagram-style handle,
+    e.g. "first.last") must never be misread as a bare domain like
+    "instagram.com" and swallowed into an empty path/empty username."""
     raw = raw.strip()
-    if "://" not in raw and "." in raw.split("/")[0]:
+    first_segment = raw.split("/")[0].lower()
+    if "://" not in raw and first_segment not in DOMAIN_TO_PLATFORM:
+        return None, raw
+    if "://" not in raw:
         raw = "https://" + raw  # allow "instagram.com/foo" without a scheme
-    if "://" in raw:
-        parsed = urlparse(raw)
-        platform = DOMAIN_TO_PLATFORM.get(parsed.netloc.lower())
-        path_parts = [seg for seg in parsed.path.split("/") if seg]
-        if platform == "linkedin" and path_parts and path_parts[0] in ("in", "company"):
-            path_parts = path_parts[1:]
-        username = path_parts[0] if path_parts else ""
-        return platform, username
-    return None, raw
+    parsed = urlparse(raw)
+    platform = DOMAIN_TO_PLATFORM.get(parsed.netloc.lower())
+    path_parts = [seg for seg in parsed.path.split("/") if seg]
+    if platform == "linkedin" and path_parts and path_parts[0] in ("in", "company"):
+        path_parts = path_parts[1:]
+    username = path_parts[0] if path_parts else ""
+    return platform, username
 
 
 # ---------------------------------------------------------------------------
@@ -180,6 +309,18 @@ def parse_profile_input(raw: str) -> tuple[str | None, str]:
 # explanation here is never anything the model didn't actually compute.
 # ---------------------------------------------------------------------------
 
+def _freq_agrees(word: str, direction: str) -> bool:
+    """True if word's raw class-frequency skew (see compute_lexical_word_stats.py)
+    agrees with `direction` ('fake' or 'genuine'). A word with no stats (e.g.
+    the file is missing, or a rare bigram edge case) is allowed through --
+    the filter only ever removes a word it has positive evidence against."""
+    stats = lexical_word_freq.get(word)
+    if not stats:
+        return True
+    genuine_freq, fake_freq = stats
+    return fake_freq > genuine_freq if direction == "fake" else genuine_freq > fake_freq
+
+
 def explain_lexical(pooled_text: str, X_lex, lexical_score: float) -> dict:
     feature_names = tfidf.get_feature_names_out()
     coefs = lexical_model.coef_[0]
@@ -188,8 +329,11 @@ def explain_lexical(pooled_text: str, X_lex, lexical_score: float) -> dict:
         ((feature_names[j], float(v) * float(coefs[j])) for j, v in zip(coo.col, coo.data)),
         key=lambda x: x[1],
     )
-    fake_words = [w for w, c in reversed(contributions) if c > 0][:5]
-    genuine_words = [w for w, c in contributions if c < 0][:5]
+    # Only surface a word if its displayed direction also matches its actual
+    # frequency pattern in the training data -- see _freq_agrees's docstring
+    # and compute_lexical_word_stats.py for why the two can otherwise disagree.
+    fake_words = [w for w, c in reversed(contributions) if c > 0 and _freq_agrees(w, "fake")][:5]
+    genuine_words = [w for w, c in contributions if c < 0 and _freq_agrees(w, "genuine")][:5]
 
     if fake_words and genuine_words:
         summary = (f'Words like "{", ".join(fake_words[:3])}" pushed this toward fake, while '
@@ -207,6 +351,12 @@ def explain_lexical(pooled_text: str, X_lex, lexical_score: float) -> dict:
 
 
 def explain_semantic(semantic_score: float, lexical_score: float) -> dict:
+    if not SEMANTIC_AVAILABLE:
+        summary = ("Semantic layer unavailable on this machine — PyTorch was blocked at import by a "
+                   "system security policy (Windows Application Control/WDAC), not by anything in this "
+                   "app. Fusion below uses a neutral 50% placeholder for this layer instead of a real "
+                   "score; Lexical and Behavioral are unaffected.")
+        return {"summary": summary}
     tone = "fake-leaning" if semantic_score >= 0.5 else "genuine-leaning"
     agree = (semantic_score >= 0.5) == (lexical_score >= 0.5)
     agreement_text = "agreeing with" if agree else "diverging from"
@@ -265,6 +415,7 @@ def score_profile(platform: str, text: str, captions: list[str], hashtags: list[
     explanation for each. `behavioral_raw` maps raw column name -> value
     (bools as bool/0/1, everything else numeric); derived ratios are computed
     here the same way train_models.py computes them for training."""
+    t_start = time.perf_counter()
     captions = list(captions)
     hashtags = list(hashtags)
     pooled_text = " ".join([text] + captions[:T.N_CAPTIONS_FOR_TEXT] + hashtags).strip()
@@ -274,8 +425,11 @@ def score_profile(platform: str, text: str, captions: list[str], hashtags: list[
     X_lex = tfidf.transform([pooled_text])
     lexical_score = float(lexical_model.predict_proba(X_lex)[0, 1])
 
-    emb = sbert.encode([pooled_text])
-    semantic_score = float(semantic_model.predict_proba(emb)[0, 1])
+    if SEMANTIC_AVAILABLE:
+        emb = sbert.encode([pooled_text])
+        semantic_score = float(semantic_model.predict_proba(emb)[0, 1])
+    else:
+        semantic_score = 0.5  # neutral placeholder -- see explain_semantic()
 
     row = {}
     for c in T.BEHAVIORAL_BASE_COLS[platform]:
@@ -291,12 +445,16 @@ def score_profile(platform: str, text: str, captions: list[str], hashtags: list[
     X_fusion = np.array([[lexical_score, semantic_score, behavioral_score]])
     fusion_score = float(fusion_models[platform].predict_proba(X_fusion)[0, 1])
 
+    analysis_time_seconds = round(time.perf_counter() - t_start, 2)
+
     return {
         "platform": platform,
         "lexical_score": round(lexical_score, 4),
         "semantic_score": round(semantic_score, 4),
+        "semantic_available": SEMANTIC_AVAILABLE,
         "behavioral_score": round(behavioral_score, 4),
         "fusion_score": round(fusion_score, 4),
+        "analysis_time_seconds": analysis_time_seconds,
         "verdict": "Likely Fake" if fusion_score >= 0.5 else "Likely Genuine",
         "explanations": {
             "lexical": explain_lexical(pooled_text, X_lex, lexical_score),
@@ -317,41 +475,16 @@ def score_profile(platform: str, text: str, captions: list[str], hashtags: list[
     }
 
 
-def platform_field_spec(platform: str) -> list[dict]:
-    fields = []
-    for col in T.BEHAVIORAL_BASE_COLS[platform]:
-        fields.append({
-            "name": col,
-            "label": field_label(col),
-            "type": "bool" if col in BOOL_FIELDS else
-                    ("float" if col == "profile_completion_score" else "number"),
-        })
-    return fields
-
-
 @app.route("/")
 def index():
-    specs = {p: platform_field_spec(p) for p in T.PLATFORMS}
-    return render_template("index.html", platforms=T.PLATFORMS, specs=specs,
+    return render_template("index.html", platforms=T.PLATFORMS,
                            text_labels=PLATFORM_TEXT_LABEL, sample_usernames=SAMPLE_USERNAMES,
-                           platform_icons=PLATFORM_ICONS)
-
-
-@app.route("/api/predict", methods=["POST"])
-def predict():
-    data = request.get_json(force=True)
-    platform = data.get("platform")
-    if platform not in T.PLATFORMS:
-        return jsonify({"error": f"platform must be one of {T.PLATFORMS}"}), 400
-
-    text = (data.get("text") or "").strip()
-    captions = [c for c in (data.get("captions") or []) if c.strip()]
-    hashtags = [h for h in (data.get("hashtags") or []) if h.strip()]
-    result = score_profile(platform, text, captions, hashtags, data.get("behavioral") or {})
-    return jsonify(result)
+                           platform_icons=PLATFORM_ICONS, semantic_available=SEMANTIC_AVAILABLE,
+                           db_available=db.DB_AVAILABLE)
 
 
 @app.route("/api/lookup", methods=["GET"])
+@limiter.limit("30 per minute")
 def lookup():
     query = (request.args.get("query") or request.args.get("username") or "").strip()
     if not query:
@@ -390,7 +523,184 @@ def lookup():
     return jsonify(result)
 
 
+def _db_unavailable():
+    return jsonify({"error": f"Database unavailable: {db.DB_UNAVAILABLE_REASON}"}), 503
+
+
+def _client_id_from(source) -> str | None:
+    cid = (source.get("client_id") or "").strip()
+    return cid or None
+
+
+@app.route("/api/history", methods=["GET"])
+def get_history():
+    if not db.DB_AVAILABLE:
+        return _db_unavailable()
+    client_id = _client_id_from(request.args)
+    if not client_id:
+        return jsonify({"error": "client_id is required"}), 400
+    return jsonify(db.list_history(client_id))
+
+
+@app.route("/api/history", methods=["POST"])
+@limiter.limit("60 per minute")
+def post_history():
+    if not db.DB_AVAILABLE:
+        return _db_unavailable()
+    body = request.get_json(force=True) or {}
+    client_id = _client_id_from(body)
+    result = body.get("result")
+    if not client_id or not result:
+        return jsonify({"error": "client_id and result are required"}), 400
+    entry = {
+        "platform": result.get("platform"), "username": result.get("username"),
+        "archetype": result.get("ground_truth_archetype"),
+        "ground_truth_is_fake": result.get("ground_truth_is_fake"),
+        "fusion_score": result.get("fusion_score"), "result": result,
+    }
+    return jsonify(db.add_history(client_id, entry))
+
+
+@app.route("/api/history/<entry_id>", methods=["DELETE"])
+@limiter.limit("60 per minute")
+def delete_history_one(entry_id):
+    if not db.DB_AVAILABLE:
+        return _db_unavailable()
+    client_id = _client_id_from(request.args)
+    if not client_id:
+        return jsonify({"error": "client_id is required"}), 400
+    db.delete_history_entry(client_id, entry_id)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/history", methods=["DELETE"])
+@limiter.limit("20 per minute")
+def delete_history_all():
+    if not db.DB_AVAILABLE:
+        return _db_unavailable()
+    client_id = _client_id_from(request.args)
+    if not client_id:
+        return jsonify({"error": "client_id is required"}), 400
+    db.clear_history(client_id)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/saved", methods=["GET"])
+def get_saved():
+    if not db.DB_AVAILABLE:
+        return _db_unavailable()
+    client_id = _client_id_from(request.args)
+    if not client_id:
+        return jsonify({"error": "client_id is required"}), 400
+    return jsonify(db.list_saved(client_id))
+
+
+@app.route("/api/saved", methods=["POST"])
+@limiter.limit("60 per minute")
+def post_saved():
+    if not db.DB_AVAILABLE:
+        return _db_unavailable()
+    body = request.get_json(force=True) or {}
+    client_id = _client_id_from(body)
+    result = body.get("result")
+    if not client_id or not result:
+        return jsonify({"error": "client_id and result are required"}), 400
+    entry = {
+        "platform": result.get("platform"), "username": result.get("username"),
+        "archetype": result.get("ground_truth_archetype"),
+        "ground_truth_is_fake": result.get("ground_truth_is_fake"),
+        "fusion_score": result.get("fusion_score"), "result": result,
+    }
+    return jsonify(db.add_saved(client_id, entry))
+
+
+@app.route("/api/saved/<entry_id>", methods=["DELETE"])
+@limiter.limit("60 per minute")
+def delete_saved_one(entry_id):
+    if not db.DB_AVAILABLE:
+        return _db_unavailable()
+    client_id = _client_id_from(request.args)
+    if not client_id:
+        return jsonify({"error": "client_id is required"}), 400
+    db.delete_saved_entry(client_id, entry_id)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/saved", methods=["DELETE"])
+@limiter.limit("20 per minute")
+def delete_saved_all():
+    if not db.DB_AVAILABLE:
+        return _db_unavailable()
+    client_id = _client_id_from(request.args)
+    if not client_id:
+        return jsonify({"error": "client_id is required"}), 400
+    db.clear_saved(client_id)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/scrape", methods=["POST"])
+@limiter.limit("5 per minute")
+def scrape():
+    """
+    Scrape a real, public Instagram profile by username or profile URL.
+
+    Ported from the standalone Instagram scrapper project's POST /api/scrape.
+    Pure JSON in/out -- no files written to disk, no dataset accumulation.
+    """
+    data = request.get_json(force=True) or {}
+    target = (data.get("username") or data.get("url") or "").strip()
+    if not target:
+        return jsonify({"error": "a username or profile URL is required"}), 400
+
+    try:
+        max_posts = int(data.get("max_posts", 12))
+    except (TypeError, ValueError):
+        max_posts = 12
+
+    try:
+        profile = scrape_instagram_profile(target, max_posts=max_posts)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except LookupError as exc:
+        return jsonify({"error": str(exc)}), 404
+    except PermissionError as exc:
+        return jsonify({"error": str(exc)}), 403
+    except RuntimeError as exc:
+        return jsonify({"error": str(exc)}), 502
+    except Exception as exc:
+        return jsonify({"error": f"Unexpected error: {exc}"}), 500
+
+    return jsonify({"success": True, "platform": "instagram", "profile": profile})
+
+
+@app.route("/healthz", methods=["GET"])
+@limiter.exempt
+def healthz():
+    """Liveness/readiness probe -- what's actually loaded and working right
+    now, not just "the process is up." No rate limit: orchestrators/uptime
+    monitors poll this frequently by design."""
+    ok = tfidf is not None and lexical_model is not None and len(behavioral_models) == len(T.PLATFORMS)
+    status = {
+        "status": "ok" if ok else "degraded",
+        "models_loaded": ok,
+        "semantic_layer_available": SEMANTIC_AVAILABLE,
+        "database_available": db.DB_AVAILABLE,
+        "demo_profiles_loaded": sum(len(v) for v in demo_profiles.values()),
+    }
+    return jsonify(status), 200 if ok else 503
+
+
 if __name__ == "__main__":
     # debug/reloader off on purpose -- the reloader re-imports this module in a
     # child process, which means loading SBERT + every joblib model twice.
-    app.run(debug=False, port=5000)
+    #
+    # Serves via waitress (a production-grade, cross-platform WSGI server)
+    # rather than Flask's own dev server, which prints its own warning about
+    # not being meant for production if used directly. Same command either
+    # way: `python app.py`. Override bind address/port via env vars for a
+    # container/cloud deployment (e.g. HOST=0.0.0.0 PORT=8080).
+    host = os.environ.get("HOST", "127.0.0.1")
+    port = int(os.environ.get("PORT", 5000))
+    from waitress import serve
+    print(f"Serving IDGuardian on http://{host}:{port} (waitress, {os.cpu_count() or 4} threads)")
+    serve(app, host=host, port=port, threads=os.cpu_count() or 4)

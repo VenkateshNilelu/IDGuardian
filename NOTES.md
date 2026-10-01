@@ -245,6 +245,95 @@ already-running dev server kept serving the old template context
 (`window.PLATFORM_ICONS` empty, icons blank) until restarted. Worth
 remembering for any future backend change: restart, don't just reload.
 
+## Dataset v2: scale, India localization, platform-owner telemetry
+
+User asked to scale up (5,000 -> 20,000 profiles/platform, ~50k -> ~200k posts/platform),
+localize the dataset to Indian users, and add more parameters -- "think like you are the
+owner of that platform" -- to make the models more accurate.
+
+- **Scale**: `common.TARGET_PROFILES_PER_PLATFORM`/`TARGET_POSTS_PER_PLATFORM` bumped 4x.
+- **Locale**: `common.make_faker()` now runs `Faker(locale="en_IN")`, so every
+  `{name}`/`{first}`/`{city}`/`{handle}` fill across all four platforms' phrase banks
+  (~1,400 lines) became Indian for free -- did not need to hand-rewrite the phrase banks
+  themselves, since they're all filled via the shared `fill_template()` helper. Faker's
+  `en_IN` `company()` provider still leans Western-suffixed ("Kale LLC"), so `{company}`
+  was switched to a curated `INDIAN_COMPANY_NAMES` pool instead. City/state are sampled
+  together from `INDIAN_CITY_STATE_PAIRS` so they can't mismatch. Added `{festival}`/
+  `{cricket}`/`{food}` placeholders and used them in a handful of student/business/fitness
+  phrase-bank fragments for cultural flavor (not exhaustively -- scope tradeoff, see below).
+- **New columns** ("platform owner" internal telemetry -- signals a real platform's trust &
+  safety systems would log that no public scraping API ever exposes): `email_verified`,
+  `phone_verified`, `two_factor_enabled`, `device_count_30d`, `login_ip_diversity_30d`,
+  `signup_to_first_post_hours`, `posting_time_entropy`, `follower_growth_rate_7d`,
+  `reports_received_count`, `content_removed_count` (shared across all 4 platforms), plus
+  `city`/`state` (descriptive only, not a model input). Platform-specific:
+  `story_post_rate_weekly` (IG), `retweet_ratio` (Twitter), `group_membership_count` (FB),
+  `recommendation_count` + `connection_acceptance_rate` (LinkedIn). Sampled per-archetype,
+  conditioned on `is_fake` via `common.TRUST_SIGNAL_DEFAULTS`/`sample_trust_signals()`, with
+  optional per-archetype overrides on the `Archetype` dataclass -- added as *optional* fields
+  (default `None`) specifically so none of the ~30 existing archetype definitions across 4
+  platforms needed to be touched individually.
+- All new numeric/boolean columns were added to `train_models.py`'s `BEHAVIORAL_BASE_COLS`
+  as real model inputs, not just descriptive fields -- that was the actual point (more
+  accurate Behavioral layer), not just a schema change.
+- See `DATASET_GENERATION_SPEC.md`'s "Addendum (v2)" section for the authoritative column
+  list.
+
+**Scope tradeoff, stated explicitly**: given the phrase banks are ~1,400 lines of
+hand-written content across 4 platforms, a full rewrite of every fragment with deep
+Hinglish/regional flavor was not attempted -- the locale switch plus curated
+company/city-state pools plus a light pass of festival/cricket/food fragments gets
+genuine, evident Indian localization without that scope. Deeper linguistic localization
+(code-switching, regional-language phrases) would be a reasonable next iteration if wanted.
+
+## Production readiness pass
+
+User asked to make the project production-ready. Scoped to local, additive, reversible
+changes only -- no public deployment was performed (that needs the user's own hosting/
+domain decision), and nothing here touches the existing scoring/lookup/history logic.
+
+- **WSGI server**: `python app.py` now serves via `waitress` (cross-platform, works on
+  Windows unlike gunicorn) instead of Flask's dev server. Same command, same default
+  port (5000); override via `HOST`/`PORT` env vars for a container deployment.
+- **Rate limiting** (Flask-Limiter, in-memory store): 30/min on `/api/lookup`, 60/min on
+  history/saved writes, 20/min on clear-all, and a strict 5/min on `/api/scrape` (real
+  external network calls to Instagram -- the most abuse-sensitive route, both for this
+  app and to avoid getting the deploying IP flagged). Global default 200/hour elsewhere.
+  Note: in-memory storage means limits are per-process, not shared across workers --
+  fine for a single-process deploy (which `threads=os.cpu_count()` under waitress already
+  parallelizes within one process); a true multi-process/multi-instance deployment would
+  need a shared store (Redis) instead.
+- **Security headers** (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`,
+  `Permissions-Policy`) added via `after_request`. Deliberately did NOT add a strict CSP --
+  the page loads Tailwind from a CDN and has an inline `<script>` injecting
+  `window.SAMPLE_USERNAMES`/`window.PLATFORM_ICONS`; getting a CSP right for that without
+  being able to live-test it risked silently breaking the page.
+- **Logging**: rotating file handler (`logs/app.log`, 5MB x 3 backups) + console, for
+  request-time errors/rate-limit events. Startup diagnostics still use `print()` on
+  purpose (one-time human-readable status lines at import time).
+- **`GET /healthz`**: liveness/readiness probe reporting whether models/semantic
+  layer/DB/curves actually loaded, not just "the process is up." Exempt from rate
+  limiting (orchestrators poll it frequently by design).
+- **`MAX_CONTENT_LENGTH = 1MB`** on all requests, prevents large-payload abuse.
+- **`requirements.txt`** rewritten from a handful of loosely-pinned lines (several core
+  deps -- Flask, scikit-learn, xgboost, sentence-transformers, onnxruntime -- weren't even
+  listed, having been installed ad hoc over the session) to a complete, exactly-pinned
+  list matching what's actually installed and tested, so a fresh `pip install -r
+  requirements.txt` reproduces this environment rather than drifting.
+- **`Dockerfile` + `.dockerignore`**: non-root user, `libgomp1` (XGBoost's OpenMP
+  runtime dependency), torch installed from PyTorch's CPU-only wheel index (avoids
+  silently pulling a multi-GB CUDA build), `HEALTHCHECK` hitting `/healthz`, big
+  training CSVs excluded from the build context (not needed at runtime, only by
+  `train_models.py` offline) while the small `demo_*.csv` files are kept.
+
+Also fixed while in this area: "Browse demo usernames" was silently capped at a 12-per-
+platform sample (`SAMPLES_PER_LABEL = 6` genuine + 6 fake) despite a comment claiming it
+browsed "the full set" -- it never did. `SAMPLE_USERNAMES` now includes every demo
+profile (all ~200/platform, shuffled), so the expandable browse panel is a genuine browse
+of the full ~800-profile demo set (per platform, via the existing platform switcher); the
+compact landing-page chip row still shows only the first 6 (`static/app.js`,
+`renderExampleChips`'s `.slice(0, 6)`), unchanged.
+
 ## Operational note for the next phase (feature extraction)
 
 `hashtags` is stored as an empty string `""` for rows with no hashtags (Facebook/LinkedIn

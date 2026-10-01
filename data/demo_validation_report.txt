@@ -19,13 +19,13 @@ Overall: ALL PLATFORMS PASSED
     Student: 30
 -- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
 -- Archetype distribution (posts) --
-    Business Account: 306
-    Celebrity Impersonator: 266
-    Developer: 330
-    Fake Influencer: 263
-    Fitness Creator: 291
-    Spam Account: 295
-    Student: 300
+    Business Account: 305
+    Celebrity Impersonator: 246
+    Developer: 299
+    Fake Influencer: 273
+    Fitness Creator: 279
+    Spam Account: 261
+    Student: 291
 -- Schema check: profiles --
 [PASS] Profile columns match spec (missing=[], extra=[])
     [PASS] user_id (str, actual=str): nulls=0
@@ -43,6 +43,19 @@ Overall: ALL PLATFORMS PASSED
     [PASS] has_website (bool, actual=bool): nulls=0
     [PASS] has_location (bool, actual=bool): nulls=0
     [PASS] profile_completion_score (float, actual=float64): nulls=0
+    [PASS] story_post_rate_weekly (float, actual=float64): nulls=0
+    [PASS] city (str, actual=str): nulls=0
+    [PASS] state (str, actual=str): nulls=0
+    [PASS] email_verified (bool, actual=bool): nulls=0
+    [PASS] phone_verified (bool, actual=bool): nulls=0
+    [PASS] two_factor_enabled (bool, actual=bool): nulls=0
+    [PASS] device_count_30d (int, actual=int64): nulls=0
+    [PASS] login_ip_diversity_30d (int, actual=int64): nulls=0
+    [PASS] signup_to_first_post_hours (float, actual=float64): nulls=0
+    [PASS] posting_time_entropy (float, actual=float64): nulls=0
+    [PASS] follower_growth_rate_7d (float, actual=float64): nulls=0
+    [PASS] reports_received_count (int, actual=int64): nulls=0
+    [PASS] content_removed_count (int, actual=int64): nulls=0
     [PASS] archetype (str, actual=str): nulls=0
     [PASS] is_fake (int, actual=int64): nulls=0
 -- Schema check: posts --
@@ -77,14 +90,14 @@ Overall: ALL PLATFORMS PASSED
     Student: 30
 -- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
 -- Archetype distribution (posts) --
-    Business Page: 290
-    Catfish/Romance-Scam Profile: 210
-    Celebrity Impersonator: 225
-    Developer: 324
-    Fake Influencer: 226
-    Fitness Creator: 306
-    Spam Account: 209
-    Student: 283
+    Business Page: 283
+    Catfish/Romance-Scam Profile: 186
+    Celebrity Impersonator: 216
+    Developer: 328
+    Fake Influencer: 216
+    Fitness Creator: 297
+    Spam Account: 205
+    Student: 321
 -- Schema check: profiles --
 [PASS] Profile columns match spec (missing=[], extra=[])
     [PASS] user_id (str, actual=str): nulls=0
@@ -99,10 +112,23 @@ Overall: ALL PLATFORMS PASSED
     [PASS] avg_shares (float, actual=float64): nulls=0
     [PASS] engagement_rate (float, actual=float64): nulls=0
     [PASS] mutual_friends_count (int, actual=int64): nulls=0
+    [PASS] group_membership_count (int, actual=int64): nulls=0
     [PASS] is_verified (bool, actual=bool): nulls=0
     [PASS] has_website (bool, actual=bool): nulls=0
     [PASS] has_location (bool, actual=bool): nulls=0
     [PASS] profile_completion_score (float, actual=float64): nulls=0
+    [PASS] city (str, actual=str): nulls=0
+    [PASS] state (str, actual=str): nulls=0
+    [PASS] email_verified (bool, actual=bool): nulls=0
+    [PASS] phone_verified (bool, actual=bool): nulls=0
+    [PASS] two_factor_enabled (bool, actual=bool): nulls=0
+    [PASS] device_count_30d (int, actual=int64): nulls=0
+    [PASS] login_ip_diversity_30d (int, actual=int64): nulls=0
+    [PASS] signup_to_first_post_hours (float, actual=float64): nulls=0
+    [PASS] posting_time_entropy (float, actual=float64): nulls=0
+    [PASS] follower_growth_rate_7d (float, actual=float64): nulls=0
+    [PASS] reports_received_count (int, actual=int64): nulls=0
+    [PASS] content_removed_count (int, actual=int64): nulls=0
     [PASS] archetype (str, actual=str): nulls=0
     [PASS] is_fake (int, actual=int64): nulls=0
 -- Schema check: posts --
@@ -136,13 +162,13 @@ Overall: ALL PLATFORMS PASSED
     Student: 30
 -- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
 -- Archetype distribution (posts) --
-    Business/Company Page: 301
-    Consultant: 285
-    Developer: 311
-    Fake Executive Impersonator: 289
-    Fake Recruiter: 290
-    Spam/Bot Account: 272
-    Student: 310
+    Business/Company Page: 300
+    Consultant: 306
+    Developer: 289
+    Fake Executive Impersonator: 242
+    Fake Recruiter: 270
+    Spam/Bot Account: 254
+    Student: 303
 -- Schema check: profiles --
 [PASS] Profile columns match spec (missing=[], extra=[])
     [PASS] user_id (str, actual=str): nulls=0
@@ -159,10 +185,24 @@ Overall: ALL PLATFORMS PASSED
     [PASS] company_name (str, actual=str): nulls=0
     [PASS] endorsements_count (int, actual=int64): nulls=0
     [PASS] skills_count (int, actual=int64): nulls=0
+    [PASS] recommendation_count (int, actual=int64): nulls=0
+    [PASS] connection_acceptance_rate (float, actual=float64): nulls=0
     [PASS] is_verified (bool, actual=bool): nulls=0
     [PASS] has_website (bool, actual=bool): nulls=0
     [PASS] has_location (bool, actual=bool): nulls=0
     [PASS] profile_completion_score (float, actual=float64): nulls=0
+    [PASS] city (str, actual=str): nulls=0
+    [PASS] state (str, actual=str): nulls=0
+    [PASS] email_verified (bool, actual=bool): nulls=0
+    [PASS] phone_verified (bool, actual=bool): nulls=0
+    [PASS] two_factor_enabled (bool, actual=bool): nulls=0
+    [PASS] device_count_30d (int, actual=int64): nulls=0
+    [PASS] login_ip_diversity_30d (int, actual=int64): nulls=0
+    [PASS] signup_to_first_post_hours (float, actual=float64): nulls=0
+    [PASS] posting_time_entropy (float, actual=float64): nulls=0
+    [PASS] follower_growth_rate_7d (float, actual=float64): nulls=0
+    [PASS] reports_received_count (int, actual=int64): nulls=0
+    [PASS] content_removed_count (int, actual=int64): nulls=0
     [PASS] archetype (str, actual=str): nulls=0
     [PASS] is_fake (int, actual=int64): nulls=0
 -- Schema check: posts --
@@ -196,13 +236,13 @@ Overall: ALL PLATFORMS PASSED
     Student: 30
 -- Overall balance: 60.0% genuine / 40.0% fake (target ~60/40)
 -- Archetype distribution (posts) --
-    Business Account: 287
-    Celebrity Impersonator: 277
-    Developer: 299
-    Fake Influencer: 283
-    Fitness Creator: 292
-    Spam/Bot Account: 291
-    Student: 270
+    Business Account: 299
+    Celebrity Impersonator: 286
+    Developer: 306
+    Fake Influencer: 294
+    Fitness Creator: 306
+    Spam/Bot Account: 259
+    Student: 290
 -- Schema check: profiles --
 [PASS] Profile columns match spec (missing=[], extra=[])
     [PASS] user_id (str, actual=str): nulls=0
@@ -220,6 +260,19 @@ Overall: ALL PLATFORMS PASSED
     [PASS] has_website (bool, actual=bool): nulls=0
     [PASS] has_location (bool, actual=bool): nulls=0
     [PASS] profile_completion_score (float, actual=float64): nulls=0
+    [PASS] retweet_ratio (float, actual=float64): nulls=0
+    [PASS] city (str, actual=str): nulls=0
+    [PASS] state (str, actual=str): nulls=0
+    [PASS] email_verified (bool, actual=bool): nulls=0
+    [PASS] phone_verified (bool, actual=bool): nulls=0
+    [PASS] two_factor_enabled (bool, actual=bool): nulls=0
+    [PASS] device_count_30d (int, actual=int64): nulls=0
+    [PASS] login_ip_diversity_30d (int, actual=int64): nulls=0
+    [PASS] signup_to_first_post_hours (float, actual=float64): nulls=0
+    [PASS] posting_time_entropy (float, actual=float64): nulls=0
+    [PASS] follower_growth_rate_7d (float, actual=float64): nulls=0
+    [PASS] reports_received_count (int, actual=int64): nulls=0
+    [PASS] content_removed_count (int, actual=int64): nulls=0
     [PASS] archetype (str, actual=str): nulls=0
     [PASS] is_fake (int, actual=int64): nulls=0
 -- Schema check: posts --

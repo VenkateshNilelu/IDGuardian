@@ -1,4 +1,39 @@
-pandas>=2.2
-numpy>=1.26
-Faker>=24.0
-vaderSentiment>=3.3.2
+# Pinned to the exact versions this project is built and tested against
+# (see `pip freeze` in the project's .venv). Pin, don't float, for production:
+# a floating >=X.Y here would let a fresh deploy silently pull in an untested
+# newer release of a fast-moving package (transformers/torch especially).
+
+# --- Web app ---
+Flask==3.1.3
+waitress==3.0.2          # production WSGI server (cross-platform; see app.py __main__)
+Flask-Limiter==4.1.1     # per-route rate limiting
+
+# --- Data / ML pipeline ---
+pandas==3.0.5
+numpy==2.5.3
+joblib==1.6.0
+scikit-learn==1.9.0
+xgboost==3.4.1
+Faker==40.38.0
+vaderSentiment==3.3.2
+
+# --- Semantic layer (SBERT). ONNX Runtime is the primary backend (Microsoft-
+# signed DLLs -- immune to Windows Application Control blocking unsigned
+# PyTorch wheels); torch is the fallback backend if ONNX is unavailable.
+sentence-transformers==6.0.1
+onnx==1.23.0
+onnxruntime==1.30.0
+optimum==2.1.0
+optimum-onnx==0.1.0
+torch==2.14.0    # CPU-only wheel; if plain PyPI doesn't resolve it, install via:
+                 # pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cpu
+transformers==4.57.6
+
+# --- MongoDB Atlas: persists Analysis History / Saved Reports server-side ---
+pymongo==4.18.1
+python-dotenv==1.2.3
+
+# --- Real Instagram scraping API (instagram_scraper.py / POST /api/scrape) ---
+curl_cffi==0.16.3
+instaloader==4.15.3
+httpx==0.28.1

@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.pyc
+.git/
+.gitignore
+.env
+.env.example
+logs/
+*.log
+gen_v2_log.txt
+train_v2_log.txt
+smoke_out.txt
+
+# The big per-platform training CSVs (tens/hundreds of MB each) aren't read
+# by app.py at runtime -- only train_models.py uses them, offline. The small
+# demo_*.csv files ARE needed (app.py loads them for the username lookup).
+data/*.csv
+!data/demo_*.csv
+data/*.txt
+data/*.md

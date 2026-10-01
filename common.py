@@ -18,14 +18,55 @@ from faker import Faker
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 SEED = 42
-TARGET_PROFILES_PER_PLATFORM = 5000
-TARGET_POSTS_PER_PLATFORM = 50000
+TARGET_PROFILES_PER_PLATFORM = 20000
+TARGET_POSTS_PER_PLATFORM = 200000
 POSTS_PER_PROFILE_LAMBDA = 10.0
 GENUINE_SHARE = 0.6
 FAKE_SHARE = 0.4
 AGGREGATE_TOLERANCE = 1e-6  # profile aggregates are computed directly from posts, so exact
 
+FAKER_LOCALE = "en_IN"  # dataset models Indian social media users
+
 _vader = SentimentIntensityAnalyzer()
+
+# Faker's en_IN `company()` provider tends to bolt on Western suffixes ("Kale LLC").
+# A small curated pool of Indian-style company/startup names (Pvt Ltd, Technologies,
+# Solutions, etc.) is used instead wherever {company} is filled in, for authenticity.
+INDIAN_COMPANY_NAMES = [
+    "Sharma Textiles Pvt Ltd", "Reddy Infotech Solutions", "Gupta & Sons Trading Co.",
+    "Mehta Digital Technologies", "Nair Consulting Group", "Iyer Software Systems",
+    "Kapoor Logistics Pvt Ltd", "Patel Agro Industries", "Verma Analytics Labs",
+    "Chopra Fintech Solutions", "Bose Healthcare Pvt Ltd", "Rao Ventures India",
+    "Singh Enterprises Pvt Ltd", "Desai Design Studio", "Malhotra Retail Group",
+    "Krishnan Cloud Systems", "Joshi Manufacturing Co.", "Bhatt Media Networks",
+    "Pillai Business Solutions", "Agarwal Global Traders", "Menon Technologies Pvt Ltd",
+    "Chowdhury Innovations", "Kulkarni Software Pvt Ltd", "Trivedi Capital Advisors",
+    "Bansal E-Commerce Pvt Ltd", "Saxena Realty Group", "Nambiar Exports Pvt Ltd",
+    "Khanna Digital Marketing", "Sinha Renewable Energy", "Pandey Industries Ltd",
+]
+
+# Major Indian cities paired with their correct state, so a generated profile's
+# {city}/{state} don't mismatch (e.g. never "Mumbai, Sikkim").
+INDIAN_CITY_STATE_PAIRS = [
+    ("Mumbai", "Maharashtra"), ("Pune", "Maharashtra"), ("Nagpur", "Maharashtra"),
+    ("Delhi", "Delhi"), ("Bengaluru", "Karnataka"), ("Mysuru", "Karnataka"),
+    ("Hyderabad", "Telangana"), ("Chennai", "Tamil Nadu"), ("Coimbatore", "Tamil Nadu"),
+    ("Kolkata", "West Bengal"), ("Ahmedabad", "Gujarat"), ("Surat", "Gujarat"),
+    ("Jaipur", "Rajasthan"), ("Udaipur", "Rajasthan"), ("Lucknow", "Uttar Pradesh"),
+    ("Kanpur", "Uttar Pradesh"), ("Noida", "Uttar Pradesh"), ("Chandigarh", "Punjab"),
+    ("Amritsar", "Punjab"), ("Kochi", "Kerala"), ("Thiruvananthapuram", "Kerala"),
+    ("Bhopal", "Madhya Pradesh"), ("Indore", "Madhya Pradesh"), ("Patna", "Bihar"),
+    ("Guwahati", "Assam"), ("Bhubaneswar", "Odisha"), ("Ranchi", "Jharkhand"),
+    ("Dehradun", "Uttarakhand"), ("Gurugram", "Haryana"), ("Vadodara", "Gujarat"),
+]
+
+# Cultural flavor pools -- woven into a subset of phrase-bank fragments so the
+# generated text reads as Indian social media, not a locale-swapped US dataset.
+INDIAN_FESTIVAL_TERMS = ["Diwali", "Holi", "Eid", "Durga Puja", "Ganesh Chaturthi",
+                          "Onam", "Navratri", "Pongal", "Raksha Bandhan"]
+INDIAN_CRICKET_TERMS = ["IPL season", "the India vs Australia test", "Sunday gully cricket",
+                         "the World Cup final", "our local cricket league"]
+INDIAN_FOOD_TERMS = ["chai", "biryani", "street food", "home-cooked dal", "filter coffee"]
 
 
 def _stable_salt(salt: str) -> int:
@@ -48,7 +89,7 @@ def make_rng(salt: str) -> np.random.Generator:
 
 
 def make_faker(salt: str) -> Faker:
-    fk = Faker()
+    fk = Faker(locale=FAKER_LOCALE)
     Faker.seed(SEED ^ _stable_salt(salt))
     return fk
 
@@ -89,25 +130,45 @@ def maybe_emoji(rng: np.random.Generator, emoji_pool: Sequence[str], p: float = 
 
 
 def fill_template(rng: np.random.Generator, fk: Faker, template: str) -> str:
-    """Fill {name}/{first}/{company}/{school}/{city}/{number} placeholders."""
+    """Fill {name}/{first}/{company}/{school}/{city}/{state}/{number}/{festival}/
+    {cricket}/{food} placeholders. Indian-flavored pools (see module constants
+    above) are used instead of Faker's raw en_IN output where Faker's coverage
+    is thin (company names) or where a paired city/state avoids mismatches."""
     out = template
     if "{name}" in out:
         out = out.replace("{name}", fk.first_name())
     if "{first}" in out:
         out = out.replace("{first}", fk.first_name())
     if "{company}" in out:
-        out = out.replace("{company}", fk.company())
+        out = out.replace("{company}", INDIAN_COMPANY_NAMES[int(rng.integers(0, len(INDIAN_COMPANY_NAMES)))])
     if "{school}" in out:
-        out = out.replace("{school}", f"{fk.city()} University")
+        city, _ = INDIAN_CITY_STATE_PAIRS[int(rng.integers(0, len(INDIAN_CITY_STATE_PAIRS)))]
+        out = out.replace("{school}", f"{city} University")
     if "{city}" in out:
-        out = out.replace("{city}", fk.city())
+        city, _ = INDIAN_CITY_STATE_PAIRS[int(rng.integers(0, len(INDIAN_CITY_STATE_PAIRS)))]
+        out = out.replace("{city}", city)
     if "{number}" in out:
         out = out.replace("{number}", str(int(rng.integers(2, 99))))
     if "{year}" in out:
         out = out.replace("{year}", str(int(rng.integers(2015, 2026))))
     if "{handle}" in out:
         out = out.replace("{handle}", "@" + fk.user_name())
+    if "{festival}" in out:
+        out = out.replace("{festival}", INDIAN_FESTIVAL_TERMS[int(rng.integers(0, len(INDIAN_FESTIVAL_TERMS)))])
+    if "{cricket}" in out:
+        out = out.replace("{cricket}", INDIAN_CRICKET_TERMS[int(rng.integers(0, len(INDIAN_CRICKET_TERMS)))])
+    if "{food}" in out:
+        out = out.replace("{food}", INDIAN_FOOD_TERMS[int(rng.integers(0, len(INDIAN_FOOD_TERMS)))])
     return out
+
+
+def sample_city_state(rng: np.random.Generator, n: int) -> tuple[list[str], list[str]]:
+    """Sample n (city, state) pairs from the curated Indian pool, kept consistent
+    (never a real city paired with the wrong state)."""
+    idx = rng.integers(0, len(INDIAN_CITY_STATE_PAIRS), size=n)
+    cities = [INDIAN_CITY_STATE_PAIRS[i][0] for i in idx]
+    states = [INDIAN_CITY_STATE_PAIRS[i][1] for i in idx]
+    return cities, states
 
 
 @dataclass
@@ -242,6 +303,48 @@ def sample_bool(rng: np.random.Generator, p: float, size: int) -> np.ndarray:
 
 def sample_uniform_float(rng: np.random.Generator, low: float, high: float, size: int) -> np.ndarray:
     return rng.uniform(low, high, size)
+
+
+# Default (is_fake-conditioned) ranges for the "platform owner" trust & safety
+# columns -- signals a real platform's internal systems would track but no
+# public API ever exposes. Genuine/fake defaults live here so every archetype
+# gets sensible values without hand-tuning ~10 new fields x ~30 archetypes;
+# an archetype can still override any of these via its Archetype fields (see
+# generate_dataset.py), which take precedence when not None.
+TRUST_SIGNAL_DEFAULTS = {
+    0: dict(email_verified_p=0.92, phone_verified_p=0.85, two_factor_p=0.35,
+            device_count_range=(1, 3), ip_diversity_range=(1, 4),
+            signup_to_post_range=(6.0, 720.0), posting_entropy_range=(0.55, 0.95),
+            follower_growth_range=(-0.02, 0.06), reports_range=(0, 2), content_removed_range=(0, 1)),
+    1: dict(email_verified_p=0.25, phone_verified_p=0.20, two_factor_p=0.05,
+            device_count_range=(1, 2), ip_diversity_range=(1, 2),
+            signup_to_post_range=(0.0, 4.0), posting_entropy_range=(0.05, 0.35),
+            follower_growth_range=(0.05, 0.6), reports_range=(0, 12), content_removed_range=(0, 6)),
+}
+
+
+def sample_trust_signals(rng: np.random.Generator, is_fake: int, n: int, overrides: dict | None = None) -> dict:
+    """Sample the shared platform-owner telemetry columns for n rows of one
+    archetype block. `overrides` (from Archetype fields) replace individual
+    defaults when provided; anything left None falls back to the is_fake-
+    conditioned default above."""
+    d = dict(TRUST_SIGNAL_DEFAULTS[is_fake])
+    if overrides:
+        for k, v in overrides.items():
+            if v is not None:
+                d[k] = v
+    return dict(
+        email_verified=sample_bool(rng, d["email_verified_p"], n),
+        phone_verified=sample_bool(rng, d["phone_verified_p"], n),
+        two_factor_enabled=sample_bool(rng, d["two_factor_p"], n),
+        device_count_30d=sample_uniform_int(rng, *d["device_count_range"], n),
+        login_ip_diversity_30d=sample_uniform_int(rng, *d["ip_diversity_range"], n),
+        signup_to_first_post_hours=np.round(sample_uniform_float(rng, *d["signup_to_post_range"], n), 2),
+        posting_time_entropy=np.round(sample_uniform_float(rng, *d["posting_entropy_range"], n), 3),
+        follower_growth_rate_7d=np.round(sample_uniform_float(rng, *d["follower_growth_range"], n), 4),
+        reports_received_count=sample_uniform_int(rng, *d["reports_range"], n),
+        content_removed_count=sample_uniform_int(rng, *d["content_removed_range"], n),
+    )
 
 
 # ---------------------------------------------------------------------------
