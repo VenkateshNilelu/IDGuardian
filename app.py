@@ -519,6 +519,11 @@ def score_profile(platform: str, text: str, captions: list[str], hashtags: list[
 
 @app.route("/")
 def index():
+    return render_template("landing.html")
+
+
+@app.route("/dashboard")
+def dashboard():
     return render_template("index.html", platforms=T.PLATFORMS,
                            text_labels=PLATFORM_TEXT_LABEL, sample_usernames=SAMPLE_USERNAMES,
                            platform_icons=PLATFORM_ICONS, semantic_available=SEMANTIC_AVAILABLE,

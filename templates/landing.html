@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IDGuardian — Trust the Real</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #2563eb;
+    --ink: #0f1720;
+    --ink-soft: #47536b;
+    --line: #e2e6ec;
+    --surface: #ffffff;
+    --ground: #f7f8fa;
+    --dark: #0a0f1c;
+    --dark-panel: #121a2b;
+    --dark-line: #232e45;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Manrope', system-ui, sans-serif; background: var(--surface); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { margin: 0; font-family: 'Manrope', system-ui, sans-serif; letter-spacing: -0.02em; }
+  p { margin: 0; }
+  a { text-decoration: none; }
+  .container { max-width: 1180px; margin: 0 auto; padding: 0 64px; }
+  .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #ffffff; font-size: 15px; font-weight: 700; padding: 13px 24px; border-radius: 10px; border: none; cursor: pointer; }
+  .btn-ghost-dark { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: #ffffff; font-size: 15px; font-weight: 600; padding: 12px 22px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.28); }
+  .btn-ghost-light { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--ink); font-size: 15px; font-weight: 600; padding: 12px 22px; border-radius: 10px; border: 1px solid var(--line); }
+  .nav-link { color: #cbd5e1; font-size: 14.5px; font-weight: 600; }
+  .nav-link:hover { color: #ffffff; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+  .grid-lines { background-image: linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px); background-size: 42px 42px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .reveal { opacity: 0; animation: fadeUp .7s ease forwards; }
+  .reveal-1 { animation-delay: .05s; }
+  .reveal-2 { animation-delay: .16s; }
+  .reveal-3 { animation-delay: .27s; }
+  .reveal-4 { animation-delay: .38s; }
+  .reveal-5 { animation-delay: .49s; }
+
+  .card, .feature-card { transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(15,23,41,0.08); border-color: #c7d2e0; }
+  .feature-card:hover { transform: translateY(-4px); }
+
+  .btn-primary { transition: transform .18s ease, box-shadow .18s ease; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(37,99,235,0.35); }
+  .btn-ghost-dark { transition: background .2s ease, border-color .2s ease; }
+  .btn-ghost-dark:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.45); }
+  .btn-ghost-light { transition: background .2s ease, border-color .2s ease; }
+  .btn-ghost-light:hover { background: var(--ground); border-color: #c7d2e0; }
+  .nav-link { transition: color .2s ease; }
+
+  @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(37,99,235,0.45); } 70% { box-shadow: 0 0 0 18px rgba(37,99,235,0); } 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); } }
+  .play-pulse { animation: pulseRing 2.4s ease-out infinite; }
+  .video-frame { transition: transform .25s ease, border-color .25s ease; }
+  .video-frame:hover { transform: scale(1.012); border-color: var(--accent); }
+
+  #playNotice { display: none; }
+  #playNotice.open { display: flex; }
+</style>
+</head>
+<body>
+
+<div style="width: 100%; min-height: 100vh; background: var(--surface);">
+
+  <!-- ============ NAV ============ -->
+  <header style="width: 100%; background: var(--dark); border-bottom: 1px solid var(--dark-line);">
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between; height: 76px;">
+      <a href="#top" style="display: flex; align-items: center; gap: 10px;">
+        <span style="width: 34px; height: 34px; border-radius: 9px; background: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+        </span>
+        <span style="color: #ffffff; font-size: 18px; font-weight: 800;">IDGuardian</span>
+      </a>
+      <nav style="display: flex; align-items: center; gap: 32px;">
+        <a href="#how" class="nav-link">How it works</a>
+        <a href="#walkthrough" class="nav-link">Walkthrough</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#demo" class="nav-link">Live demo</a>
+        <a href="{{ url_for('login') }}" class="nav-link">Sign in</a>
+      </nav>
+      <a href="{{ url_for('dashboard') }}" class="btn-ghost-dark">See it in action</a>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section id="top" class="grid-lines" style="width: 100%; background: var(--dark); padding: 96px 0 110px 0; position: relative;">
+    <div class="container" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 28px;">
+      <span class="eyebrow reveal reveal-1" style="color: #93c5fd; background: rgba(37,99,235,0.16); border: 1px solid rgba(37,99,235,0.35); padding: 7px 14px; border-radius: 999px;">
+        Explainable, multi-layer fake-profile detection
+      </span>
+      <h1 class="reveal reveal-2" style="color: #ffffff; font-size: 56px; font-weight: 800; line-height: 1.08; max-width: 760px;">
+        Trust the real. Catch the fake.
+      </h1>
+      <p class="reveal reveal-3" style="color: #a3adc2; font-size: 18px; line-height: 1.6; max-width: 620px;">
+        IDGuardian scores social profiles across Instagram, Facebook, LinkedIn and X through four independent
+        machine-learning layers — then shows you exactly which words, patterns and numbers drove the call. No
+        black box, no guessing.
+      </p>
+      <div class="reveal reveal-4" style="display: flex; gap: 14px; margin-top: 8px;">
+        <a href="#demo" class="btn-primary">
+          Try the live demo
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+        <a href="#how" class="btn-ghost-dark">How it works</a>
+      </div>
+
+      <div class="reveal reveal-5" style="display: flex; gap: 48px; margin-top: 56px; flex-wrap: wrap; justify-content: center;">
+        <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+          <span style="color: #ffffff; font-size: 30px; font-weight: 800;">4</span>
+          <span style="color: #8291ab; font-size: 13px; font-weight: 600;">ML layers, fused</span>
+        </div>
+        <div style="width: 1px; background: var(--dark-line);"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+          <span style="color: #ffffff; font-size: 30px; font-weight: 800;">80,000</span>
+          <span style="color: #8291ab; font-size: 13px; font-weight: 600;">profiles trained on</span>
+        </div>
+        <div style="width: 1px; background: var(--dark-line);"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+          <span style="color: #ffffff; font-size: 30px; font-weight: 800;">4</span>
+          <span style="color: #8291ab; font-size: 13px; font-weight: 600;">platforms covered</span>
+        </div>
+        <div style="width: 1px; background: var(--dark-line);"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+          <span style="color: #ffffff; font-size: 30px; font-weight: 800;">&lt;1s</span>
+          <span style="color: #8291ab; font-size: 13px; font-weight: 600;">per full analysis</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section id="how" style="width: 100%; padding: 110px 0; background: var(--ground);">
+    <div class="container">
+      <div style="display: flex; flex-direction: column; gap: 14px; max-width: 620px; margin-bottom: 56px;">
+        <span class="eyebrow" style="color: var(--accent);">How it works</span>
+        <h2 style="font-size: 36px; font-weight: 800;">One profile, four independent readings</h2>
+        <p style="color: var(--ink-soft); font-size: 16px; line-height: 1.6;">
+          Each layer looks at a completely different slice of the profile — word choice, meaning, behavior, and
+          account telemetry — then a final Trust Fusion model learns how much to weight each one, per platform.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px;">
+
+        <div class="card" style="padding: 26px; display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="width: 30px; height: 30px; border-radius: 999px; background: var(--dark); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">1</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8"><path d="M4 4h16v16H4z" opacity="0"/><path d="M6 7h12M6 12h12M6 17h8"/></svg>
+          </div>
+          <h3 style="font-size: 17px; font-weight: 700;">Lexical</h3>
+          <p style="color: var(--ink-soft); font-size: 13.5px; line-height: 1.55;">TF-IDF + Logistic Regression reads bio and caption word choice — fast, and every word's contribution is visible.</p>
+        </div>
+
+        <div class="card" style="padding: 26px; display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="width: 30px; height: 30px; border-radius: 999px; background: var(--dark); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">2</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8"><circle cx="12" cy="6" r="2.4"/><circle cx="6" cy="17" r="2.4"/><circle cx="18" cy="17" r="2.4"/><path d="M12 8.4V13M12 13l-4.6 2.4M12 13l4.6 2.4"/></svg>
+          </div>
+          <h3 style="font-size: 17px; font-weight: 700;">Semantic</h3>
+          <p style="color: var(--ink-soft); font-size: 13.5px; line-height: 1.55;">Sentence-BERT embeddings + XGBoost read overall tone and meaning — catches paraphrased fakes lexical alone would miss.</p>
+        </div>
+
+        <div class="card" style="padding: 26px; display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="width: 30px; height: 30px; border-radius: 999px; background: var(--dark); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">3</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8"><path d="M4 19V10M10 19V5M16 19v-7M20 19V9"/></svg>
+          </div>
+          <h3 style="font-size: 17px; font-weight: 700;">Behavioral</h3>
+          <p style="color: var(--ink-soft); font-size: 13.5px; line-height: 1.55;">XGBoost on 25+ account signals per platform — growth rate, posting rhythm, verification, device diversity.</p>
+        </div>
+
+        <div class="card" style="padding: 26px; display: flex; flex-direction: column; gap: 14px; border-color: var(--accent);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="width: 30px; height: 30px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">4</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
+          </div>
+          <h3 style="font-size: 17px; font-weight: 700;">Trust Fusion</h3>
+          <p style="color: var(--ink-soft); font-size: 13.5px; line-height: 1.55;">Logistic Regression learns, per platform, how much to trust each layer — then outputs one final score.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WALKTHROUGH VIDEO (placeholder -- no recording exists yet) ============ -->
+  <section id="walkthrough" style="width: 100%; padding: 110px 0; background: var(--surface);">
+    <div class="container">
+      <div style="display: flex; flex-direction: column; gap: 14px; max-width: 620px; margin: 0 auto 48px auto; text-align: center; align-items: center;">
+        <span class="eyebrow" style="color: var(--accent);">Watch it work</span>
+        <h2 style="font-size: 36px; font-weight: 800;">A guided walkthrough</h2>
+        <p style="color: var(--ink-soft); font-size: 16px; line-height: 1.6;">
+          Running a lookup, reading the Trust Score gauge, and drilling into why each layer scored the way it did.
+        </p>
+      </div>
+
+      <button type="button" id="playBtn" class="video-frame" aria-label="Play product walkthrough video (placeholder, not yet recorded)" style="display: block; width: 100%; max-width: 860px; margin: 0 auto; aspect-ratio: 16 / 9; border-radius: 20px; border: 1px solid var(--line); background: var(--dark); position: relative; cursor: pointer; padding: 0; overflow: hidden;">
+        <div class="grid-lines" style="position: absolute; inset: 0; opacity: 0.6;"></div>
+        <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px;">
+          <span class="play-pulse" style="width: 74px; height: 74px; border-radius: 999px; background: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="#ffffff"><path d="M8 5v14l11-7Z"/></svg>
+          </span>
+          <span style="color: #ffffff; font-size: 14px; font-weight: 700;">Walkthrough video — placeholder</span>
+          <span style="color: #8291ab; font-size: 12.5px; max-width: 380px; text-align: center; line-height: 1.5;">[No recording yet — drop a screen-capture of the live dashboard here]</span>
+        </div>
+        <div id="playNotice" style="position: absolute; inset: 0; background: rgba(10,15,28,0.94); align-items: center; justify-content: center; padding: 32px; text-align: center;">
+          <span style="color: #ffffff; font-size: 14.5px; font-weight: 600; line-height: 1.65; max-width: 340px;">No walkthrough has been recorded yet. Once a real screen-capture is added here, this player will show it. Click again to close.</span>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section id="features" style="width: 100%; padding: 110px 0; background: var(--surface);">
+    <div class="container">
+      <div style="display: flex; flex-direction: column; gap: 14px; max-width: 620px; margin-bottom: 56px;">
+        <span class="eyebrow" style="color: var(--accent);">Built for scrutiny</span>
+        <h2 style="font-size: 36px; font-weight: 800;">Every score comes with a reason</h2>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;">
+
+        <div class="feature-card" style="display: flex; flex-direction: column; gap: 12px; padding: 4px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8"><path d="M12 2 4 5v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+          <h3 style="font-size: 16.5px; font-weight: 700;">No black box</h3>
+          <p style="color: var(--ink-soft); font-size: 14px; line-height: 1.6;">Every layer's explanation is grounded in its own math — real word coefficients, real SHAP-style feature contributions. No LLM call, nothing hallucinated after the fact.</p>
+        </div>
+
+        <div class="feature-card" style="display: flex; flex-direction: column; gap: 12px; padding: 4px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <h3 style="font-size: 16.5px; font-weight: 700;">Four platforms, one score</h3>
+          <p style="color: var(--ink-soft); font-size: 14px; line-height: 1.6;">Instagram, Facebook, LinkedIn and X each get their own tuned Behavioral and Trust Fusion models — a LinkedIn recruiter and a Twitter bot fail differently, and IDGuardian knows it.</p>
+        </div>
+
+        <div class="feature-card" style="display: flex; flex-direction: column; gap: 12px; padding: 4px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 1.8"/></svg>
+          <h3 style="font-size: 16.5px; font-weight: 700;">Real-time scoring</h3>
+          <p style="color: var(--ink-soft); font-size: 14px; line-height: 1.6;">A full four-layer pass — including semantic embedding — typically finishes in under a second.</p>
+        </div>
+
+        <div class="feature-card" style="display: flex; flex-direction: column; gap: 12px; padding: 4px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8"><path d="M3 12a9 9 0 0 1 18 0"/><path d="M3 12a9 9 0 0 0 18 0"/><path d="M12 3v18"/></svg>
+          <h3 style="font-size: 16.5px; font-weight: 700;">Trained on 25+ signals</h3>
+          <p style="color: var(--ink-soft); font-size: 14px; line-height: 1.6;">Beyond followers and likes: account-age, verification, posting-time entropy, follower-growth spikes and device/IP diversity — the signals a platform's own trust &amp; safety team would track.</p>
+        </div>
+
+        <div class="feature-card" style="display: flex; flex-direction: column; gap: 12px; padding: 4px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          <h3 style="font-size: 16.5px; font-weight: 700;">Privacy-respecting by default</h3>
+          <p style="color: var(--ink-soft); font-size: 14px; line-height: 1.6;">The live demo scores a large synthetic profile set — nothing about a real person is fetched or stored to show you the system working end to end.</p>
+        </div>
+
+        <div class="feature-card" style="display: flex; flex-direction: column; gap: 12px; padding: 4px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8"><path d="M4 19h16"/><path d="M6 19V9M12 19V5M18 19v12"/></svg>
+          <h3 style="font-size: 16.5px; font-weight: 700;">A dashboard that keeps receipts</h3>
+          <p style="color: var(--ink-soft); font-size: 14px; line-height: 1.6;">Trust-score gauge, per-layer breakdown, analysis history and saved reports — every verdict stays inspectable, not just a red or green badge.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO CTA ============ -->
+  <section id="demo" style="width: 100%; padding: 100px 0; background: var(--ground);">
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between; gap: 48px; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 56px 64px;">
+      <div style="display: flex; flex-direction: column; gap: 14px; max-width: 480px;">
+        <h2 style="font-size: 30px; font-weight: 800;">See the four layers score a real lookup</h2>
+        <p style="color: var(--ink-soft); font-size: 15px; line-height: 1.6;">
+          Pick a demo username, and watch the Trust Score gauge, per-layer breakdown, and word-level explanation
+          build in real time — the same pipeline described above, running end to end.
+        </p>
+      </div>
+      <a href="{{ url_for('dashboard') }}" class="btn-primary" style="white-space: nowrap;">
+        Open the dashboard
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer style="width: 100%; background: var(--dark); border-top: 1px solid var(--dark-line); padding: 40px 0;">
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="width: 26px; height: 26px; border-radius: 7px; background: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+        </span>
+        <span style="color: #ffffff; font-size: 14.5px; font-weight: 700;">IDGuardian</span>
+        <span style="color: #5c6884; font-size: 13px;">— Trust the Real</span>
+      </div>
+      <span style="color: #5c6884; font-size: 13px;">A research project in explainable fake-profile detection.</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  document.getElementById("playBtn").addEventListener("click", function () {
+    document.getElementById("playNotice").classList.toggle("open");
+  });
+</script>
+</body>
+</html>

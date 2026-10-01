@@ -76,7 +76,7 @@ async function handleEmailSubmit(ev) {
     } else {
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     }
   } catch (err) {
     showMessage(err.message || "Something went wrong.", "error");
@@ -93,7 +93,7 @@ async function handleGoogleClick() {
   }
   const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: window.location.origin + "/" },
+    options: { redirectTo: window.location.origin + "/dashboard" },
   });
   if (error) showMessage(error.message, "error");
   // On success, Supabase redirects the browser to Google then back to redirectTo --
@@ -103,7 +103,7 @@ async function handleGoogleClick() {
 async function redirectIfAlreadySignedIn() {
   if (!supabaseClient) return;
   const { data } = await supabaseClient.auth.getSession();
-  if (data && data.session) window.location.href = "/";
+  if (data && data.session) window.location.href = "/dashboard";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
