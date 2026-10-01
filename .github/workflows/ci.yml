@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libgomp1
+
+      - name: Install Python dependencies
+        # Mirrors the Dockerfile exactly: sentence-transformers and
+        # optimum-onnx install last with --no-deps, since their declared
+        # transformers version ranges don't overlap each other at all (see
+        # the comment in requirements.txt). Resolving all three together in
+        # one `pip install -r requirements.txt` is a genuine
+        # ResolutionImpossible -- this step is what catches that kind of
+        # dependency regression before it reaches a deploy.
+        run: |
+          pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.0
+          pip install -r requirements.txt
+          pip install --no-deps sentence-transformers==6.0.1 optimum-onnx==0.1.0
+          pip install pytest
+
+      - name: Run test suite
+        env:
+          # Optional: if set as a repo secret, the MongoDB history round-trip
+          # test runs for real; if absent, that test skips itself cleanly
+          # (db.DB_AVAILABLE is False) rather than failing CI.
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: pytest tests/ -v
