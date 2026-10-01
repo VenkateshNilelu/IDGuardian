@@ -30,16 +30,21 @@
     document.getElementById("userMenuEmail").textContent = user.email || "";
   }
 
-  document.addEventListener("DOMContentLoaded", async () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const supabase = getClient();
     if (!supabase) { showSignedOut(); return; }
 
-    const { data } = await supabase.auth.getSession();
-    if (data && data.session) {
-      showSignedIn(data.session.user);
-    } else {
-      showSignedOut();
-    }
+    // Wiring onAuthStateChange alone (not also a one-off getSession() call)
+    // is deliberate: when a page loads straight off an OAuth redirect,
+    // Supabase is still asynchronously exchanging the ?code= param in the
+    // URL for a session. onAuthStateChange fires once immediately with
+    // whatever the current state is AND again when that exchange finishes
+    // -- a separate getSession() call races that exchange and can resolve
+    // first, showing "Sign in" even though the user is, a moment later,
+    // actually signed in.
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) showSignedIn(session.user); else showSignedOut();
+    });
 
     document.getElementById("userMenuBtn").addEventListener("click", () => {
       const menu = document.getElementById("userMenu");
@@ -52,10 +57,6 @@
     document.getElementById("signOutBtn").addEventListener("click", async () => {
       await supabase.auth.signOut();
       window.location.href = "/";
-    });
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) showSignedIn(session.user); else showSignedOut();
     });
   });
 })();
