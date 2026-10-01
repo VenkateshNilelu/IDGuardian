@@ -169,6 +169,8 @@ body { font-family: "Inter", system-ui, -apple-system, sans-serif; }
 .history-sub { font-size: .73rem; color: #94a3b8; }
 .history-remove { color: #cbd5e1; font-size: 1.1rem; padding: 4px 8px; border-radius: 8px; }
 .history-remove:hover { color: #b91c1c; background: #fef2f2; }
+.history-pdf { color: #94a3b8; font-size: 1.1rem; padding: 4px 8px; border-radius: 8px; }
+.history-pdf:hover { color: #2563eb; background: #eff6ff; }
 
 /* ---------- Reports bar chart ---------- */
 .bar-row { display: grid; grid-template-columns: 90px 1fr 34px; align-items: center; gap: 12px; }

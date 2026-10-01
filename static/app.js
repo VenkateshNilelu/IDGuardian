@@ -438,7 +438,7 @@ async function historyClear() {
   localSave(HISTORY_KEY, []);
 }
 
-function historyRowHtml(entry, removable, onRemoveAttr) {
+function historyRowHtml(entry, removable, showPdf) {
   const isFake = verdictFor(entry.fusion_score);
   return `<div class="history-row" data-id="${entry.id}">
     <div class="history-icon">${window.PLATFORM_ICONS[entry.platform] ? `<span class="pill-icon pill-icon-${entry.platform}">${window.PLATFORM_ICONS[entry.platform]}</span>` : ""}</div>
@@ -447,6 +447,7 @@ function historyRowHtml(entry, removable, onRemoveAttr) {
       <div class="history-sub">${platformLabel(entry.platform)} · ${new Date(entry.ts).toLocaleString()}</div>
     </div>
     <span class="badge ${isFake ? "badge-red" : "badge-green"}">${isFake ? "Fake" : "Genuine"}</span>
+    ${showPdf ? `<button type="button" class="history-pdf" data-pdf="${entry.id}" title="Download PDF">⬇</button>` : ""}
     ${removable ? `<button type="button" class="history-remove" data-remove="${entry.id}">✕</button>` : ""}
   </div>`;
 }
@@ -555,13 +556,173 @@ async function savedClear() {
   localSave(SAVED_KEY, []);
 }
 
+// Renders a saved result as a downloadable PDF -- the same fields shown on
+// the Check Profile result page, laid out as plain text/tables rather than
+// a screenshot so it stays readable and small. Client-side only (jsPDF via
+// CDN): no server-side rendering dependency to add to an already
+// memory-constrained deploy.
+function downloadReportPdf(data) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const marginL = 18, pageW = 210, maxY = 280;
+  let y = 20;
+
+  const ensureSpace = (needed) => {
+    if (y + needed > maxY) { doc.addPage(); y = 20; }
+  };
+  const heading = (text) => {
+    ensureSpace(10);
+    doc.setFont("helvetica", "bold").setFontSize(12).setTextColor(15, 23, 32);
+    doc.text(text, marginL, y);
+    y += 7;
+  };
+  const row = (label, value) => {
+    ensureSpace(6);
+    doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(71, 83, 107);
+    doc.text(label, marginL, y);
+    doc.setTextColor(15, 23, 32);
+    doc.text(String(value), marginL + 55, y);
+    y += 6;
+  };
+  const paragraph = (text, color = [71, 83, 107]) => {
+    doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(...color);
+    const lines = doc.splitTextToSize(text, pageW - marginL * 2);
+    ensureSpace(lines.length * 5 + 2);
+    doc.text(lines, marginL, y);
+    y += lines.length * 5 + 2;
+  };
+  const divider = () => {
+    ensureSpace(6);
+    doc.setDrawColor(226, 230, 236);
+    doc.line(marginL, y, pageW - marginL, y);
+    y += 8;
+  };
+
+  const isFake = verdictFor(data.fusion_score);
+  const trustScore = Math.round((1 - data.fusion_score) * 100);
+  const confidence = Math.max(data.fusion_score, 1 - data.fusion_score);
+  const riskLevel = data.fusion_score < 0.3 ? "Low" : data.fusion_score < 0.7 ? "Medium" : "High";
+  const verifiedField = data.profile_data.behavioral.find((f) => f.label === "Verified");
+
+  // --- Header ---
+  doc.setFont("helvetica", "bold").setFontSize(18).setTextColor(37, 99, 235);
+  doc.text("IDGuardian", marginL, y);
+  doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(100, 116, 139);
+  doc.text("Trust Report", marginL, y + 6);
+  y += 18;
+
+  doc.setFont("helvetica", "bold").setFontSize(15).setTextColor(15, 23, 32);
+  doc.text(`@${data.username}`, marginL, y);
+  y += 7;
+  doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(100, 116, 139);
+  doc.text(`${platformLabel(data.platform)}  ·  Analyzed ${new Date().toLocaleString()}`, marginL, y);
+  y += 12;
+
+  // --- Verdict + trust score ---
+  const verdictColor = isFake ? [239, 68, 68] : [16, 185, 129];
+  doc.setFont("helvetica", "bold").setFontSize(13).setTextColor(...verdictColor);
+  doc.text(isFake ? "LIKELY FAKE" : "LIKELY GENUINE", marginL, y);
+  doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(71, 83, 107);
+  doc.text(`${fmtPct(data.fusion_score)} fake probability`, marginL, y + 6);
+  doc.setFont("helvetica", "bold").setFontSize(22).setTextColor(...verdictColor);
+  doc.text(`${trustScore}/100`, pageW - marginL, y, { align: "right" });
+  doc.setFont("helvetica", "normal").setFontSize(9).setTextColor(100, 116, 139);
+  doc.text("Trust Score", pageW - marginL, y + 6, { align: "right" });
+  y += 16;
+  divider();
+
+  // --- Bio ---
+  if (data.profile_data.text) {
+    heading("Bio");
+    paragraph(data.profile_data.text);
+    y += 2;
+  }
+
+  // --- Model layer scores ---
+  heading("Model Layer Scores");
+  row("Lexical (TF-IDF + LogReg)", fmtPct(data.lexical_score));
+  row("Semantic (SBERT + XGBoost)", data.semantic_available ? fmtPct(data.semantic_score) : "Unavailable");
+  row("Behavioral (XGBoost)", fmtPct(data.behavioral_score));
+  row("Final Fake Probability", fmtPct(data.fusion_score));
+  y += 4;
+
+  // --- Classification ---
+  heading("Classification");
+  row("Category", capitalize(data.ground_truth_archetype.replace(/_/g, " ")));
+  row("Platform", platformLabel(data.platform));
+  row("Confidence", fmtPct(confidence));
+  row("Risk Level", riskLevel);
+  row("Verified Account", verifiedField ? (verifiedField.value ? "Yes" : "No") : "—");
+  row("Posts Analyzed", String(data.profile_data.captions.length));
+  row("Analysis Time", `${data.analysis_time_seconds}s`);
+  y += 4;
+  divider();
+
+  // --- Lexical explanation ---
+  heading("Lexical Indicators");
+  const lex = data.explanations.lexical;
+  row("Genuine-leaning words", lex.top_genuine_words.join(", ") || "None detected");
+  row("Fake-leaning words", lex.top_fake_words.join(", ") || "None detected");
+  paragraph(lex.summary);
+  y += 2;
+
+  // --- Semantic explanation ---
+  if (data.semantic_available) {
+    heading("Semantic Analysis");
+    paragraph(data.explanations.semantic.summary);
+    y += 2;
+  }
+
+  // --- Behavioral explanation ---
+  heading("Behavioral Indicators");
+  const beh = data.explanations.behavioral;
+  if (beh.top_features.length) {
+    ensureSpace(8);
+    doc.setFont("helvetica", "bold").setFontSize(9).setTextColor(100, 116, 139);
+    doc.text("Feature", marginL, y);
+    doc.text("Value", marginL + 75, y);
+    doc.text("Typical", marginL + 105, y);
+    doc.text("Signal", marginL + 140, y);
+    y += 5;
+    beh.top_features.forEach((f) => {
+      ensureSpace(6);
+      doc.setFont("helvetica", "normal").setFontSize(9).setTextColor(15, 23, 32);
+      doc.text(f.feature, marginL, y);
+      doc.text(fmtNum(f.value), marginL + 75, y);
+      doc.setTextColor(100, 116, 139);
+      doc.text(fmtNum(f.genuine_typical), marginL + 105, y);
+      doc.setTextColor(...(f.direction === "fake" ? [239, 68, 68] : [16, 185, 129]));
+      doc.text(f.direction === "fake" ? "Fake" : "Genuine", marginL + 140, y);
+      y += 6;
+    });
+  } else {
+    paragraph("No standout behavioral signals.");
+  }
+  y += 2;
+  divider();
+
+  // --- Final conclusion ---
+  heading("Final Conclusion");
+  const lead = isFake
+    ? "This profile shows a pattern consistent with synthetic or fake accounts."
+    : "This profile shows a pattern consistent with genuine, real accounts.";
+  paragraph(`${lead} ${data.explanations.fusion.summary}`, [15, 23, 32]);
+
+  ensureSpace(14);
+  y = Math.max(y, maxY - 10);
+  doc.setFont("helvetica", "normal").setFontSize(8).setTextColor(148, 163, 184);
+  doc.text("Generated by IDGuardian from a synthetic demo profile -- not a real identity verification.", marginL, y);
+
+  doc.save(`idguardian-${data.platform}-${data.username}.pdf`);
+}
+
 async function renderSaved() {
   const list = await savedGetAll();
   $("savedEmpty").hidden = list.length > 0;
-  $("savedList").innerHTML = list.map((e) => historyRowHtml(e, true)).join("");
+  $("savedList").innerHTML = list.map((e) => historyRowHtml(e, true, true)).join("");
   $("savedList").querySelectorAll(".history-row").forEach((row) => {
     row.addEventListener("click", (ev) => {
-      if (ev.target.closest("[data-remove]")) return;
+      if (ev.target.closest("[data-remove]") || ev.target.closest("[data-pdf]")) return;
       const entry = list.find((e) => e.id === row.dataset.id);
       if (!entry) return;
       currentResult = entry.result;
@@ -577,6 +738,13 @@ async function renderSaved() {
       ev.stopPropagation();
       await savedRemove(btn.dataset.remove);
       renderSaved();
+    });
+  });
+  $("savedList").querySelectorAll("[data-pdf]").forEach((btn) => {
+    btn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      const entry = list.find((e) => e.id === btn.dataset.pdf);
+      if (entry) downloadReportPdf(entry.result);
     });
   });
 }
