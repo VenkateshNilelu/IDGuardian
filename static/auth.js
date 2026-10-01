@@ -7,9 +7,14 @@
 // not the same thing as a service-role key, which must never appear here.
 
 let mode = "signin"; // "signin" | "signup"
-let supabase = null;
+let supabaseClient = null;
 
 function initSupabase() {
+  // NOTE: the CDN script below declares its own global `supabase` (the SDK
+  // namespace, with .createClient()) -- this file's own client is deliberately
+  // named `supabaseClient` to avoid a global `let`/`var` redeclaration clash
+  // with it (that clash threw an uncaught SyntaxError that broke this whole
+  // page, caught only once real Supabase credentials made this path run).
   if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) return null;
   if (!window.supabase || !window.supabase.createClient) return null;
   return window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
@@ -51,7 +56,7 @@ function setMode(next) {
 
 async function handleEmailSubmit(ev) {
   ev.preventDefault();
-  if (!supabase) {
+  if (!supabaseClient) {
     showMessage("Sign-in isn't configured yet — SUPABASE_URL/SUPABASE_ANON_KEY aren't set.", "error");
     return;
   }
@@ -64,12 +69,12 @@ async function handleEmailSubmit(ev) {
 
   try {
     if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { error } = await supabaseClient.auth.signUp({ email, password });
       if (error) throw error;
       showMessage("Account created — check your email to confirm, then sign in.", "success");
       setMode("signin");
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
       window.location.href = "/";
     }
@@ -82,11 +87,11 @@ async function handleEmailSubmit(ev) {
 }
 
 async function handleGoogleClick() {
-  if (!supabase) {
+  if (!supabaseClient) {
     showMessage("Sign-in isn't configured yet — SUPABASE_URL/SUPABASE_ANON_KEY aren't set.", "error");
     return;
   }
-  const { error } = await supabase.auth.signInWithOAuth({
+  const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo: window.location.origin + "/" },
   });
@@ -96,13 +101,13 @@ async function handleGoogleClick() {
 }
 
 async function redirectIfAlreadySignedIn() {
-  if (!supabase) return;
-  const { data } = await supabase.auth.getSession();
+  if (!supabaseClient) return;
+  const { data } = await supabaseClient.auth.getSession();
   if (data && data.session) window.location.href = "/";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  supabase = initSupabase();
+  supabaseClient = initSupabase();
   document.getElementById("tabSignIn").addEventListener("click", () => setMode("signin"));
   document.getElementById("tabSignUp").addEventListener("click", () => setMode("signup"));
   document.getElementById("authForm").addEventListener("submit", handleEmailSubmit);
