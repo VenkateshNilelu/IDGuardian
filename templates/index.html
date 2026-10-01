@@ -10,6 +10,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.SUPABASE_URL = {{ supabase_url|tojson }};
+    window.SUPABASE_ANON_KEY = {{ supabase_anon_key|tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='auth-guard.js') }}"></script>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
@@ -345,8 +350,6 @@
     window.SAMPLE_USERNAMES = {{ sample_usernames|tojson }};
     window.PLATFORM_ICONS = {{ platform_icons|tojson }};
     window.DB_AVAILABLE = {{ db_available|tojson }};
-    window.SUPABASE_URL = {{ supabase_url|tojson }};
-    window.SUPABASE_ANON_KEY = {{ supabase_anon_key|tojson }};
   </script>
   <script src="{{ url_for('static', filename='auth-state.js') }}"></script>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
