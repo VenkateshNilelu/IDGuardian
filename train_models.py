@@ -25,6 +25,10 @@ Methodology (why this isn't just "fit everything on everything"):
   score the untouched test set for the reported metrics and what gets saved to models/.
 
 Usage: python train_models.py
+    Needs sentence-transformers + torch for the SBERT encoding step, which
+    requirements.txt deliberately leaves out (app.py's serving path never
+    needs them -- see its semantic-layer comment). Install requirements-train.txt
+    instead: pip install -r requirements-train.txt
 """
 from __future__ import annotations
 

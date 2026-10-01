@@ -13,18 +13,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Install dependencies first (separate layer, cached across code-only rebuilds).
-# torch's CPU-only wheel comes from PyTorch's own index -- installing from
-# default PyPI can otherwise resolve a much larger CUDA-enabled build that
-# this CPU-only app never uses.
+# Deliberately NOT installing torch/sentence-transformers here -- app.py's
+# serving path encodes text with onnxruntime directly (see its semantic-layer
+# comment and requirements.txt's), and skipping torch saves ~250MB of resident
+# memory that this image has no use for (that's what was OOM-killing the app
+# on Render's 512MB free tier). Retraining needs requirements-train.txt instead.
 COPY requirements.txt .
-# sentence-transformers and optimum-onnx install last, with --no-deps -- their
-# declared transformers version ranges don't overlap each other at all, even
-# though both work correctly against the transformers version pinned in
-# requirements.txt (see the comment there). Resolving all three together in
-# one pass is a genuine ResolutionImpossible, not a resource/timeout issue.
-RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch==2.14.0 \
-    && pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir --no-deps sentence-transformers==6.0.1 optimum-onnx==0.1.0
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 

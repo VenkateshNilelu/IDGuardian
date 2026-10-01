@@ -1,7 +1,23 @@
+# Extra deps needed ONLY to retrain models (python train_models.py), on top of
+# requirements.txt. app.py's serving path never needs these -- see its
+# semantic-layer comment and requirements.txt's.
 -r requirements.txt
-scikit-learn>=1.4
-xgboost>=2.0
-sentence-transformers>=3.0
+
+onnx==1.23.0
+optimum==2.1.0
+torch==2.14.0    # CPU-only wheel; if plain PyPI doesn't resolve it, install via:
+                 # pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cpu
+
+# sentence-transformers==6.0.1 and optimum-onnx==0.1.0 are deliberately left
+# OUT of the resolution pass above: their declared dependency ranges for
+# transformers don't overlap each other at all (sentence-transformers wants
+# transformers>=5.0,<6.0; optimum-onnx wants transformers>=4.36,<4.58), even
+# though both work correctly in practice against transformers==4.57.6 pinned
+# in requirements.txt -- confirmed by this app's own test suite. A single
+# `pip install -r requirements-train.txt` with these two included hits a
+# genuine ResolutionImpossible. Install them explicitly with --no-deps, AFTER
+# everything above:
+#   pip install --no-deps sentence-transformers==6.0.1 optimum-onnx==0.1.0
 
 # Windows-only, and only needed if huggingface_hub/httpx fail with
 # CERTIFICATE_VERIFY_FAILED behind a corporate TLS-inspecting proxy whose root CA

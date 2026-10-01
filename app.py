@@ -105,39 +105,67 @@ semantic_model = joblib.load(os.path.join(MODELS_DIR, "semantic_xgboost.joblib")
 with open(os.path.join(MODELS_DIR, "semantic_sbert_model.txt")) as f:
     SBERT_MODEL_NAME = f.read().strip()
 
-# The Semantic layer's default backend is PyTorch, which on some locked-down
-# Windows machines gets blocked at import time by an Application Control/WDAC
-# policy (an OSError naming a specific unsigned .dll -- PyPI's torch wheels
-# aren't code-signed, so this can recur any time the venv is rebuilt, even
-# though it happened to clear on its own last time). ONNX Runtime's DLLs
-# *are* Microsoft-signed, so try that backend first; fall back to the default
-# (torch) backend if ONNX isn't available for some reason; only if both fail
-# does the app degrade (Lexical + Behavioral + Fusion keep working, and the
-# UI says plainly that Semantic is unavailable instead of faking a score).
-sbert = None
+# The semantic layer's embeddings are produced with a plain tokenizer +
+# onnxruntime session instead of the sentence-transformers/torch wrapper.
+# sentence-transformers hard-imports torch as soon as it's imported (even
+# just for AutoTokenizer, even when backend="onnx" is requested -- confirmed
+# by blocking the import directly), which alone costs ~250MB of resident
+# memory before a single model is loaded -- enough to OOM a container with a
+# 512MB limit once the rest of the pipeline (lexical TF-IDF, 10 joblib
+# models) is also loaded. This hand-rolled encode() does the exact same
+# computation (mean-pool last_hidden_state over the attention mask, then
+# L2-normalize -- see models/semantic_sbert_model.txt's 1_Pooling/config.json
+# and 2_Normalize step) and was verified to match sentence-transformers'
+# own .encode() output to ~1e-8 (floating point noise only), while never
+# importing torch at all.
+sbert_tokenizer = None
+sbert_session = None
+sbert_input_names = set()
 SEMANTIC_AVAILABLE = False
-SEMANTIC_BACKEND = None
 SEMANTIC_UNAVAILABLE_REASON = ""
+SBERT_MAX_SEQ_LEN = 256
 try:
-    # Even this import can transitively pull in torch (sentence_transformers ->
-    # transformers -> torch at module level in some version combos), so it has
-    # to be inside the try too -- picking backend="onnx" below doesn't help if
-    # the import itself already failed.
-    from sentence_transformers import SentenceTransformer
-    try:
-        sbert = SentenceTransformer(SBERT_MODEL_NAME, backend="onnx",
-                                    model_kwargs={"file_name": "onnx/model.onnx"})
-        SEMANTIC_BACKEND = "onnx"
-    except Exception as onnx_exc:
-        print(f"Semantic layer: ONNX backend unavailable ({onnx_exc}); trying the default backend...")
-        sbert = SentenceTransformer(SBERT_MODEL_NAME)
-        SEMANTIC_BACKEND = "torch"
+    from huggingface_hub import hf_hub_download
+    from transformers import AutoTokenizer
+    import onnxruntime as ort
+
+    # train_models.py writes the bare model name (e.g. "all-MiniLM-L6-v2");
+    # the actual HF Hub repo lives under the sentence-transformers namespace.
+    _sbert_repo = SBERT_MODEL_NAME if "/" in SBERT_MODEL_NAME else f"sentence-transformers/{SBERT_MODEL_NAME}"
+
+    sbert_tokenizer = AutoTokenizer.from_pretrained(_sbert_repo)
+    _onnx_path = hf_hub_download(_sbert_repo, "onnx/model.onnx")
+
+    _ort_opts = ort.SessionOptions()
+    _ort_opts.enable_cpu_mem_arena = False
+    _ort_opts.enable_mem_pattern = False
+    _ort_opts.intra_op_num_threads = 1
+    sbert_session = ort.InferenceSession(_onnx_path, sess_options=_ort_opts,
+                                          providers=["CPUExecutionProvider"])
+    sbert_input_names = {i.name for i in sbert_session.get_inputs()}
     SEMANTIC_AVAILABLE = True
-    print(f"Semantic layer ready (backend: {SEMANTIC_BACKEND}).")
+    print("Semantic layer ready (backend: onnxruntime, no torch).")
 except Exception as exc:  # broad on purpose -- import/load failures vary by platform
     SEMANTIC_UNAVAILABLE_REASON = str(exc)
     print(f"WARNING: Semantic layer unavailable ({exc}). Continuing with "
           f"Lexical + Behavioral + Fusion only.")
+
+
+def encode_texts(texts: list[str]) -> np.ndarray:
+    """Sentence embeddings for `texts`: tokenize -> ONNX forward pass -> mean-pool
+    over the attention mask -> L2-normalize. Matches sentence-transformers'
+    SentenceTransformer(...).encode(texts) bit-for-bit (see module docstring above
+    this function's definition site for how that was verified)."""
+    enc = sbert_tokenizer(texts, padding=True, truncation=True,
+                           max_length=SBERT_MAX_SEQ_LEN, return_tensors="np")
+    feed = {k: v for k, v in enc.items() if k in sbert_input_names}
+    last_hidden = sbert_session.run(None, feed)[0]
+    attn = enc["attention_mask"].astype(np.float32)[..., None]
+    summed = (last_hidden * attn).sum(axis=1)
+    counts = np.clip(attn.sum(axis=1), 1e-9, None)
+    mean_pooled = summed / counts
+    norm = np.linalg.norm(mean_pooled, axis=1, keepdims=True)
+    return mean_pooled / np.clip(norm, 1e-9, None)
 
 behavioral_models = {p: joblib.load(os.path.join(MODELS_DIR, f"behavioral_{p}_xgboost.joblib"))
                      for p in T.PLATFORMS}
@@ -168,6 +196,20 @@ else:
           "to filter out frequency-inconsistent words from the Lexical explanation.")
 
 print("Models loaded. Ready.")
+
+# Supabase Auth (Google OAuth + email/password) -- optional, same graceful-
+# degradation pattern as the semantic layer/MongoDB: the app runs fine
+# without it, the login page just shows a "not configured yet" notice. The
+# anon key is meant to be used client-side by Supabase's own design (access
+# control is enforced via Row Level Security, not by keeping this key
+# secret) -- never put a service-role key here.
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "").strip()
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "").strip()
+SUPABASE_CONFIGURED = bool(SUPABASE_URL and SUPABASE_ANON_KEY)
+if SUPABASE_CONFIGURED:
+    print("Supabase Auth configured.")
+else:
+    print("Supabase Auth not configured -- set SUPABASE_URL and SUPABASE_ANON_KEY to enable sign-in.")
 
 BOOL_FIELDS = {"is_verified", "has_website", "has_location",
                "email_verified", "phone_verified", "two_factor_enabled"}
@@ -426,7 +468,7 @@ def score_profile(platform: str, text: str, captions: list[str], hashtags: list[
     lexical_score = float(lexical_model.predict_proba(X_lex)[0, 1])
 
     if SEMANTIC_AVAILABLE:
-        emb = sbert.encode([pooled_text])
+        emb = encode_texts([pooled_text])
         semantic_score = float(semantic_model.predict_proba(emb)[0, 1])
     else:
         semantic_score = 0.5  # neutral placeholder -- see explain_semantic()
@@ -480,7 +522,15 @@ def index():
     return render_template("index.html", platforms=T.PLATFORMS,
                            text_labels=PLATFORM_TEXT_LABEL, sample_usernames=SAMPLE_USERNAMES,
                            platform_icons=PLATFORM_ICONS, semantic_available=SEMANTIC_AVAILABLE,
-                           db_available=db.DB_AVAILABLE)
+                           db_available=db.DB_AVAILABLE,
+                           supabase_configured=SUPABASE_CONFIGURED,
+                           supabase_url=SUPABASE_URL, supabase_anon_key=SUPABASE_ANON_KEY)
+
+
+@app.route("/login")
+def login():
+    return render_template("login.html", supabase_configured=SUPABASE_CONFIGURED,
+                           supabase_url=SUPABASE_URL, supabase_anon_key=SUPABASE_ANON_KEY)
 
 
 @app.route("/api/lookup", methods=["GET"])

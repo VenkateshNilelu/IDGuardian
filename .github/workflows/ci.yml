@@ -21,17 +21,12 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libgomp1
 
       - name: Install Python dependencies
-        # Mirrors the Dockerfile exactly: sentence-transformers and
-        # optimum-onnx install last with --no-deps, since their declared
-        # transformers version ranges don't overlap each other at all (see
-        # the comment in requirements.txt). Resolving all three together in
-        # one `pip install -r requirements.txt` is a genuine
-        # ResolutionImpossible -- this step is what catches that kind of
-        # dependency regression before it reaches a deploy.
+        # Mirrors the Dockerfile exactly: no torch/sentence-transformers --
+        # app.py's serving path encodes text via onnxruntime directly (see
+        # its semantic-layer comment), so this also doubles as a check that
+        # the test suite genuinely passes without torch installed at all.
         run: |
-          pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.0
           pip install -r requirements.txt
-          pip install --no-deps sentence-transformers==6.0.1 optimum-onnx==0.1.0
           pip install pytest
 
       - name: Run test suite

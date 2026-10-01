@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
@@ -38,7 +39,14 @@
       </button>
       {% endfor %}
       <button type="button" id="themeToggle" class="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 ml-1" aria-label="Toggle theme">🌙</button>
-      <div class="w-9 h-9 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-sm">V</div>
+      <div id="authState" class="relative">
+        <a href="/login" id="signInLink" class="text-sm font-semibold text-blue-600 hover:text-blue-700 px-3 py-2" hidden>Sign in</a>
+        <button type="button" id="userMenuBtn" class="w-9 h-9 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-sm" hidden></button>
+        <div id="userMenu" class="absolute right-0 top-11 w-44 card p-2" hidden>
+          <div id="userMenuEmail" class="text-xs text-slate-400 px-2 py-1.5 truncate"></div>
+          <button type="button" id="signOutBtn" class="w-full text-left text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg px-2 py-1.5">Sign out</button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -337,7 +345,10 @@
     window.SAMPLE_USERNAMES = {{ sample_usernames|tojson }};
     window.PLATFORM_ICONS = {{ platform_icons|tojson }};
     window.DB_AVAILABLE = {{ db_available|tojson }};
+    window.SUPABASE_URL = {{ supabase_url|tojson }};
+    window.SUPABASE_ANON_KEY = {{ supabase_anon_key|tojson }};
   </script>
+  <script src="{{ url_for('static', filename='auth-state.js') }}"></script>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

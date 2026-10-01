@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in — IDGuardian</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-50 text-slate-900" style="font-family:'Inter',system-ui,sans-serif;">
+
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+
+    <a href="/" class="flex items-center gap-2.5 mb-8">
+      <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 5v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <div class="leading-tight">
+        <div class="font-extrabold text-[17px]">IDGuardian</div>
+        <div class="text-[12px] text-slate-400 -mt-0.5">Trust the Real</div>
+      </div>
+    </a>
+
+    {% if not supabase_configured %}
+    <div class="w-full max-w-sm mb-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm px-4 py-3">
+      ⚠️ Sign-in isn't configured yet (missing <code>SUPABASE_URL</code> / <code>SUPABASE_ANON_KEY</code>).
+      This page is otherwise ready to go once those are set.
+    </div>
+    {% endif %}
+
+    <div class="w-full max-w-sm card p-7">
+
+      <div class="flex rounded-lg bg-slate-100 p-1 mb-6">
+        <button type="button" id="tabSignIn" class="flex-1 py-2 rounded-md text-sm font-semibold bg-white shadow-sm text-slate-900" aria-pressed="true">Sign in</button>
+        <button type="button" id="tabSignUp" class="flex-1 py-2 rounded-md text-sm font-semibold text-slate-500" aria-pressed="false">Create account</button>
+      </div>
+
+      <h1 id="formTitle" class="text-lg font-bold mb-1">Welcome back</h1>
+      <p id="formSub" class="text-sm text-slate-500 mb-5">Sign in to sync your analysis history across devices.</p>
+
+      <button type="button" id="googleBtn" class="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-lg py-2.5 text-sm font-semibold hover:bg-slate-50 transition mb-5">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.46c-.28 1.5-1.13 2.78-2.4 3.63v3h3.88c2.27-2.09 3.58-5.17 3.58-8.82Z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.94-2.91l-3.88-3c-1.08.72-2.45 1.15-4.06 1.15-3.12 0-5.77-2.11-6.72-4.94H1.27v3.1C3.24 21.3 7.3 24 12 24Z"/><path fill="#FBBC05" d="M5.28 14.3a7.2 7.2 0 0 1 0-4.6v-3.1H1.27a12 12 0 0 0 0 10.8l4.01-3.1Z"/><path fill="#EA4335" d="M12 4.77c1.76 0 3.34.6 4.58 1.79l3.44-3.44C17.95 1.19 15.24 0 12 0 7.3 0 3.24 2.7 1.27 6.6l4.01 3.1C6.23 6.88 8.88 4.77 12 4.77Z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="flex items-center gap-3 mb-5">
+        <div class="h-px bg-slate-200 flex-1"></div>
+        <span class="text-xs text-slate-400 font-semibold">OR</span>
+        <div class="h-px bg-slate-200 flex-1"></div>
+      </div>
+
+      <form id="authForm" class="flex flex-col gap-3">
+        <div>
+          <label for="emailInput" class="text-xs font-semibold text-slate-600 mb-1 block">Email</label>
+          <input type="email" id="emailInput" required autocomplete="email"
+                 class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition">
+        </div>
+        <div>
+          <label for="passwordInput" class="text-xs font-semibold text-slate-600 mb-1 block">Password</label>
+          <input type="password" id="passwordInput" required autocomplete="current-password" minlength="6"
+                 class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition">
+        </div>
+        <button type="submit" id="submitBtn" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-lg transition mt-2">
+          Sign in
+        </button>
+      </form>
+
+      <div id="authMsg" class="text-sm mt-4" hidden></div>
+
+      <p class="text-xs text-slate-400 text-center mt-6">
+        <a href="/" class="hover:text-slate-600">← Back to IDGuardian</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    window.SUPABASE_URL = {{ supabase_url|tojson }};
+    window.SUPABASE_ANON_KEY = {{ supabase_anon_key|tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='auth.js') }}"></script>
+</body>
+</html>
