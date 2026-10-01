@@ -20,14 +20,23 @@ vaderSentiment==3.3.2
 # --- Semantic layer (SBERT). ONNX Runtime is the primary backend (Microsoft-
 # signed DLLs -- immune to Windows Application Control blocking unsigned
 # PyTorch wheels); torch is the fallback backend if ONNX is unavailable.
-sentence-transformers==6.0.1
 onnx==1.23.0
 onnxruntime==1.30.0
 optimum==2.1.0
-optimum-onnx==0.1.0
 torch==2.14.0    # CPU-only wheel; if plain PyPI doesn't resolve it, install via:
                  # pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cpu
 transformers==4.57.6
+
+# sentence-transformers==6.0.1 and optimum-onnx==0.1.0 are deliberately left
+# OUT of the resolution pass above: their declared dependency ranges for
+# transformers don't overlap with each other at all (sentence-transformers
+# wants transformers>=5.0,<6.0; optimum-onnx wants transformers>=4.36,<4.58),
+# even though both work correctly in practice against transformers==4.57.6
+# pinned above -- confirmed by this app's own test suite. A single `pip
+# install -r requirements.txt` with these two included hits a genuine
+# ResolutionImpossible. Install them explicitly with --no-deps, AFTER
+# everything above (see Dockerfile):
+#   pip install --no-deps sentence-transformers==6.0.1 optimum-onnx==0.1.0
 
 # --- MongoDB Atlas: persists Analysis History / Saved Reports server-side ---
 pymongo==4.18.1

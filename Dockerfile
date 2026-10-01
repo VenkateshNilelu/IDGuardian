@@ -17,8 +17,14 @@ WORKDIR /app
 # default PyPI can otherwise resolve a much larger CUDA-enabled build that
 # this CPU-only app never uses.
 COPY requirements.txt .
+# sentence-transformers and optimum-onnx install last, with --no-deps -- their
+# declared transformers version ranges don't overlap each other at all, even
+# though both work correctly against the transformers version pinned in
+# requirements.txt (see the comment there). Resolving all three together in
+# one pass is a genuine ResolutionImpossible, not a resource/timeout issue.
 RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch==2.14.0 \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir --no-deps sentence-transformers==6.0.1 optimum-onnx==0.1.0
 
 COPY . .
 
